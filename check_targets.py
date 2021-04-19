@@ -73,15 +73,16 @@ from decouple import config      # Allows us to read .env
 # Set DBTools Environment and Global Variables
 # ============================================================================
 
-DBC_USERNAME = config('DBC_USER')
+DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 ORACLE_BASE = "/u01/app/oracle"
 ORACLE_HOME = "/u01/app/oracle/product/12.2.0.1"
 TNS_ADMIN = "/u01/app/oracle/DBTools/"
 GlobalLog_File = "/home/orac4i/Inventory/src/logs/check_targets_"+str(date.today())+".log"
 GlobalLogLevel = logging.DEBUG
-INVENTORYDB = "database=\"testdb\", user = \"postgres\", password = DBC_PWD, \
-               host = \"caddld-498.belldev.dev.bce.ca\", port = \"5432\" connect_timeout=3 "
+#INVENTORYDB = "dbname=\"testdb\", user=\"postgres\", password=\"DBC_PWD\", host=\"caddld-498.belldev.dev.bce.ca\" "
+INVENTORYDB = "dbname=testdb user=postgres password=sys4Bell host=caddld-498.belldev.dev.bce.ca"
+
 
 # ============================================================================
 
@@ -115,6 +116,7 @@ def StartLogging(LogLevel, Log_File):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     ch.setFormatter(formatter)
     Logger.addHandler(ch)
+    Logger.info("Begin Logging Level: %s", LogLevel)
 
     return Logger
 
@@ -160,7 +162,7 @@ def check_os_target(owner, host, homedir, command):
             stdin, stdout, stderr = ssh_connection.exec_command(command)
             result_row = stdout.readlines()
             result=str(result_row[0]).strip()
-            TargetLogger.info("Result: %s ", result)
+            TargetLogger.info("OS Check Result: %s ", result)
             timer.cancel()    # cancel the connection thread if it's still alive after 30 seconds
     
         except  Exception as sshException:
@@ -183,53 +185,58 @@ def check_os_target(owner, host, homedir, command):
 # Ouptut:       A check object array and Status
 # ============================================================================
 
-def check_oracle_target(instance, host, check):
+def check_oracle_target(tns, check):
+    
+    TargetLogger.info("Start Oracle DB Check on: %s ", tns)
+    result='TBD'
 
     try:
-        connection = cx_Oracle.connect("Cloud_DBC", "DBC#4Cloud2", tns, encoding="UTF-8")
+        target = cx_Oracle.connect(DBC_USER, DBC_PWD, tns, encoding="UTF-8")
         # lets only allow a few seconds per database query to collect what we want
         # note:  summing used space on some databases can take overa minute
         timer = threading.Timer(90,connection.cancel)
         timer.start()    # start counting right before connecting to the database
         
-        db_info_cursor = connection.cursor()
-        db_info_cursor.execute(check, instance, host)
-        result = db_info_cursor.fetchone()
+        target_cursor = target.cursor()
+        target_cursor.execute(check)
+        result = target_cursor.fetchone()
 
     except (OSError, ValueError, RuntimeError, TypeError, NameError) as exc:
         error, = exc.args
         TargetLogger.error("Error:    %s ", error)
     except cx_Oracle.DatabaseError as exc:
         error, = exc.args
-        TargetLogger.error("DatabaseError-Code:    %s %s ", error.code, error.message)
+        TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
         result=str(error.code)
     except cx_Oracle.OperationalError as exc:
         error, = exc.args
-        TargetLogger.error("OperationalError-Code:    %s %s", error.code, error.message)
+        TargetLogger.error("OperationalError-Code: %s %s", error.code, error.message)
     except cx_Oracle.InternalError as exc:
         error, = exc.args
-        TargetLogger.error("OperationalError-Code:    %s %s    ", error.code, error.message)
+        TargetLogger.error("OperationalError-Code: %s %s    ", error.code, error.message)
     except cx_Oracle.InterfaceError as exc:
         error, = exc.args
-        TargetLogger.error("InterfaceError-Code:    %s %s ", error.code, error.message)
+        TargetLogger.error("InterfaceError-Code: %s %s ", error.code, error.message)
     except cx_Oracle.ProgrammingError as exc:
         error, = exc.args
-        TargetLogger.error("ProgrammingError-Code:    %s %s ", error.code, error.message)
+        TargetLogger.error("ProgrammingError-Code: %s %s ", error.code, error.message)
     except cx_Oracle.NotSupportedError as exc:
         error, = exc.args
-        TargetLogger.error("NotSupportedError-Code:    %s %s ", error.code, error.message)
+        TargetLogger.error("NotSupportedError-Code: %s %s ", error.code, error.message)
     except cx_Oracle.Error as exc:
         error, = exc.args
-        TargetLogger.error("Error-Code:    %s %s", error.code, error.message)
+        TargetLogger.error("Error-Code: %s %s", error.code, error.message)
     except:
-        TargetLogger.error("Unexpected error:    %s    ", sys.exc_info()[0])
+        TargetLogger.error("Unexpected error: %s ", sys.exc_info()[0])
         raise
 
     else:
+        TargetLogger.debug("Oracle DB Check result: %s ", result)
         timer.cancel() 
+        target.close()
         
     finally:    
-        connection.close()
+        TargetLogger.info("Oracle DB Check Completed")
 
     return result
 
@@ -245,6 +252,7 @@ def check_oracle_target(instance, host, check):
 # ============================================================================
 
 def add_result(ID, check_result, column_name):
+    TargetLogger.debug("Insert check result: %s into %s for ID: %s", check_result, column_name, ID)
     postgres_insert_connection = psycopg2.connect(INVENTORYDB)
     insert_cursor = postgres_insert_connection.cursor()
     insert_statement  =  "INSERT INTO CheckResults (inventoryid, checkdate," \
@@ -258,10 +266,10 @@ def add_result(ID, check_result, column_name):
 
     except psycopg2.Error as exc:
         error, = exc.args
-        TargetLogger.error("Data Exception: %s %s", error.code, error.message) 
+        TargetLogger.error("Data Exception: %s ", error) 
 
     else:
-        TargetLogger.info("Added: %s  %s  %s  %s", ID, column_name, check_result, check_date) 
+        TargetLogger.info("Result added: %s  %s  %s  %s", ID, column_name, check_result, check_date) 
 
         # Make the changes to the database persistent
         postgres_insert_connection.commit()
@@ -279,26 +287,36 @@ def add_result(ID, check_result, column_name):
 # ============================================================================
 # ============================================================================
 def main(argv):
-    VENDOR='ALL'
-    FREQUENCY='ALL'
-    CHECKTYPE='ALL'
+    VENDOR='%'
+    FREQUENCY='%'
+    CHECKTYPE='%'
     
     try:
-        opts = getopt.getopt(argv,"h:vft")
+        opts, args = getopt.getopt(argv,"h:v:f:t")
+        
     except getopt.GetoptError:
         print ('check_targets.py -v <vendor> -f <frequency> -t <type>')
         sys.exit(2)
+        
     for opt, arg in opts:
         if opt == '-h':
             print ('check_targets.py -v <vendor> -f <frequency> -t <type>')
             sys.exit()
         elif opt in ("-v"):
             VENDOR = arg
+            if VENDOR == 'ALL':
+                VENDOR = '%'
         elif opt in ("-f"):
             FREQUENCY = arg
+            if FREQUENCY == 'ALL':
+                FREQUENCY = '%'
         elif opt in ("-t"):
             CHECKTYPE = arg
-    
+            if CHECKTYPE == 'ALL':
+                CHECKTYPE = '%' 
+
+    TargetLogger.info("Running CheckTargets.py with VENDOR=% FREQUENCY=% CHECKTYPE=%", VENDOR, FREQUENCY, CHECKTYPE )
+
     # ============================================================================
     # Fetch all the valid database targets from the InventoryDB and
     # check each one database by database
@@ -307,8 +325,8 @@ def main(argv):
     
     # Connect to the Inventory DB 
     
-    postgres_conn = psycopg2.connect(INVENTORYDB)
-    target_cursor = postgres_conn.cursor()
+    inventory_conn = psycopg2.connect(INVENTORYDB)
+    target_cursor = inventory_conn.cursor()
     
     # Get ALL the active targets     
     target_cursor.execute("""
@@ -320,22 +338,37 @@ def main(argv):
     
     # Get ALL the checks to perform on these targets     
     target_cursor.execute("""
-            select check, checktype, resultcolumn
+            select check_command, check_type, result_column
                 from public.checklist
-                 where vendor = %s
-                   and frequency = %s
-                   and type = %s""",  VENDOR, FREQUENCY, CHECKTYPE )
+                 where check_type like 'DB' """,  (VENDOR, FREQUENCY, CHECKTYPE ))
     all_checks = target_cursor.fetchall()
 
     for InventoryID, InstanceName, Owner, HomeDir, HostName in all_targets:
-        for check, checktype, result_column in all_checks:
-            if (checktype == 'ORACLE') and ((CHECKTYPE == 'ALL') or (CHECKTYPE == 'ORACLE')):
-                result = check_oracle_target(InstanceName, HostName, check)
-                add_result(InventoryID, result, result_column)
-                CheckOMS(InstanceName, HostName)
-            if (checktype == 'OS') and ((CHECKTYPE == 'ALL') or (CHECKTYPE == 'OS')):
+        TargetLogger.info("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s ", \
+                          InventoryID, InstanceName, Owner, HomeDir, HostName)
+        
+        for check, check_type, result_column in all_checks:
+            print( all_checks)
+            TargetLogger.info("check: %s checktype: %s result_column: %s ", \
+                               check, check_type, result_column)
+                
+            if check_type == 'DB':
+                if (VENDOR == 'ORACLE') or (VENDOR == '%') :
+                    result = check_oracle_target(InstanceName+'_'+HostName, check)
+                    add_result(InventoryID, result, result_column)
+                    TargetLogger.info("InventoryID: %s result: %s result_column: %s ", \
+                                       InventoryID, result, result_column)               
+
+                    # CheckOMS(InstanceName, HostName)
+                
+            if (check_type == 'OS'):
                 result = check_os_target(Owner, HostName, HomeDir, check)
                 add_result(InventoryID, result, result_column)
+                TargetLogger.info("InventoryID: %s result: %s result_column: %s ", \
+                                   InventoryID, result, result_column)   
+                                    
+                                    
+    inventory_conn.close()           
 # ============================================================================
 # END main program
 # ============================================================================
