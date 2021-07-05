@@ -13,20 +13,20 @@
 # Description
 # ============================================================================
 #
-# Script name:          update_targets.py
+# Script name:          add_targets.py
 #
-# Version:              1.01
+# Version:              1.02
 #
 # Purpose:              This script adds new targets from DBList into the 
 #                       DBC Inventory Database. If the targe exists and 
 #                       something has changed, then it updates the entry.
 #
-# Input files:          /u01/app/oracle/DBTools/tnsnames.ora
+# Input files:          /u01/app/oracle/DBTools/AddToDBList.txt
 #
 # Output:               Entries into the DBC_Targets tables
 #                       Log files to ./logs directory
 #
-# Syntax:               python update_targets.py
+# Syntax:               python add_targets.py
 #
 # Called Routines:      cx_Oracle - for Oracle database calls
 #                       psycopg2 - for PostgreSQL database calls
@@ -34,7 +34,7 @@
 #
 # Return Codes:
 #
-# Restrictions:         You must first run "source ~/Inventory/bin/activate
+# Restrictions:         You must first run "source ~/venv/bin/activate
 #                       to enter the necessary Python virtual environment
 #
 # Abend instructions:   Resolve and rerun
@@ -43,8 +43,11 @@
 # History of Changes
 # ============================================================================
 # Date         Person            Version  Comments
-# 2021/03/05   M.Pankratz        1.00     Copied from add_targets.py
-# 2021/06/10   M.Pankratz        1.01     Move settings to separate file
+# 2021/01/13   M.Pankratz        1.00     Created
+# 2021/01/15   M.Pankratz        1.01     rename, add logging, restructure
+# 2021/01/19   M.Pankratz        1.02     add containers
+# 2021/03/03   M.Pankratz        1.03     add host type (VM or physical)
+# 2021/06/10   M.Pankratz        1.04     move settings into separate file
 # ============================================================================
 
 
@@ -58,9 +61,10 @@ import psycopg2.extras    # This gives access to the psycopg2 error messages
 import sys                # for some reason this is not included by default
 import logging            # https://docs.python.org/3/library/logging.html
 import threading          # Allows us to time and kill hung db connections
-# from numpy import asarray # convert sql result tuples to python arrays
-from datetime import date # for some reason this is not included by default
-from decouple  import config     # Allows us to read .env
+# from numpy import asarray     # convert sql result tuples to python arrays
+from datetime import date       # for some reason this is not included by default
+from check_oms import CheckOMS  # Allows us to query the OEM DEv instance 
+from decouple  import config    # Allows us to read .env
 # ============================================================================
 
 # ============================================================================
@@ -70,11 +74,17 @@ DBC_USER = config('DBC_USER')
 DBC_PWD  = config('DBC_PWD')
 INV_USER = config('INV_USER')
 INV_PWD  = config('INV_PWD')
-INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-498.belldev.dev.bce.ca"
+ORACLE_BASE = "/u01/app/oracle"
 ORACLE_HOME="/u01/app/oracle/product/12.2.0.1"
 TNS_ADMIN="/u01/app/oracle/DBTools/"
-Log_File="/home/orac4i/Inventory/src/logs/update_targets_"+str(date.today())+".log"
-LogLevel="INFO"
+target_file="/u01/app/oracle/DBTools/AddToDBList.txt"
+Log_File="/home/orac4i/Inventory/src/logs/add_targets_"+str(date.today())+".log"
+LogLevel="DEBUG"
+GlobalLog_File = "/home/orac4i/Inventory/src/logs/check_targets_"+str(date.today())+".log"
+GlobalLogLevel = logging.DEBUG
+INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-498.belldev.dev.bce.ca"
+
+
 # ============================================================================
 
 # ============================================================================
@@ -82,10 +92,10 @@ LogLevel="INFO"
 # ============================================================================
 
 def StartLogging(LogLevel, Log_File):
-    logging.basicConfig(filename=Log_File, level=logging.INFO)
+    logging.basicConfig(filename=Log_File, level=logging.DEBUG)
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-    TargetLogger=logging.getLogger('Target_Update')
-    TargetLogger.setLevel(logging.INFO)
+    TargetLogger=logging.getLogger('Add_Target')
+    TargetLogger.setLevel(logging.DEBUG)
 
     # Create a console handler
     ch = logging.StreamHandler()
@@ -211,12 +221,13 @@ def CheckOratab(target, owner):
 # ============================================================================
 # Function:    PingTarget
 # Description: Checks the Inventory database and retuns the result
-# Input:       Takes target in the format of host_instance
+# Input:       Takes target in the format of instance_host
 # Ouptut:      Returns a boolean if its new and the target info
 #              [instance,host,DBCreateDate,DBID,version,logMode,status]
 # ============================================================================
 def PingTarget(target):
   # Set some initial values each time we do a check
+  NewTarget=False  # Set to False until we determine if it's True
   TargetRow=[]     # create an empty array to start
   instance, host=target.split('_')
 
@@ -227,38 +238,35 @@ def PingTarget(target):
   else:
 
     try:
-        connection = cx_Oracle.connect(DBC_USER, DBC_PWD, target, encoding="UTF-8")
+        connection = cx_Oracle.connect(DBC_USER, DBC_PWD, target.strip(), encoding="UTF-8")
         timer = threading.Timer(30,connection.cancel)
         db_info_cursor = connection.cursor()
         timer.start()  # start counting right before connecting to the database
         db_info_cursor.execute("""
-            select upper(instance_name), upper(host_name), to_char(db.created, 'YYYY-MM-DD'), to_char(db.dbid),
+            select upper(instance_name), upper(host_name), to_char(db.created, 'YYYY-MM-DD'), to_char(db.dbid), 
                    version, db.log_mode, status, database_role,
                    CASE when substr(version,0,instr(version,'.')-1) > 11
-                        then case
-                                 when SYS_CONTEXT('USERENV','CON_NAME') = instance_name
-                                 then 'STANDALONE'
-                                 else SYS_CONTEXT('USERENV','CON_NAME')
-                             end
-                        else 'STANDALONE'
+			then case
+			         when SYS_CONTEXT('USERENV','CON_NAME') = instance_name
+			         then 'STANDALONE'
+			         else SYS_CONTEXT('USERENV','CON_NAME')
+			     end
+			else 'STANDALONE'
                     end as container,
                     CASE when substr(version,0,instr(version,'.')-1) > 11
 			 then SYS_CONTEXT('USERENV','ORACLE_HOME')
 			 else 'UNKNOWN'
 	 	    end as oracle_home
             from v$instance, v$database db
-            where instance_name like db.name||'%' """)
+            where instance_name like db.name ||'%' """)
 
         TargetRow = db_info_cursor.fetchone()
         timer.cancel()  # cancel the connection thread if it's still alive after 30 seconds
 
-        if TargetRow == None:
-            TargetLogger.warning('Target is not queryable: %s ', target)
-            TargetRow = 'NONE'
-
-        else:
+        if TargetRow != None:
             # This target is reachable as Cloud_DBC!!
             TargetLogger.debug('Connected to: %s', str(TargetRow))
+            NewTarget = True
             TargetRowList=list(TargetRow)
 
             db_info_cursor.execute("""
@@ -270,13 +278,16 @@ def PingTarget(target):
             OwnerRow = db_info_cursor.fetchone()
             Owner=str(OwnerRow[0]).strip()
 
-            # in_oms=CheckOMS(target)
+            #in_oms=CheckOMS(target)
+            in_oms="N"
             hosttype=GetHostType(host, Owner)
             dbora=GetDBora(host, Owner)
-
+    
             homedir=TargetRowList.pop() 
 
             if homedir == 'UNKNOWN':
+              # make sure we use the actual Oracle "Instance" returned above to get the container
+              instance=str(target[0]).upper()
               TargetRowList.append(CheckOratab(target, Owner))
             else:
               TargetRowList.append(homedir)
@@ -284,7 +295,7 @@ def PingTarget(target):
             TargetRowList.append(Owner)
             TargetRowList.append('ORACLE')
             TargetRowList.append(int(DBBlockSize[0]))
-            # TargetRowList.append(in_oms)
+            TargetRowList.append(in_oms)
             TargetRowList.append(hosttype)
             TargetRowList.append(dbora)
 
@@ -292,6 +303,11 @@ def PingTarget(target):
  
             # All done with the Target Oracle connection
             connection.close()
+        else:
+            # This target is not reachable as Cloud_DBC!!
+            TargetLogger.debug('Unable to connect to: %s', str(TargetRow))
+            NewTarget = False
+   
     
     # Handle all the things that could go wrong with this connection attempt
     except cx_Oracle.DatabaseError as exc:
@@ -303,13 +319,14 @@ def PingTarget(target):
         if oraerr in NotExist :
             TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
             TargetLogger.error('TNS Error: Target DB not added to inventory. Correct the issue or remove from DBList')
-            TargetRow = 'NONE'
+            NewTarget = False
         else:
             TargetLogger.warning('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
-            # We can add this target to inventory even though we can't log in
+            # We can add a placeholder for this target into inventory even though we can't log in
+            NewTarget=True  
             TargetLogger.info('Target %s exists, but couldn''t log in. Setting blank initial values.', str(target))
-            TargetRow = (str(instance).upper(),str(host).upper(),"1900-01-01",'','Unknown','',oraerr,'','','','','ORACLE',0,'','')
-            # Created, DBID, Version, log_mode, status, role, owner, blocksize, hosttype, dbora
+            TargetRow = (str(instance).upper(),str(host).upper(),"1900-01-01",'','Unknown','',oraerr,'','STANDALONE','','','ORACLE',0,'','','')
+            NewTarget = True
 
 
     except Exception as exc:
@@ -319,10 +336,11 @@ def PingTarget(target):
         error, = exc.args
         TargetLogger.error('Target: %s   Error: %s', str(target), error)
         TargetLogger.error('Target DB not added to inventory. Correct the issue or remove from DBList')
+        NewTarget = False
  
     
 
-  return TargetRow
+  return NewTarget, TargetRow
 # ============================================================================
 # END PingTarget
 # ============================================================================
@@ -335,6 +353,7 @@ def PingTarget(target):
 #              [instance,host,DBCreateDate,DBID,version,logMode,status]
 # ============================================================================
 def UpdateTarget(target):
+        NewTarget   =False
         row         =None
         instance    =str(target[0]).upper()
         host        =str(target[1]).upper()
@@ -349,12 +368,15 @@ def UpdateTarget(target):
         Owner       =str(target[10])
         Vendor      =str(target[11])
         DBBlockSize =str(target[12])
-        hosttype    =str(target[13])
-        dbora       =str(target[14])
+        In_OMS      =str(target[13])
+        hosttype    =str(target[14])
+        dbora       =str(target[15])
 
         # ============================================================================
         # Open a connection to the Inventory Database 
-        # Update the results if anything has changed about the target (i.e. version or logmode)
+        # Insert or update the results if:
+        #   1) The target is not already there
+        #   2) If anything has changed about the target (i.e. version or logmode)
         # ============================================================================
          
         postgres_conn = psycopg2.connect(INVENTORYDB)
@@ -363,18 +385,24 @@ def UpdateTarget(target):
         # 1) See if the target is in the inventory database
         # ============================================================================
 
+        if Container==instance :
+           Container='STANDALONE'
+        if Container=='None':
+           Container=''
+
         select_cursor = postgres_conn.cursor()
         TargetLogger.info('Checking if Host: %s Instance: %s Container: %s exists in inventory.', host, instance, Container)
    
         try: 
+           
             # Get just the info about the target for comparison
             select_cursor.execute("""
-                select InstanceName, HostName, to_char(DBCreatedDate,'YYYY-MM-DD'), DBID,  Version, ArchiveLogMode, Status, Role,
-                       Container, HomeDirectory, Owner, Vendor, BlockSize, hosttype, dbora
+                select InstanceName, HostName, to_char(DBCreatedDate,'YYYY-MM-DD'), DBID,  Version, ArchiveLogMode, Status, Role, 
+                       Container, HomeDirectory, Owner, Vendor, BlockSize, in_oms, hosttype, dbora
                     from public.DBC_Target
                     where InstanceName = %s
-                    and Container = %s
-                    and HostName = %s;
+                    and Coalesce(Container,'') = %s
+                    and HostName = %s; 
                     """, (instance, Container, host ))
             row = select_cursor.fetchone()
 
@@ -383,7 +411,7 @@ def UpdateTarget(target):
                 select InventoryID
                     from public.DBC_Target
                     where InstanceName = %s
-                    and Container = %s
+                    and Coalesce(Container,'') = %s
                     and HostName = %s; 
                     """, (instance, Container, host ))
             oldInventoryID = select_cursor.fetchone()
@@ -396,6 +424,8 @@ def UpdateTarget(target):
                 TargetLogger.info('Is this a New Target Found!?!?')
                 TargetLogger.info('Host: %s  Instance: %s  Message: %s', str(host), str(instance), str(errormsg))
                 TargetLogger.error('Target DB not added to inventory. Correct the issue or remove from DBList')
+                # Now lets insert or update if we got data above
+                NewTarget=True
                 pass
 
             else:
@@ -414,56 +444,36 @@ def UpdateTarget(target):
    
 
         if row == None:
-            TargetLogger.info('Target %s does not match Host: %s Instance: %s Container %s', \
-                               str(target), str(host), str(instance), str(Container))
+            TargetLogger.info('New Target Found. Host: %s Instance: %s ', str(host), str(instance))
 
-            try: 
-                # Get just the info about the target for comparison
-                select_cursor.execute("""
-                    select InstanceName, HostName, to_char(DBCreatedDate,'YYYY-MM-DD'), DBID,  Version, ArchiveLogMode, Status, Role,
-                           Container, HomeDirectory, Owner, Vendor, BlockSize, hosttype, dbora
-                        from public.DBC_Target
-                        where InstanceName = %s
-                        and (Container = '' or Container = 'STANDALONE')
-                        and HostName = %s;
-                        """, (instance, host ))
-                row = select_cursor.fetchone()
-    
-                # Get just the InventoryID for reference
-                select_cursor.execute("""
-                    select InventoryID
-                        from public.DBC_Target
-                        where InstanceName = %s
-                        and (Container = '' or Container = 'STANDALONE')
-                        and HostName = %s; 
-                        """, (instance, host ))
-                oldInventoryID = select_cursor.fetchone()
+            insert_cursor = postgres_conn.cursor()
+   
+            try:
+                insert_cursor.execute("""
+                     INSERT INTO public.dbc_target (InventoryCreate, DBCreatedDate, DBID, InstanceName, 
+                                                    HostName, Version, ArchiveLogMode, Status, Role, Container,
+                                                    HomeDirectory, Owner, Vendor, BlockSize, in_oms, hosttype, dbora ) 
+                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s );
+                 """, ( date.today(), DBCreateDate, DBID, instance, host, version, logMode, status, Role, Container, \
+                        HomeDir, Owner, Vendor, DBBlockSize, In_OMS, hosttype, dbora ))
 
-            except (psycopg2.DataError) as exc:
-                errormsg = psycopg2.errors.lookup(exc.pgcode)
-                TargetLogger.error('Target: %s  DataError: %s', str(target), str(errormsg))
-                if ((errormsg == '02000' ) or ( errormsg == NoData )): 
-                    # Try to detect and flag "No Data Found" as it means we don't have this target
-                    TargetLogger.info('Is this a New Target Found!?!?')
-                    TargetLogger.info('Host: %s  Instance: %s  Message: %s', str(host), str(instance), str(errormsg))
-                    TargetLogger.error('Target DB not added to inventory. Correct the issue or remove from DBList')
-                    pass
-    
-                else:
-                    # Move on.  Data error checking the Inventory
-                    NewTarget=False
-                    TargetLogger.info('Skipping Target: %s  DataError: %s', str(target), str(errormsg))
-                    
-            except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.InternalError)   as exc:
+                # Make the changes to the database persistent
+                postgres_conn.commit()
+
+            except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
                 error, = exc.args
-                TargetLogger.error('Target: %s  Message: %s', str(target),  str(error))
-    
+                TargetLogger.error('Error inserting new target: %s %s Container: %s %s ', str(host),str(instance), str(Container), str(error))
+                result='INSERT FAILED'
+         
+            except Exception as exc:
+                error, = exc.args
+                TargetLogger.error('Exception occurred inserting target: %s %s Container: %s %s', \
+                                    str(host), str(instance), str(Container), str(error))
+                result='INSERT FAILED'
 
-        if row == None:
-            TargetLogger.info('Target %s STILL does not match Host: %s Instance: %s Container %s', \
-                               str(target), str(host), str(instance), str(Container))
-
-
+            else:
+                result='TARGET ADDED'
+   
         else:  # host, instance, container already  exists in inventory
                 # see if something changed about the database info and UPDATE it.
                 # select InventoryID, InstanceName, HostName, DBCreatedDate, DBID,  Version, ArchiveLogMode 
@@ -480,25 +490,19 @@ def UpdateTarget(target):
                 oldOwner       =str(row[10])
                 oldVendor      =str(row[11])
                 oldDBBlockSize =str(row[12])
-                oldhosttype    =str(row[13])
-                olddbora       =str(row[14])
+                oldIn_OMS      =str(row[13])
+                oldhostype     =str(row[14])
+                olddbora       =str(row[15])
+
+                if instance == Container:
+                   TargetLogger.info('Instance %s Container is %s and should be STANDALONE ', instance, Container)
 
                 if target != row:
-                    TargetLogger.info('Old owner: %s New owner: %s ', oldOwner, Owner)
-                    if Owner == '' :
-                        Owner = oldOwner
-                        # careful  update owner until we can find a way to obtain it on all versions
-                        # careful  updating CONTAINER as they can easily get mixed up with PDBs
-
                     TargetLogger.info('Target known. Status has changed. Host: %s  Instance: %s ', str(host), str(instance))
                     TargetLogger.info('New data: '+ str(target))
                     TargetLogger.info('Old data: '+ str(row))
+
                     TargetLogger.info('Old container: %s New container: %s ', oldContainer, Container)
-                    TargetLogger.info('Old hosttype: %s New hosttype: %s ', oldhosttype, hosttype)
-
-                    if hosttype == '' :
-                        hosttype = oldhosttype
-
 
                     # Pass data to fill a query placeholder and let Psycopg perform
                     # the correct conversion (no more SQL injections!)
@@ -507,12 +511,14 @@ def UpdateTarget(target):
                     try:
                         update_cursor.execute("""
                         UPDATE public.dbc_target 
-                           set DBCreatedDate=%s, DBID=%s, Version=%s, ArchiveLogMode=%s, Status=%s, Role=%s, 
-                               BlockSize=%s, hosttype=%s, dbora=%s, owner=%s, container=%s
-                         WHERE InventoryID=%s;
-                        """, ( DBCreateDate, DBID, version, logMode, status, Role, DBBlockSize, \
-                               hosttype, dbora, Owner, Container, oldInventoryID ))
-
+                           set DBCreatedDate=%s, DBID=%s, Version=%s, ArchiveLogMode=%s, Status=%s, Role=%s, Container=%s,
+                               HomeDirectory=%s, Vendor=%s, BlockSize=%s, in_oms=%s, hosttype=%s, dbora=%s
+                         WHERE InventoryID=%s
+                           and decommissioned is null; 
+                        """, ( DBCreateDate, DBID, version, logMode, status, Role, Container, HomeDir, Vendor, DBBlockSize, \
+                               In_OMS, hosttype, dbora, oldInventoryID ))
+                        # Don't update owner until we can find a way to obtain it on all versions
+          
                         # Make the changes to the database persistent
                         postgres_conn.commit()
    
@@ -537,7 +543,7 @@ def UpdateTarget(target):
 
         postgres_conn.close()
 
-        return 
+        return result
 # ============================================================================
 # END UpdateTarget
 # ============================================================================
@@ -549,49 +555,28 @@ def UpdateTarget(target):
 # ============================================================================
 # ============================================================================
 
-TargetLogger=StartLogging(LogLevel, Log_File)  # Log to File
+
+TargetLogger=StartLogging(LogLevel, Log_File)  # Log to File 
 
 # ============================================================================
-# Fetch all the active database targets from the InventoryDB and
-# check each one database by database
-# Attempt to query that target and update the target if needed 
+# Read through the DBList.txt file database by database
+# Attempt to query that target and record the results
 # ============================================================================
+with open(target_file) as tf:
+  for target in tf:
+    target=target.strip()
+    TargetLogger.info('Connecting to target: %s', str(target))
+   
+    # Try connecting to the database and get info if possible
+    IsTarget, TargetInfo=PingTarget(target)
 
-# Connect to the Inventory DB
+    if IsTarget: 
+        TargetLogger.info('Target %s exists. Checking Inventory DB', str(target))
+        result=UpdateTarget(TargetInfo)  # Update if it exists and there is new info 
 
-postgres_conn = psycopg2.connect(INVENTORYDB)
-target_cursor = postgres_conn.cursor()
-
-# Get ALL the active targets
-target_cursor.execute("""
-    select inventoryid, hostname, instancename, container
-      from public.dbc_target
-       where decommissioned is null
-    order by inventoryid desc """)
-targets = target_cursor.fetchall()
-
-for InventoryID, HostName, InstanceName, Container in targets:
-    if HostName.find(".") > 0:
-        host=HostName[0:HostName.find(".")]
-
-    Target = InstanceName + "_" + HostName
-
-    if "+ASM" in Target:
-       TargetLogger.info('ASM Instance found: %s', str(Target))
-       # Build connection to
-       # return NewTarget, TargetRow
     else:
+        # This was not a valid reachable target
+        TargetLogger.info('Target %s info should be corrected or removed from DBList.txt', str(target))
+        TargetLogger.error('Target %s is not valid or not reachable:' , str(target)  )
 
-      TargetLogger.info("Connecting to target: %s", Target)
-  
-      # Try connecting to the database and get info if possible
-      TargetInfo=PingTarget(Target)
-  
-      if TargetInfo == 'NONE':
-          # This was not a valid reachable target
-          TargetLogger.info('Target %s info should be corrected or removed from DBList.txt', str(Target))
-          TargetLogger.error('Target %s is not valid or not reachable:' , str(Target)  )
-      else:
-          TargetLogger.info('Target %s exists. Updating Inventory DB', str(Target))
-          TargetLogger.info('Target info: %s ', TargetInfo)
-          UpdateTarget(TargetInfo)  # Update if it exists and there is new info 
+
