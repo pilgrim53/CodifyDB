@@ -15,7 +15,7 @@
 #
 # Script name:          add_targets.py
 #
-# Version:              1.02
+# Version:              1.04
 #
 # Purpose:              This script adds new targets from DBList into the 
 #                       DBC Inventory Database. If the targe exists and 
@@ -54,12 +54,12 @@
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
+from Inv_Logging import StartLogging
 import paramiko           # Allows us to ssh to the target hosts
 import cx_Oracle          # https://oracle.github.io/python-cx_Oracle/
 import psycopg2           # https://pypi.org/project/psycopg2/
 import psycopg2.extras    # This gives access to the psycopg2 error messages
 import sys                # for some reason this is not included by default
-import logging            # https://docs.python.org/3/library/logging.html
 import threading          # Allows us to time and kill hung db connections
 # from numpy import asarray     # convert sql result tuples to python arrays
 from datetime import date       # for some reason this is not included by default
@@ -74,48 +74,15 @@ DBC_USER = config('DBC_USER')
 DBC_PWD  = config('DBC_PWD')
 INV_USER = config('INV_USER')
 INV_PWD  = config('INV_PWD')
-ORACLE_BASE = "/u01/app/oracle"
+INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-498.belldev.dev.bce.ca"
 ORACLE_HOME="/u01/app/oracle/product/12.2.0.1"
 TNS_ADMIN="/u01/app/oracle/DBTools/"
 target_file="/u01/app/oracle/DBTools/AddToDBList.txt"
-Log_File="/home/orac4i/Inventory/src/logs/add_targets_"+str(date.today())+".log"
+LogFile="/home/orac4i/Inventory/src/logs/add_targets_"+str(date.today())+".log"
 LogLevel="DEBUG"
-GlobalLog_File = "/home/orac4i/Inventory/src/logs/check_targets_"+str(date.today())+".log"
-GlobalLogLevel = logging.DEBUG
-INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-498.belldev.dev.bce.ca"
-
-
+LogName="Add_Targets"
 # ============================================================================
 
-# ============================================================================
-# Define Functions
-# ============================================================================
-
-def StartLogging(LogLevel, Log_File):
-    logging.basicConfig(filename=Log_File, level=logging.DEBUG)
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-    TargetLogger=logging.getLogger('Add_Target')
-    TargetLogger.setLevel(logging.DEBUG)
-
-    # Create a console handler
-    ch = logging.StreamHandler()
-    #ch.setLevel(logging.LogLevel)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    TargetLogger.addHandler(ch)
-
-
-    return TargetLogger
-    # End StartLogging
-
-# ============================================================================
-# Logging examples
-# ============================================================================
-# logging.debug('This should go to the log file.')
-# logging.info('So should this')
-# logging.warning('And this, too')
-# logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
-# ============================================================================
 
 # ============================================================================
 #  GetHostType
@@ -419,7 +386,7 @@ def UpdateTarget(target):
         except (psycopg2.DataError) as exc:
             errormsg = psycopg2.errors.lookup(exc.pgcode)
             TargetLogger.error('Target: %s  DataError: %s', str(target), str(errormsg))
-            if ((errormsg == '02000' ) or ( errormsg == NoData )): 
+            if (errormsg == '02000' ): 
                 # Try to detect and flag "No Data Found" as it means we don't have this target
                 TargetLogger.info('Is this a New Target Found!?!?')
                 TargetLogger.info('Host: %s  Instance: %s  Message: %s', str(host), str(instance), str(errormsg))
@@ -556,7 +523,7 @@ def UpdateTarget(target):
 # ============================================================================
 
 
-TargetLogger=StartLogging(LogLevel, Log_File)  # Log to File 
+TargetLogger=StartLogging(LogLevel, LogFile, LogName)  # Log to File 
 
 # ============================================================================
 # Read through the DBList.txt file database by database
@@ -578,5 +545,3 @@ with open(target_file) as tf:
         # This was not a valid reachable target
         TargetLogger.info('Target %s info should be corrected or removed from DBList.txt', str(target))
         TargetLogger.error('Target %s is not valid or not reachable:' , str(target)  )
-
-
