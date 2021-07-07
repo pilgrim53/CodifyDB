@@ -126,8 +126,9 @@ def GetTargetDBInfo(target, check):
 
 # ============================================================================
 # Function:    GetTargetOSInfo
-# Description: Checks the target server for a single spcific key attribute
-# Returns:     The result of the check query
+# Description: Takes a target and an OS check and first obtains the FID and 
+#              home_dir for the call to the check_os_target routine
+# Returns:     The result of the OS check query
 # ============================================================================
 def GetTargetOSInfo(InventoryID, target, check, result_column):
     instance, host=target.split('_')
