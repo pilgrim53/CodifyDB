@@ -15,7 +15,7 @@
 #
 # Script name:        check_targets.py
 #
-# Version:            1.02
+# Version:            1.03
 #
 # Purpose:            This script monitors database targets from the
 #                     DBC Inventory Database. If the target exists and
@@ -51,18 +51,20 @@
 #                                         1) Move checks into checklist table
 #                                         2) Update results for each check
 #                                         3) Move environment variables to file
+# 2021/07/06     M.Pankratz       1.03      Extract common routines
 # ============================================================================
-
 
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
+from Inv_Logging import StartLogging
 import cx_Oracle
 import psycopg2
-import logging
 import sys, getopt               # Allows us to interact with the o/s
 import paramiko                  # Allows us to ssh to the Database Servers
 import threading                 # Allows us to time and kill hung db connections
+import check_os_target           # Allows us to send o/s level checks to target
+import add_result
 from datetime  import datetime
 from datetime  import date
 from check_oms import CheckOMS   # Allows us to query the OEM Dev instance
@@ -80,120 +82,15 @@ INV_PWD  = config('INV_PWD')
 ORACLE_BASE = "/u01/app/oracle"
 ORACLE_HOME = "/u01/app/oracle/product/12.2.0.1"
 TNS_ADMIN = "/u01/app/oracle/DBTools/"
-GlobalLog_File = "/home/orac4i/Inventory/src/logs/check_targets_"+str(date.today())+".log"
-GlobalLogLevel = logging.DEBUG
+GlobalLogFile = "/home/orac4i/Inventory/src/logs/check_targets_"+str(date.today())+".log"
+GlobalLogLevel = 'logging.DEBUG'
+GlobalLogName = "Check_Targets"
 INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-498.belldev.dev.bce.ca"
-
 
 # ============================================================================
 
 # ============================================================================
 # Define Functions
-# ============================================================================
-
-# ============================================================================
-# Function:    StartLogging
-# Description: Set up the Python Logging module
-# Input:       LogLevel and Log File
-# Ouptut:      Returns a logger object / handler
-# ============================================================================
-# Logging examples
-# logging.debug('This should go to the log file.')
-# logging.info('So should this')
-# logging.warning('And this, too')
-# logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
-# ============================================================================
-def StartLogging(LogLevel, Log_File):
-    logging.basicConfig(filename = Log_File, level=LogLevel)
-    logging.basicConfig(format = '%(asctime)s:%(levelname)s:%(message)s', \
-                        datefmt = '%m/%d/%Y %I:%M:%S %p')
-    Logger=logging.getLogger('Check_Targets')
-    Logger.setLevel(LogLevel)
-
-    # Create a console handler
-    ch = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    Logger.addHandler(ch)
-    Logger.info("Begin Logging Level: %s", LogLevel)
-
-    return Logger
-
-# ============================================================================
-# END StartLogging
-# ============================================================================
-
-
-# ============================================================================
-#    check_os_target    
-# ============================================================================
-def check_os_target(ID, owner, host, homedir, all_checks):
-    RC=0
-
-    ssh_connection = paramiko.SSHClient()
-    ssh_connection.load_system_host_keys()
-    ssh_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    timer = threading.Timer(90,ssh_connection.close)
-    timer.start()    # start counting right before connecting to the database
-
-    try:
-        TargetLogger.info("Connecting to %s as %s ", host, owner)
-        ssh_connection.connect(host, 22, owner)
-
-    except paramiko.ssh_exception.AuthenticationException:
-        result="ssh auth error"
-        TargetLogger.error("Authentication failed, Host: %s    Owner: %s", host, owner)
-        
-    except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
-        result="bad ssh key"
-        TargetLogger.error("Unable to verify server's host key: %s", badHostKeyException)
-
-    except    paramiko.ssh_exception.SSHException as sshException:
-        result="ssh exception"
-        TargetLogger.error("Unable to establish SSH connection: %s",    sshException)
-
-    except Exception as sshException:
-        result="ssh exception"
-        TargetLogger.error("Unable to establish SSH connection: %s ",    sshException)
-
-    else:
-        try: 
-            for check, check_type, result_column in all_checks:
-                if check_type == 'OS':
-                    if result_column == 'swrelease':
-                        check = homedir + '/OPatch/' + check
-
-                    if result_column == 'email':
-                        check = 'cd ' + homedir + '/../../DBTools;' + check
-
-                    TargetLogger.info("Running %s as %s on %s ", check, owner, host)
-                    stdin, stdout, stderr = ssh_connection.exec_command(check)
-
-                    result_row = stdout.readlines()
-                    result_err = stderr.readlines()
-
-                    if result_row :
-                        result=str(result_row[0]).strip()
-                        add_result(ID, result, result_column)
-                        TargetLogger.info("InventoryID: %s result: %s result_column: %s ", \
-                                   ID, result, result_column)   
-
-                    TargetLogger.debug("OS Check Errors: %s ", result_err )
-                    timer.cancel()    # cancel the connection thread if it's still alive after 30 seconds
-
-        except  Exception as sshException:
-            RC=911 
-            TargetLogger.error("Unable to run: %s on host: %s as %s Result: %s",   \
-                               check, host, owner, sshException)
-            
-    finally:
-        ssh_connection.close() 
-
-    return RC
-
-# ============================================================================
-#    End check_os_target    
 # ============================================================================
 
 # ============================================================================
@@ -276,45 +173,6 @@ def check_oracle_target(ID, tns, all_db_checks):
 
 # ============================================================================
 # END check_oracle_target
-# ============================================================================
-
-# ============================================================================
-# Function:     add_result
-# Description:  Insert the check results into the inventory database
-# Input:        Check results and column_name for the results to be stored
-# Ouptut:       Single entry into CheckResults table
-# ============================================================================
-
-def add_result(ID, check_result, column_name):
-    TargetLogger.debug("Insert check result: %s into %s for ID: %s", check_result, column_name, ID)
-    postgres_insert_connection = psycopg2.connect(INVENTORYDB)
-    insert_cursor = postgres_insert_connection.cursor()
-    insert_statement  =  "INSERT INTO checkresults (inventoryid, checkdate, check_result, check_column) \
-                          VALUES ( %s, %s, %s, %s ); "
-    # insert_statement  =  "INSERT INTO checkresults (inventoryid, checkdate," \
-    #                      + column_name + " ) VALUES ( %s, %s, %s); "
-    check_date = datetime.now()
-
-    # Pass data to fill a query placeholders and let Psycopg perform
-    # the correct conversion (no more SQL injections!)
-    try:
-        insert_cursor.execute(insert_statement, ( ID, check_date, check_result, column_name ))
-
-    except psycopg2.Error as exc:
-        error, = exc.args
-        TargetLogger.error("Data Exception: %s ", error) 
-
-    else:
-        TargetLogger.info("Result added: %s  %s  %s  %s", ID, column_name, check_result, check_date) 
-
-        # Make the changes to the database persistent
-        postgres_insert_connection.commit()
-
-    finally:
-        postgres_insert_connection.close()
-
-# ============================================================================
-# END add_result
 # ============================================================================
 
 # ============================================================================
@@ -405,6 +263,5 @@ def main(argv):
 # ============================================================================
 
 if __name__ == "__main__":
-    TargetLogger=StartLogging(GlobalLogLevel, GlobalLog_File)    # Log to File 
+    TargetLogger=StartLogging(GlobalLogLevel, GlobalLogFile, GlobalLogName)    # Log to File 
     main(sys.argv[1:])
-    
