@@ -27,13 +27,12 @@ Finally, results of all the "Check" runs are stored in the CHECK_RESULTS table.
 Grafana is used and recommended for creating the dashboards and user interfaces for your monitoring results.
 
 
-Dependencies
-------------
-
-- All code is written in Python 3.
-- the psycopg2 library is required for connections to Postgres databases
-- the paramiko library is required to make ssh connections to servers.
-- The cx_Oracle library is required to make connections to Oracle databases.
+Application Dependencies
+------------------------
+- Python 3
+- psycopg2 https://www.psycopg.org/
+- paramiko for OS monitoring http://www.paramiko.org/
+- cx_Oracle for Oracle DB monitoring https://oracle.github.io/python-cx_Oracle/
 - You will need either a common account and password or passwordless (ssh key) access to linux / un*x servers
 - You will need a common account and password for each database vendor group.
 
