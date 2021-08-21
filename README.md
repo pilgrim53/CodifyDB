@@ -46,6 +46,7 @@ Non-Python files:
 filename                  |  description
 --------------------------|------------------------------------------------------------------------------------
 README.md                 |  Text file (markdown format) description of the project.
+dockerfile                |  Rapid deployment via Docker container
 
 
 Python scripts files:
