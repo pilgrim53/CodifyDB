@@ -1,35 +1,29 @@
-Inventory 
+#Inventory 
 =========
 
-This repository contains scripts to inventory, and monitor IT resources
-such as servers and databases. Additional information and support can 
-be found at https://pankratzmanagement.com
+This repository contains scripts that are used to inventory and monitor IT resources such as servers and databases. Additional information and support can be found at https://pankratzmanagement.com
 
-Overview
+#Overview
 --------
-
-This application has 3 main operation modes:
+This application has 3 operation modes:
 
 1. ADD resources called "Targets". These are things you want to inventory and monitor such as servers and databases.
 2. UPDATE targets.  Over time targets come and go, get upgraded, moved, etc..   Update will scan the targets for any changes in status.   
-3. CHECK targets.   Perform various health and status checks on the targets in your inventory.   There are 3 filters you can apply on any give "Check".   
+3. CHECK targets.   Perform various health and status checks on the targets in your inventory.   There are 3 custom filter options you can apply on any give "Check".   
   - TYPE:   	ie   OS, DB, Other
   - FREQUENCY:  ie  MONTHLY, DAILY, HOURLY, ADHOC, etc...
   - VENDOR:   	ie  Oracle, AIX, Solaris, DB2, SQL, Postgres, etc...
 
-Targets are stored in a Postgres database.   The TARGETS table contains the relatively static information
-about the targets such as Name, Version, IP Address, Vendor, CreateDate, etc...
-
+All information including the monitored targets and monitoring results are stored in a Postgres database.   The TARGETS table contains the relatively static information about the targets such as Name, Version, IP Address, Vendor, CreateDate, etc...
 The checks you want to perform on the Targets are stored in the "CHECKLIST" table.
-
 Finally, results of all the "Check" runs are stored in the CHECK_RESULTS table.
 
-Grafana is used and recommended for creating the dashboards and user interfaces for your monitoring results.
+Grafana is recommended to be used for creating the dashboards and user interfaces for your monitoring results.  However, you can use the Postgres database directly with your own queries and reports.
 
 
-Application Dependencies
+#Application Dependencies
 ------------------------
-- Python 3
+- Python 3 https://www.python.org/download/releases/3.0/
 - psycopg2 https://www.psycopg.org/
 - paramiko for OS monitoring http://www.paramiko.org/
 - cx_Oracle for Oracle DB monitoring https://oracle.github.io/python-cx_Oracle/
