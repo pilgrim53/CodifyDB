@@ -78,3 +78,17 @@ git clone https://github.com/pilgrim53/DBInventory.git
 ```
 Docker-compose up -d --build
 ```
+
+## Configure your instance
+ - set postgres password
+ - update .env
+ - etc...
+ 
+ # Using the Inventory Application
+ 
+ ## Add Targets
+ 
+ ## Update Targets
+ 
+ ## Check Targets
+ 
