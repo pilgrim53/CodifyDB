@@ -1,10 +1,9 @@
-Inventory 
-=========
+# Inventory
 
 This repository contains scripts that are used to inventory and monitor IT resources such as servers and databases. Additional information and support can be found at https://pankratzmanagement.com
 
-Overview
---------
+## Overview
+
 This application has 3 operation modes:
 
 1. ADD resources called "Targets". These are things you want to inventory and monitor such as servers and databases.
@@ -62,10 +61,10 @@ Database Schema
 
 <img alt="Pretty Picture goes here" src="tbdg" width="75%">
 
-### Installing from Github
-------------------------
-- install pre-requisite python modules listed above
-- download this repository and unzip *OR* clone directly from github
+Installing from Github
+-------------------------
+[ ] install pre-requisite python modules listed above
+[ ] download this repository and unzip **OR** clone directly from github
 
 	cd <your application directory>
 	git clone https://github.com/pilgrim53/DBInventory.git  
