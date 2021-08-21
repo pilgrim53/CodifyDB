@@ -71,6 +71,6 @@ Targets.py                |  Module containing all Target methods (add, update, 
 [ ] install Docker for your monitoring server ex)  https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04 
 [ ] complete all post install steps  ex)    https://docs.docker.com/engine/install/linux-postinstall/
 [ ] cd <your application directory>
-	git clone https://github.com/pilgrim53/DBInventory.git  
-	Docker-compose up -d --build![image](https://user-images.githubusercontent.com/28211619/130332929-659d07bb-1119-464c-9d80-b7f07f9b295b.png)
+        git clone https://github.com/pilgrim53/DBInventory.git  
+        Docker-compose up -d --build![image](https://user-images.githubusercontent.com/28211619/130332929-659d07bb-1119-464c-9d80-b7f07f9b295b.png)
 
