@@ -65,18 +65,17 @@ Targets.py                |  Module containing all Target methods (add, update, 
 - [ ] install pre-requisite python modules listed above
 - [ ] download this repository and unzip **OR** clone directly from github
 
-	
-        cd "your application directory"
-	git clone https://github.com/pilgrim53/DBInventory.git  
-	
+```
+cd "your application directory"
+git clone https://github.com/pilgrim53/DBInventory.git  
+```	
 
 ## Install as a Docker Container
 - [ ] install Docker for your monitoring server ex)  https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04 
 - [ ] complete all post install steps  ex)    https://docs.docker.com/engine/install/linux-postinstall/
 
-	
-	
-        cd "your application directory"
-	git clone https://github.com/pilgrim53/DBInventory.git  
-        Docker-compose up -d --build
-
+```
+cd "your application directory"
+git clone https://github.com/pilgrim53/DBInventory.git  
+Docker-compose up -d --build
+```
