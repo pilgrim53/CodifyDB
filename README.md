@@ -57,8 +57,17 @@ filename                  |  description
 Inv_Logging.py            |  Handle all the application logging output to files.
 Targets.py                |  Module containing all Target methods (add, update, get, etc...)
 
-How it all fits together
+Database Schema
 ------------------------
 
-<img alt="Pretty Picture goes here" src="docs/oeis-tools.png" width="75%">
+<img alt="Pretty Picture goes here" src="tbdg" width="75%">
+
+### Installing from Github
+------------------------
+- install pre-requisite python modules listed above
+- download this repository and unzip  or clone directly from github
+
+		cd <your application directory>
+		git clone https://github.com/pilgrim53/DBInventory.git  
+
 
