@@ -1,9 +1,9 @@
-#Inventory 
+Inventory 
 =========
 
 This repository contains scripts that are used to inventory and monitor IT resources such as servers and databases. Additional information and support can be found at https://pankratzmanagement.com
 
-#Overview
+Overview
 --------
 This application has 3 operation modes:
 
@@ -21,7 +21,7 @@ Finally, results of all the "Check" runs are stored in the CHECK_RESULTS table.
 Grafana is recommended to be used for creating the dashboards and user interfaces for your monitoring results.  However, you can use the Postgres database directly with your own queries and reports.
 
 
-#Application Dependencies
+Application Dependencies
 ------------------------
 - Python 3 https://www.python.org/download/releases/3.0/
 - psycopg2 https://www.psycopg.org/
@@ -65,9 +65,9 @@ Database Schema
 ### Installing from Github
 ------------------------
 - install pre-requisite python modules listed above
-- download this repository and unzip  or clone directly from github
+- download this repository and unzip *OR* clone directly from github
 
-		cd <your application directory>
-		git clone https://github.com/pilgrim53/DBInventory.git  
+	cd <your application directory>
+	git clone https://github.com/pilgrim53/DBInventory.git  
 
 
