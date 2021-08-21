@@ -87,8 +87,12 @@ Docker-compose up -d --build
  # Using the Inventory Application
  
  ## Add Targets
- 
+  - do these things
+  
  ## Update Targets
+  - do these other things
  
  ## Check Targets
- 
+  - do still more things
+
+ # Getting additional help or support
