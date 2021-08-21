@@ -19,9 +19,7 @@ Finally, results of all the "Check" runs are stored in the CHECK_RESULTS table.
 
 Grafana is recommended to be used for creating the dashboards and user interfaces for your monitoring results.  However, you can use the Postgres database directly with your own queries and reports.
 
-
-Application Dependencies
-------------------------
+### Application Dependencies
 - Python 3 https://www.python.org/download/releases/3.0/
 - psycopg2 https://www.psycopg.org/
 - paramiko for OS monitoring http://www.paramiko.org/
@@ -30,7 +28,7 @@ Application Dependencies
 - You will need a common account and password for each database vendor group.
 
 
-Description of files
+### Description of files
 --------------------
 
 Non-Python files:
@@ -56,17 +54,23 @@ filename                  |  description
 Inv_Logging.py            |  Handle all the application logging output to files.
 Targets.py                |  Module containing all Target methods (add, update, get, etc...)
 
-Database Schema
+### Database Schema
 ------------------------
 
 <img alt="Pretty Picture goes here" src="tbdg" width="75%">
 
-Installing from Github
--------------------------
+# Installation
+
+## Installing from Github
 [ ] install pre-requisite python modules listed above
 [ ] download this repository and unzip **OR** clone directly from github
-
 	cd <your application directory>
 	git clone https://github.com/pilgrim53/DBInventory.git  
 
+## Install as a Docker Container
+[ ] install Docker for your monitoring server ex)  https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04 
+[ ] complete all post install steps  ex)    https://docs.docker.com/engine/install/linux-postinstall/
+[ ] cd <your application directory>
+	git clone https://github.com/pilgrim53/DBInventory.git  
+	Docker-compose up -d --build![image](https://user-images.githubusercontent.com/28211619/130332929-659d07bb-1119-464c-9d80-b7f07f9b295b.png)
 
