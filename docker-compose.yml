@@ -1,22 +1,20 @@
 services:
   db:
     image: postgres
-    volumes: 
+    volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: always
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    ports: 
-      - "5432:5432"
-  nginx:
-    build: ./nginx
-    volumes:
-      - static:/static
-      - media:/media
     ports:
-      - "80:80"
-      - "443:443"
+      - "5432:5432"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 volumes:
   pgdata:
   static:
