@@ -113,7 +113,7 @@ def StartLogging(LogLevel, Log_File):
 # Input:       Takes target in the format of host_instance and checkstring
 # Ouptut:      Returns a "Y/N" result 
 # ============================================================================
-def CheckOMS(target, checkstring):
+def CheckOMS(target, checkstring, TargetLogger):
   # Set some initial values each time we do a check
   In_OMS='N'  # Set to False until we determine if it's True
 
@@ -192,14 +192,15 @@ if __name__ == '__main__':
   # Get the check query
   target_cursor.execute("""
       select check_command from public.checklist
-       where check_type = 'OMS' """)
+       where check_type = 'OMS' 
+    order by priority """)
   checkstring = target_cursor.fetchone()
 
 
   
   for InventoryID, instancename, owner, homedirectory, hostname in targets:
      target=instancename + '_' + hostname
-     in_oms=CheckOMS(target, checkstring[0])
+     in_oms=CheckOMS(target, checkstring[0], TargetLogger)
   
      update_cursor = postgres_conn.cursor()
   
