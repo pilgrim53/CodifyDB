@@ -63,12 +63,13 @@ import psycopg2
 import sys, getopt               # Allows us to interact with the o/s
 import paramiko                  # Allows us to ssh to the Database Servers
 import threading                 # Allows us to time and kill hung db connections
-import check_os_target           # Allows us to send o/s level checks to target
-import add_result
+from check_os_target import check_os_target  #Allows us to send o/s level checks to target
+from add_result import add_result
 from datetime  import datetime
 from datetime  import date
 from check_oms import CheckOMS   # Allows us to query the OEM Dev instance
 from decouple  import config     # Allows us to read .env
+
 # ============================================================================
 
 # ============================================================================
@@ -83,7 +84,7 @@ ORACLE_BASE = "/u01/app/oracle"
 ORACLE_HOME = "/u01/app/oracle/product/12.2.0.1"
 TNS_ADMIN = "/u01/app/oracle/DBTools/"
 GlobalLogFile = "/home/orac4i/Inventory/src/logs/check_targets_"+str(date.today())+".log"
-GlobalLogLevel = 'logging.DEBUG'
+GlobalLogLevel = 'DEBUG'
 GlobalLogName = "Check_Targets"
 INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-498.belldev.dev.bce.ca"
 
@@ -103,34 +104,35 @@ INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-
 def check_oracle_target(ID, tns, all_db_checks):
 
     TargetLogger.info("Start Oracle DB Check on: %s ", tns)
-    result='TBD'
+    result=''
     RC=0
 
     try:
         target = cx_Oracle.connect(DBC_USER, DBC_PWD, tns, encoding="UTF-8")
-        result=target
 
         # lets only allow a few seconds per database query to collect what we want
         # note:  summing used space on some databases can take overa minute
-        timer = threading.Timer(90,target.cancel)
+        timer = threading.Timer(60,target.cancel)
         timer.start()    # start counting right before connecting to the database
         
         for check, check_type, result_column in all_db_checks:
-            if check_type == 'DB':
-                if (VENDOR == 'ORACLE') or (VENDOR == '%') :
-                    #print( all_checks)
-                    TargetLogger.info("check: %s checktype: %s result_column: %s ", \
+      
+          TargetLogger.debug("check: %s checktype: %s result_column: %s ", \
                                        check, check_type, result_column)
+          if check_type == 'DB':
+            if (VENDOR == 'ORACLE') or (VENDOR == '%') :
+               target_cursor = target.cursor()
+               target_cursor.execute(check)
+               result = target_cursor.fetchone()
     
-                    target_cursor = target.cursor()
-                    target_cursor.execute(check)
-                    result = target_cursor.fetchone()
-    
-                    add_result(ID, result, result_column)
-                    TargetLogger.info("InventoryID: %s result: %s result_column: %s ", \
-                                       ID, result, result_column)               
+            elif check_type == 'OMS':
+              result = CheckOMS(tns, check, TargetLogger)
 
-            # CheckOMS(InstanceName, HostName)
+            add_result(ID, result, result_column, TargetLogger)
+
+            TargetLogger.info("InventoryID: %s result: %s result_column: %s ", \
+                                     ID, result, result_column)               
+
 
     except (OSError, ValueError, RuntimeError, TypeError, NameError) as exc:
         error, = exc.args
@@ -185,7 +187,7 @@ def main(argv):
     global FREQUENCY
     global CHECKTYPE
     VENDOR = '%'
-    FREQUENCY = '%'
+    FREQUENCY = 'HOURLY'    # Default to the hourly checks if not specified
     CHECKTYPE = '%'
 
     CHECKQUERY='select check_command, check_type, result_column from public.checklist where 1=1'
@@ -212,7 +214,9 @@ def main(argv):
 
         elif opt in ("-f"):
             FREQUENCY = arg
-            CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\''
+
+
+    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\' order by priority'
 
 
     TargetLogger.info("Running CheckTargets.py with VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", VENDOR, FREQUENCY, CHECKTYPE )
@@ -245,13 +249,19 @@ def main(argv):
     for InventoryID, InstanceName, Owner, HomeDir, HostName in all_targets:
         OracleRC=0
         RC=0
+
         TargetLogger.debug("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s ", \
                           InventoryID, InstanceName, Owner, HomeDir, HostName)
 
         OracleRC=check_oracle_target(InventoryID, InstanceName+'_'+HostName, all_checks)
-        add_result(InventoryID, OracleRC, 'dbstatus')
+        add_result(InventoryID, OracleRC, 'dbstatus', TargetLogger)
 
-        OSRC=check_os_target(InventoryID, Owner, HostName, HomeDir, all_checks)
+        for check, check_type, result_column in all_checks:
+            OSRC=''
+            if check_type == 'OS':
+                OSRC=check_os_target(InventoryID, Owner, HostName, HomeDir, check, result_column, TargetLogger)
+                if OSRC != '' :
+                  add_result(InventoryID, OSRC, result_column, TargetLogger)
 
     if OracleRC > 0 :
         TargetLogger.info("Inventory ID: %s Returned Error Code: %s" , InventoryID, OracleRC)
@@ -265,3 +275,4 @@ def main(argv):
 if __name__ == "__main__":
     TargetLogger=StartLogging(GlobalLogLevel, GlobalLogFile, GlobalLogName)    # Log to File 
     main(sys.argv[1:])
+    
