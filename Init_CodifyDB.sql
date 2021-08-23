@@ -1,34 +1,51 @@
 ----------------------------------
 -- Drop commands if required
 ----------------------------------
-DROP VIEW public.lastcheck;
-DROP TABLE public.checkresults;
-DROP TABLE public.dbc_target;
-DROP SEQUENCE public.inventoryid;
-DROP INDEX public.inv_inst;
-DROP INDEX public."CR_Column";
-DROP INDEX public.check_date;
-DROP INDEX public.check_inv;
-DROP TABLE public.checklist;
-DROP TABLE public.dbc_target_rejects;
+DROP SCHEMA CODIFY;
+DROP VIEW codify.lastcheck;
+DROP TABLE codify.checkresults;
+DROP TABLE codify.dbc_target;
+DROP SEQUENCE codify.inventoryid;
+DROP INDEX codify.inv_inst;
+DROP INDEX codify."CR_Column";
+DROP INDEX codify.check_date;
+DROP INDEX codify.check_inv;
+DROP TABLE codify.checklist;
+DROP TABLE codify.dbc_target_rejects;
 ----------------------------------
 
 
+DO
+$do$
+BEGIN
+   IF NOT EXISTS (
+      SELECT FROM pg_catalog.pg_roles  -- SELECT list can be empty for this
+      WHERE  rolname = 'codify') 
+	  THEN
+      CREATE ROLE codify superuser;
+	  GRANT codify to postgres;
+	  ALTER ROLE codify with login PASSWORD 'codify_2021';
+   END IF;
+END
+$do$;
 
--- SEQUENCE: public.inventoryid
 
-CREATE SEQUENCE public.inventoryid
+CREATE SCHEMA codify AUTHORIZATION codify;
+
+-- SEQUENCE: codify.inventoryid
+
+CREATE SEQUENCE codify.inventoryid
     INCREMENT 1
     START 1
     MINVALUE 1
     CACHE 1;
 
-ALTER SEQUENCE public.inventoryid
-    OWNER TO postgres;
+ALTER SEQUENCE codify.inventoryid
+    OWNER TO codify;
 
--- Table: public.dbc_target
+-- Table: codify.dbc_target
 
-CREATE TABLE public.dbc_target
+CREATE TABLE codify.dbc_target
 (
     inventoryid integer NOT NULL DEFAULT nextval('inventoryid'::regclass),
     inventorycreate date NOT NULL,
@@ -63,21 +80,21 @@ CREATE TABLE public.dbc_target
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.dbc_target
-    OWNER to postgres;
+ALTER TABLE codify.dbc_target
+    OWNER to codify;
 
-GRANT ALL ON TABLE public.dbc_target TO postgres;
+GRANT ALL ON TABLE codify.dbc_target TO codify;
 
 -- Index: inv_inst
 
 CREATE INDEX inv_inst
-    ON public.dbc_target USING btree
+    ON codify.dbc_target USING btree
     (inventoryid ASC NULLS LAST, instancename COLLATE pg_catalog."default" ASC NULLS LAST, hostname COLLATE pg_catalog."default" ASC NULLS LAST)
     TABLESPACE pg_default;
 
--- Table: public.checkresults
+-- Table: codify.checkresults
 
-CREATE TABLE public.checkresults
+CREATE TABLE codify.checkresults
 (
     inventoryid integer,
     checkdate timestamp without time zone,
@@ -87,33 +104,33 @@ CREATE TABLE public.checkresults
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.checkresults
-    OWNER to postgres;
+ALTER TABLE codify.checkresults
+    OWNER to codify;
 
 -- Index: CR_Column
 
 CREATE INDEX "CR_Column"
-    ON public.checkresults USING hash
+    ON codify.checkresults USING hash
     (check_column COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: check_date
 
 CREATE INDEX check_date
-    ON public.checkresults USING btree
+    ON codify.checkresults USING btree
     (checkdate ASC NULLS LAST)
     TABLESPACE pg_default;
 
 -- Index: check_inv
 
 CREATE INDEX check_inv
-    ON public.checkresults USING btree
+    ON codify.checkresults USING btree
     (inventoryid ASC NULLS LAST)
     TABLESPACE pg_default;
 
---- View: public.lastcheck
+--- View: codify.lastcheck
 
-CREATE OR REPLACE VIEW public.lastcheck
+CREATE OR REPLACE VIEW codify.lastcheck
  AS
  SELECT id.inventoryid,
     id.hostname,
@@ -178,13 +195,13 @@ CREATE OR REPLACE VIEW public.lastcheck
   WHERE (id.decommissioned IS NULL)
   ORDER BY id.inventoryid;
 
-ALTER TABLE public.lastcheck
-    OWNER TO postgres;
+ALTER TABLE codify.lastcheck
+    OWNER TO codify;
 
 
--- Table: public.dbc_target_rejects
+-- Table: codify.dbc_target_rejects
 
-CREATE TABLE public.dbc_target_rejects
+CREATE TABLE codify.dbc_target_rejects
 (
     inventoryid integer,
     inventorycreate date,
@@ -202,12 +219,12 @@ CREATE TABLE public.dbc_target_rejects
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.dbc_target_rejects
-    OWNER to postgres;
+ALTER TABLE codify.dbc_target_rejects
+    OWNER to codify;
 
--- Table: public.checklist
+-- Table: codify.checklist
 
-CREATE TABLE public.checklist
+CREATE TABLE codify.checklist
 (
     id integer NOT NULL,
     vendor text COLLATE pg_catalog."default",
@@ -222,8 +239,8 @@ CREATE TABLE public.checklist
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.checklist
-    OWNER to postgres;
+ALTER TABLE codify.checklist
+    OWNER to codify;
 
 ---------------------------------------------
 
