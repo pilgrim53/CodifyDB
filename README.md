@@ -1,4 +1,4 @@
-# Inventory
+# CodifyDB
 
 This repository contains scripts that are used to inventory and monitor IT resources such as servers and databases. Additional information and support can be found at https://pankratzmanagement.com
 
