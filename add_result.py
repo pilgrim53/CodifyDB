@@ -46,6 +46,8 @@ def add_result(ID, check_result, column_name, TargetLogger):
     finally:
         postgres_insert_connection.close()
 
+    return 0
+
 # ============================================================================
 # END add_result
 # ============================================================================
