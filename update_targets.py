@@ -64,7 +64,8 @@ import threading          # Allows us to time and kill hung db connections
 from Inv_Logging import StartLogging
 # from numpy import asarray # convert sql result tuples to python arrays
 from datetime import date # for some reason this is not included by default
-from decouple  import config     # Allows us to read .env
+from datetime import datetime
+from decouple import config     # Allows us to read .env
 # ============================================================================
 
 # ============================================================================
@@ -88,7 +89,7 @@ LogName="Update_Targets"
 # Description: Checks the target database for a single spcific key attribute
 # Returns:     The result of the check query
 # ============================================================================
-def GetTargetDBInfo(target, check):
+def GetTargetDBInfo(target, check, TargetLogger):
     instance, host=target.split('_')
     value=''
 
@@ -97,7 +98,9 @@ def GetTargetDBInfo(target, check):
         timer = threading.Timer(30,connection.cancel)
         db_info_cursor = connection.cursor()
         timer.start()  # start counting right before connecting to the database
-        value=db_info_cursor.execute(check)
+        db_info_cursor.execute(check)
+        value = db_info_cursor.fetchone()
+        value=str(value[0]).strip()
         TargetLogger.debug('Connected to: %s', str(target))
 
         # All done with the Target Oracle connection
@@ -117,7 +120,9 @@ def GetTargetDBInfo(target, check):
     # ============================================================================
         error, = exc.args
         TargetLogger.error('Target: %s   Error: %s', str(target), error)
-
+ 
+    timer.cancel()  # cancel the timer
+  
     return value
 
 # ============================================================================
@@ -130,28 +135,29 @@ def GetTargetDBInfo(target, check):
 #              home_dir for the call to the check_os_target routine
 # Returns:     The result of the OS check query
 # ============================================================================
-def GetTargetOSInfo(InventoryID, target, check, result_column):
+def GetTargetOSInfo(InventoryID, target, check, result_column, TargetLogger):
     instance, host=target.split('_')
     value=''
     owner=''
     homedir=''
-    QUERY="select owner, homedir from dbc_target where inventoryid = "" + InventoryID + ""  " 
+    QUERY='select owner, homedirectory from dbc_target where inventoryid = ' + str(InventoryID) + '' 
+    if InventoryID > 0:
 
-    try:
-        postgres_conn = psycopg2.connect(INVENTORYDB)
-        select_cursor = postgres_conn.cursor()
-
-        # Get just the info about the target for comparison
-        select_cursor.execute(QUERY)
-        owner, homedir = select_cursor.fetchone()
-
-        value=check_os_target(InventoryID, owner, host, homedir, check, result_column, TargetLogger)
+      try:
+          postgres_conn = psycopg2.connect(INVENTORYDB)
+          select_cursor = postgres_conn.cursor()
+  
+          # Get just the info about the target for comparison
+          select_cursor.execute(QUERY)
+          owner, homedir = select_cursor.fetchone()
+  
+          value=check_os_target(InventoryID, owner, host, homedir, check, result_column, TargetLogger)
     
-    except cx_Oracle.DatabaseError as exc:
-    # If there was a database error we need the ORA-##### error
-        error, = exc.args
-        oraerr=str(error.code)
-        TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))    
+      except cx_Oracle.DatabaseError as exc:
+      # If there was a database error we need the ORA-##### error
+          error, = exc.args
+          oraerr=str(error.code)
+          TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))    
 
     return value
 
@@ -164,8 +170,9 @@ def GetTargetOSInfo(InventoryID, target, check, result_column):
 # Function:    UpdateTargetColumn
 # Description: Checks the Inventory database for 1 target and 1 attribute / column
 # ============================================================================
-def UpdateTargetColumn(inventoryid, column_name, value):
-
+def UpdateTargetColumn(inventoryid, column_name, value, TargetLogger):
+    result = 'NO CHANGE'
+ 
     if value != '':
         # ============================================================================
         # Open a connection to the Inventory Database 
@@ -174,13 +181,19 @@ def UpdateTargetColumn(inventoryid, column_name, value):
             
         postgres_conn = psycopg2.connect(INVENTORYDB)
         select_cursor = postgres_conn.cursor()
-        TARGET_QUERY="select " + column_name + " from public.DBC_Target" + \
-                     "where inventoryid = %s"
+        TARGET_QUERY='select ' + column_name + ' from public.DBC_Target where inventoryid = \'' + str(inventoryid) + '\''
+        TargetLogger.info('QUERY: %s', TARGET_QUERY)
 
         try:  
             # Get just the info about the target for comparison
-            select_cursor.execute(TARGET_QUERY, (inventoryid))
+            select_cursor.execute(TARGET_QUERY)
             Curr_Value = select_cursor.fetchone()
+
+            if type(Curr_Value)==type(None) :
+              Curr_Value = ''
+            else: 
+              Curr_Value=str(Curr_Value[0]).strip()
+
             TargetLogger.info('InventoryID: %s Column: %s Old Value: %s New Value: %s ',\
                                 inventoryid, column_name, Curr_Value, value)
 
@@ -194,10 +207,10 @@ def UpdateTargetColumn(inventoryid, column_name, value):
             TargetLogger.info('No change in Target Info')
         else:
             insert_cursor = postgres_conn.cursor()
-            INSERT_STMT="UPDATE public.dbc_target set "+column_name+"="+ value + "where inventoryid = %s"
-   
+            INSERT_STMT='UPDATE public.dbc_target set '+column_name+'= \''+ value + '\'where inventoryid = \'' + str(inventoryid) + '\''
+             
             try:
-                insert_cursor.execute(INSERT_STMT, ( inventoryid ))
+                insert_cursor.execute(INSERT_STMT)
                 # Make the changes to the database persistent
                 postgres_conn.commit()
 
@@ -220,91 +233,123 @@ def UpdateTargetColumn(inventoryid, column_name, value):
 
     return result
 
+def UpdateTarget(InventoryID, host, instance, TargetLogger):
+  TargetLogger.debug("Update Target: InventoryID: %s Host: %s Instance: %s", InventoryID, host, instance)
 
+  postgres_conn = psycopg2.connect(INVENTORYDB)
+  target_cursor = postgres_conn.cursor()
+
+  # Get ALL the checks to perform on these targets
+  CHECKQUERY="select check_command, check_type, result_column from public.checklist where frequency='TARGET' order by priority"
+  target_cursor.execute(CHECKQUERY)
+  all_checks = target_cursor.fetchall()
+  TargetLogger.debug("All Checks: %s" , all_checks)
+  
+  TargetLogger.info("Updating Host: %s Instance: %s", host, instance)
+  # Try connecting to the database and get info if possible
+  for check, check_type, result_column in all_checks:
+      value=''
+      if check_type == 'DB':
+          # if (VENDOR == 'ORACLE') or (VENDOR == '%') :
+             if "+ASM" not in instance:
+                 value=GetTargetDBInfo(instance+'_'+host, check, TargetLogger)
+      elif check_type == 'OS':
+          value=GetTargetOSInfo(InventoryID, instance+'_'+host, check, result_column, TargetLogger)
+
+      UpdateTargetColumn(InventoryID, result_column, value, TargetLogger )
+
+    # Lastly Update the Last Updated Column
+  UpdateTargetColumn(InventoryID, "lastcheckdate", str(datetime.now()), TargetLogger)
+
+  return
 
 # ============================================================================
 # ============================================================================
 # ---------------------------   MAIN PROGRAM   -------------------------------
 # ============================================================================
 # ============================================================================
-
-TargetLogger=StartLogging(LogLevel, LogFile, LogName)    # Log to File 
-
-global VENDOR
-global FREQUENCY
-global CHECKTYPE
-VENDOR = '%'
-FREQUENCY = '%'
-CHECKTYPE = '%'
-
-CHECKQUERY="""select check_command, check_type, result_column 
-                from public.checklist where frequency=""TARGET"" """
-
-try:
-    opts, args = getopt.getopt(sys.argv,"h:v:t")
-    
-except getopt.GetoptError:
-    print ('check_targets.py [ -t <type> ] -v <vendor> -f <frequency> ')
-    sys.exit(2)
-    
-for opt, arg in opts:
-    if opt == '-h':
-        print ('check_targets.py [ -t <type> ] -v <vendor> -f <frequency> ')
-        sys.exit()
-
-    elif opt in ("-t"):
-        CHECKTYPE = arg
-        CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
-
-    elif opt in ("-v"):
-        VENDOR = arg
-        CHECKQUERY += ' and vendor = \'' + VENDOR + '\''
-        
-# ============================================================================
-# Fetch all the active database targets from the InventoryDB and
-# check each one database by database
-# Attempt to query that target and update the target if needed 
-# ============================================================================
-# Connect to the Inventory DB
-
-postgres_conn = psycopg2.connect(INVENTORYDB)
-target_cursor = postgres_conn.cursor()
-
-# Get ALL the active targets
-target_cursor.execute("""
-    select inventoryid, hostname, instancename, container
-    from public.dbc_target
-    where decommissioned is null
-    order by inventoryid desc """)
-targets = target_cursor.fetchall()
-
-# Get ALL the checks to perform on these targets     
-target_cursor.execute(CHECKQUERY)
-all_checks = target_cursor.fetchall()
-TargetLogger.debug("All Checks: %s" , all_checks)
-
-for InventoryID, HostName, InstanceName, Container in targets:
-    if HostName.find(".") > 0:
-        HostName=HostName[0:HostName.find(".")]
-
-    Target = InstanceName + "_" + HostName
-
-    if "+ASM" in Target:
-        TargetLogger.info('ASM Instance found: %s', str(Target))
-        # Build connection to
-        # return NewTarget, TargetRow
-    else:
-        TargetLogger.info("Updating target: %s", Target)
-        # Try connecting to the database and get info if possible
-        for check, check_type, result_column in all_checks:
-            if check_type == 'DB':
-                if (VENDOR == 'ORACLE') or (VENDOR == '%') :
-                    value=GetTargetDBInfo(Target, check)
-            elif check_type == 'OS':
-                value=GetTargetOSInfo(InventoryID, Target, check)
-
-            UpdateTargetColumn(InventoryID, value, result_column )
-
+def main(argv):
+  TargetLogger=StartLogging(LogLevel, LogFile, LogName)    # Log to File 
+  
+  global VENDOR
+  global FREQUENCY
+  global CHECKTYPE
+  VENDOR = '%'
+  CHECKTYPE = '%'
+  
+  CHECKQUERY="select check_command, check_type, result_column from public.checklist where frequency='TARGET'"
+  
+  try:
+      opts, args = getopt.getopt(sys.argv,"h:v:t")
+      
+  except getopt.GetoptError:
+      print ('check_targets.py [ -t <type> ] -v <vendor> -f <frequency> ')
+      sys.exit(2)
+      
+  for opt, arg in opts:
+      if opt == '-h':
+          print ('check_targets.py [ -t <type> ] -v <vendor> -f <frequency> ')
+          sys.exit()
+  
+      elif opt in ("-t"):
+          CHECKTYPE = arg
+          CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
+  
+      elif opt in ("-v"):
+          VENDOR = arg
+          CHECKQUERY += ' and vendor = \'' + VENDOR + '\''
+          
+  CHECKQUERY += ' order by priority'
+  # ============================================================================
+  # Fetch all the active database targets from the InventoryDB and
+  # check each one database by database
+  # Attempt to query that target and update the target if needed 
+  # ============================================================================
+  # Connect to the Inventory DB
+  
+  postgres_conn = psycopg2.connect(INVENTORYDB)
+  target_cursor = postgres_conn.cursor()
+  
+  # Get ALL the active targets
+  target_cursor.execute("""
+      select inventoryid, hostname, instancename, container
+      from public.dbc_target
+      where decommissioned is null
+      and inventoryid < 25
+      order by inventoryid """)
+  targets = target_cursor.fetchall()
+  
+  # Get ALL the checks to perform on these targets     
+  target_cursor.execute(CHECKQUERY)
+  all_checks = target_cursor.fetchall()
+  TargetLogger.debug("All Checks: %s" , all_checks)
+  
+  for InventoryID, HostName, InstanceName, Container in targets:
+      if HostName.find(".") > 0:
+          HostName=HostName[0:HostName.find(".")]
+  
+      Target = InstanceName + "_" + HostName
+  
+      TargetLogger.info("Updating target: %s", Target)
+      # Try connecting to the database and get info if possible
+      for check, check_type, result_column in all_checks:
+          value=''
+          if check_type == 'DB':
+              if (VENDOR == 'ORACLE') or (VENDOR == '%') :
+                 if "+ASM" not in Target:
+                     value=GetTargetDBInfo(Target, check)
+          elif check_type == 'OS':
+              value=GetTargetOSInfo(InventoryID, Target, check, result_column, TargetLogger)
+  
+          # TargetLogger.debug("Target: %s Check: %s Column: %s Value:" , str(Target), str(check), str(result_column), str(value))
+          UpdateTargetColumn(InventoryID, result_column, value , TargetLogger)
+      # Lastly Update the Last Updated Column
+      UpdateTargetColumn(InventoryID, "lastcheckdate", str(datetime.now()), TargetLogger)
+  
 # ============================================================================
 # END main program
 # ============================================================================
+
+if __name__ == "__main__":
+  main(sys.argv[1:])
+
