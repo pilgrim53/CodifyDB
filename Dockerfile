@@ -31,8 +31,11 @@ USER postgres
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
 RUN    /etc/init.d/postgresql start &&\
-   ## psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker';" &&\
-    createdb -O docker docker
+       psql --command "CREATE USER codify WITH SUPERUSER PASSWORD 'codify_2021';" &&\
+       createdb -O codify codifydb; &&\
+       psql -f Init_CodifyDB.sql;
+       
+
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
