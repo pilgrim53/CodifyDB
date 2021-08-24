@@ -24,9 +24,9 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc
 # after each ``apt-get``
 
 COPY . /code/
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
+# COPY ./entrypoint.sh /entrypoint.sh
+# RUN chmod +x /entrypoint.sh
+# ENTRYPOINT [ "/entrypoint.sh" ]
 
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
 USER postgres
@@ -40,7 +40,6 @@ RUN    /etc/init.d/postgresql start &&\
        createdb -O codify codifydb; &&\
        psql -f Init_CodifyDB.sql;
        
-
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf
