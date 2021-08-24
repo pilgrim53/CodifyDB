@@ -1,5 +1,9 @@
 FROM python:3
 ENV PYTHONUNBUFFERED=1
+ENV PGHOST=localhost
+ENV PGPORT=5432
+ENV PGUSER=postgres
+
 WORKDIR /code
 COPY requirements.txt /code/
 RUN pip install --upgrade pip
@@ -37,6 +41,8 @@ USER postgres
 #       allows the RUN command to span multiple lines.
 RUN    /etc/init.d/postgresql start &&\
        psql --command "CREATE USER codify WITH SUPERUSER PASSWORD 'codify_2021';" &&\
+       dropdb -force postgres; &&\
+       dropdb -force codifydb; &&\
        createdb -O codify codifydb; &&\
        psql -f Init_CodifyDB.sql;
        
