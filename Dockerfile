@@ -4,7 +4,7 @@ WORKDIR /code
 COPY requirements.txt /code/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-COPY . /code/
+
 
 # Install ``python-software-properties``, ``software-properties-common`` and PostgreSQL 9.3
 #  There are some warnings (in red) that show up during the build. You can hide
@@ -23,6 +23,11 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc
 # Note: The official Debian and Ubuntu images automatically ``apt-get clean``
 # after each ``apt-get``
 
+COPY . /code/
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
+
 # Run the rest of the commands as the ``postgres`` user created by the ``postgres-9.3`` package when it was ``apt-get installed``
 USER postgres
 
@@ -35,7 +40,6 @@ RUN    /etc/init.d/postgresql start &&\
        createdb -O codify codifydb; &&\
        psql -f Init_CodifyDB.sql;
        
-
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
@@ -52,3 +56,5 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 
 # Set the default command to run when starting the container
 CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
+
+
