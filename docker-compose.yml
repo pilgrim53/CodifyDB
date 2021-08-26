@@ -1,8 +1,6 @@
 services:
   db:
     image: postgres
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     restart: always
     environment:
       - POSTGRES_DB=postgres
@@ -16,6 +14,5 @@ services:
     ports:
       - 8080:8080
 volumes:
-  pgdata:
   static:
   media:
