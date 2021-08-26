@@ -1,4 +1,4 @@
-FROM python:3
+FROM db
 ENV PYTHONUNBUFFERED=1
 ENV PGHOST=localhost
 ENV PGPORT=5432
@@ -13,7 +13,7 @@ RUN pip install -r requirements.txt
 # Install ``python-software-properties``, ``software-properties-common`` and PostgreSQL 9.3
 #  There are some warnings (in red) that show up during the build. You can hide
 #  them by prefixing each apt-get statement with DEBIAN_FRONTEND=noninteractive
-# RUN apt-get update && apt-get install -y python-software-properties software-properties-common postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
+RUN apt-get update && apt-get install -y python-software-properties software-properties-common postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
 RUN apt-get install gnupg
 
 # Add the PostgreSQL PGP key to verify their Debian packages.
@@ -39,12 +39,12 @@ USER postgres
 # then create a database `docker` owned by the ``docker`` role.
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
-RUN    /etc/init.d/postgresql start &&\
-       psql --command "CREATE USER codify WITH SUPERUSER PASSWORD 'codify_2021';" &&\
-       dropdb -force postgres; &&\
-       dropdb -force codifydb; &&\
-       createdb -O codify codifydb; &&\
-       psql -f Init_CodifyDB.sql;
+RUN    /etc/init.d/postgresql start 
+RUN    psql --command "CREATE USER codify WITH SUPERUSER PASSWORD 'codify_2021';"
+RUN    dropdb -force postgres
+RUN    dropdb -force codifydb
+RUN    createdb -O codify codifydb
+RUN    psql -f Init_CodifyDB.sql
        
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
