@@ -2,6 +2,11 @@
 
 version: '3.1'
 services:
+  grafana:
+    image: grafana/grafana:5.1.0
+    ports:
+      - 3000:3000
+    user: 'grafana'
   db:
     image: postgres
     healthcheck:
@@ -22,6 +27,14 @@ services:
       - ./:/code/
     ports:
       - "5432:5432"
+      
+  os:
+    image: ubuntu
+    restart: always
+    build: ./ubuntu
+    volumes:
+      - ./:/python/    
+    
   adminer:
     image: adminer
     restart: always

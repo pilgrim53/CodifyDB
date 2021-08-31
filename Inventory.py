@@ -33,8 +33,7 @@ target_file="./discovery.txt"
 # Function:    GetInventoryID
 # Description: Creates the initial Target entry in the DBC_Target table
 # Input:       Takes target in the format of host, instance, container, port
-# Ouptut:      Returns a boolean if its new and the target info 
-#              [instance,host,DBCreateDate,DBID,status, port]
+# Ouptut:      Returns the InventoryID of the target or 0 if not found
 # ============================================================================
 def GetID(host, instance,  TargetLogger):
 
