@@ -293,7 +293,7 @@ def Scan(target, owner, port, TargetLogger):
 # Description: Creates the initial Target entry in the DBC_Target table
 # Input:       Takes target in the format of host, instance, container, port
 # Ouptut:      Returns a boolean if its new and the target info 
-#              [instance,host,DBCreateDate,DBID,status, port]
+#              [host, vendor, instance, status, owner, homedir]
 # ============================================================================
 def Reject(host, vendor, instance, status, owner, homedir, importantnotes, TargetLogger):
 
@@ -346,7 +346,7 @@ def Add(host, instance, container, DBID, owner, homedir, status, port, TargetLog
 
       insert_cursor = postgres_conn.cursor()
       insert_stmt = """INSERT INTO public.dbc_target 
-                       (InventoryCreate, HostName, InstanceName, Container, DBID, owner, homedirectory, Vendor, Status, Port) 
+                       (InventoryCreate, HostName, InstanceName, Container, SerialNumber, owner, homedirectory, Vendor, Status, Port) 
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
               
       try:
