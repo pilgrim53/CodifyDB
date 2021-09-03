@@ -76,17 +76,20 @@ from decouple  import config     # Allows us to read .env
 # Set DBTools Environment and Global Variables
 # ============================================================================
 
-DBC_USER = config('DBC_USER')
-DBC_PWD  = config('DBC_PWD')
-INV_USER = config('INV_USER')
-INV_PWD  = config('INV_PWD')
-ORACLE_BASE = "/u01/app/oracle"
-ORACLE_HOME = "/u01/app/oracle/product/12.2.0.1"
-TNS_ADMIN = "/u01/app/oracle/DBTools/"
-GlobalLogFile = "/home/orac4i/Inventory/src/logs/check_targets_"+str(date.today())+".log"
+DBC_USER      = config('DBC_USER')
+DBC_PWD       = config('DBC_PWD')
+INV_USER      = config('INV_USER')
+INV_PWD       = config('INV_PWD')
+ORACLE_BASE   = config('ORACLE_BASE')
+ORACLE_HOME   = config('ORACLE_HOME')
+TNS_ADMIN     = config('TNS_ADMIN')
+LOG_DIR       = config('LOG_DIR')
+CODIFYDB_HOST = config('CODIFYDB_HOST')
+
+GlobalLogFile = LOG_DIR+"\check_targets_"+str(date.today())+".log"
 GlobalLogLevel = 'DEBUG'
 GlobalLogName = "Check_Targets"
-INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-498.belldev.dev.bce.ca"
+INVENTORYDB = "dbname=codifydb user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
 
 # ============================================================================
 
