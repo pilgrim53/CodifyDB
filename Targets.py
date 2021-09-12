@@ -16,12 +16,14 @@ import socket
 import os
 import Results    
 import Inventory
+import check_oms
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
 # ============================================================================
 DBC_USER      = config('DBC_USER')
 DBC_PWD       = config('DBC_PWD')
+OLD_DBC_PWD   = config('OLD_DBC_PWD')
 INV_USER      = config('INV_USER')
 INV_PWD       = config('INV_PWD')
 ORACLE_BASE   = config('ORACLE_BASE')
@@ -29,9 +31,58 @@ ORACLE_HOME   = config('ORACLE_HOME')
 TNS_ADMIN     = config('TNS_ADMIN')
 LOG_DIR       = config('LOG_DIR')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
-INVENTORYDB = "dbname=codifydb user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
+CODIFYDB      = config('CODIFYDB')
+INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
 
+# ============================================================================
+# Function:     connect
+# Description:  Connects to a target using the specified handler
+# Input:        Hostname, InstanceName, Handler
+# Ouptut:       None 
+# Returns:      the connection
+# ============================================================================
 
+def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
+
+  TargetLogger.debug("Connecting to: %s with %s as %s", HostName, Handler, Owner)
+  curr_connection=''
+  RC=0
+
+  if Handler == 'Oracle' :
+    try:
+        curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, InstanceName+'_'+HostName, encoding="UTF-8")
+        TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
+    except cx_Oracle.DatabaseError as exc:
+        error, = exc.args
+        TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+
+  elif Handler == 'ssh' :
+    curr_connection = paramiko.SSHClient()
+    curr_connection.load_system_host_keys()
+    curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    timer = threading.Timer(10,curr_connection.close)
+    timer.start()    # start counting right before connecting 
+
+    try:
+        curr_connection.connect(HostName, 22, Owner) 
+
+    except paramiko.ssh_exception.AuthenticationException:
+        TargetLogger.error("Authentication failed, Host: %s    Owner: %s", HostName, Owner)
+        
+    except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
+        TargetLogger.error("Unable to verify server's host key: %s", badHostKeyException)
+
+    except    paramiko.ssh_exception.SSHException as sshException:
+        TargetLogger.error("Unable to establish SSH connection: %s",    sshException)
+
+    except Exception as sshException:
+        TargetLogger.error("General Exception in os command: %s ",    sshException)
+        result='FAILED: general_ssh_exception'
+
+    else: timer.cancel()    # cancel the connection thread if it's still alive after 30 seconds
+
+  return curr_connection
 
 # ============================================================================
 # Function:    CreateDBC
@@ -96,7 +147,7 @@ sqlOUT"""
 # Description: Force the creation or recreation of the CLOUD_DBC database user
 # Returns:     None
 # ============================================================================
-def UpdatePassword(target):
+def UpdatePassword(target, TargetLogger):
     instance, host=target.split('_')
     value=0
     TargetLogger.debug('Fix CLOUD_DBC on: %s', str(target))
@@ -106,6 +157,7 @@ def UpdatePassword(target):
         connection = cx_Oracle.connect(DBC_USER, OLD_DBC_PWD, target, encoding="UTF-8")
         timer = threading.Timer(15,connection.cancel)
         db_info_cursor = connection.cursor()
+        check="select 1 from dual"
         try:
             timer.start()  # start counting right before connecting to the database
             db_info_cursor.execute(check)
@@ -115,7 +167,6 @@ def UpdatePassword(target):
 
             PWD_Update = 'alter user cloud_dbc identified by ' + DBC_PWD
             db_info_cursor.execute(PWD_Update)
-
 
         except cx_Oracle.DatabaseError as exc:
             error, = exc.args
@@ -142,6 +193,14 @@ def UpdatePassword(target):
 # END UpdatePassword
 # ============================================================================
 
+def GetInfo(check, handler, connection, TargetLogger):
+  if handler == 'Oracle' :
+    result=GetOracleInfo(check, connection, TargetLogger)
+  elif handler == 'ssh' :
+    result=GetOSInfo(check, connection, TargetLogger)
+    # result=check_os_target(InventoryID, Owner, HostName, HomeDir, check, result_column, TargetLogger)
+
+  return
 
 # ============================================================================
 # Function:    GetDBInfo
@@ -151,45 +210,27 @@ def UpdatePassword(target):
 #              RC=0 means check failed
 #Future:   Make the check timeout a parameter and setting for each check
 # ============================================================================
-def GetDBInfo(target, check, TargetLogger):
-    instance, host=target.split('_')
-    value=0
+def GetOracleInfo(check, connection, TargetLogger):
+  timer = threading.Timer(15,connection.cancel)
+  db_info_cursor = connection.cursor()
+  value=''
 
-    try:
-        connection = cx_Oracle.connect(DBC_USER, DBC_PWD, target, encoding="UTF-8")
-        timer = threading.Timer(15,connection.cancel)
-        db_info_cursor = connection.cursor()
-        try:
-            timer.start()  # start counting right before connecting to the database
-            db_info_cursor.execute(check)
-            value = db_info_cursor.fetchone()
-            value=str(value[0]).strip()
-            TargetLogger.debug('Connected to: %s', str(target))
-        # Handle all the things that could go wrong with this connection attempt
-        except cx_Oracle.DatabaseError as exc:
-            # If there was a database error we need the ORA-##### error
-            # This might mean the database exists
-            error, = exc.args
-            oraerr=str(error.code)
+  try:
+    timer.start()  # start counting right before connecting to the database
+    db_info_cursor.execute(check)
+    value=db_info_cursor.fetchone()
+    value=str(value[0]).strip()
 
-            TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
-            timer.cancel()  # cancel the timer before leaving this function
-            value=oraerr
+  except cx_Oracle.DatabaseError as exc:
+  # Now Handle all the things that could go wrong with this request
+  # If there was a database error, return it as the value
+    error, = exc.args
+    oraerr=str(error.code)
+    TargetLogger.error('GetOracleInfo Error: ORA-%s  Message: %s',  oraerr, str(error))
         
-        connection.close()   # All done
-        timer.cancel()  # cancel the timer before leaving this function
-    
-    # Handle all the things that could go wrong with this connection attempt
-    except cx_Oracle.DatabaseError as exc:
-    # If there was a database error we need the ORA-##### error
-    # This might mean the database exists
-        error, = exc.args
-        oraerr=str(error.code)
-        TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
-        value=oraerr
-
-    TargetLogger.info('GetDBInfo result for Target: %s Result: %s', str(target), str(value))
-    return value
+  timer.cancel()  # cancel the timer before leaving this function
+  TargetLogger.info('GetOracleInfo returning Result: %s', str(value))
+  return value
 
 # ============================================================================
 # END GetDBInfo
@@ -213,19 +254,21 @@ def GetDBInfo(target, check, TargetLogger):
 # RC=1    Add this target
 # RC=2    Update this target
 # ============================================================================
-def Scan(target, owner, port, TargetLogger):
+def Scan(target, owner, port, TARGETTYPE, TargetLogger):
 
   inventoryid=0
+  RC = 0
+  NoAccess=['1017','1045', '1033', '28000', '28001']
+
   # host, instance=target.split('_')    # needed for oracle_discovery.ksh v1.0
   instance, host=target.split('_')
   inventoryid=Inventory.GetID(host, instance, TargetLogger)
   if inventoryid > 0 :
     owner=Inventory.GetAttribute(inventoryid, target, 'owner', TargetLogger)
 
-  # Try a default connection to this target first. Chances are "we know dis".
-  RC=GetDBInfo(target, "select \'1\' from dual", TargetLogger)
-  NoAccess=['1017','1045', '1033', '28000', '28001']
-
+  if TARGETTYPE == 'Database' :  
+    # Try a default connection to this target first. Chances are "we know dis".
+    RC=GetOracleInfo(target, "select \'1\' from dual", TargetLogger)
 
   if RC in NoAccess :
     RC=CreateDBC(target, owner, TargetLogger)
@@ -242,10 +285,15 @@ def Scan(target, owner, port, TargetLogger):
 
 
   else:   # Try making our own TNS String 
-       ping_result=os.system('ping %s -4 -c 4 >/dev/null ' % (host))
+       ping_result=os.system('ping %s -4 -c 4 -w 10 >/dev/null ' % (host))     # Ping 4 times or 10 seconds, whichever comes first
+
        if ping_result < 1 :
+           RC = 0
            TargetLogger.info('Host: %s is pingable.', host)
-           try:
+
+           if TARGETTYPE == "Database": 
+           
+             try:
                target_dsn = cx_Oracle.makedsn(host, port, service_name=instance)
                connection = cx_Oracle.connect(user=DBC_USER, password=DBC_PWD, dsn=target_dsn)
                timer = threading.Timer(5,connection.cancel)
@@ -257,26 +305,26 @@ def Scan(target, owner, port, TargetLogger):
                connection.close()
                # CreateTNS(target_dsn)
 
-           except cx_Oracle.DatabaseError as exc:
-         # Handle all the things that could go wrong with this connection attempt
-         # If there was a database error we need the ORA-##### error
-         # This might mean the database exists
-             error, = exc.args
-             oraerr=str(error.code)
-             NotExist=['12545','12541','12543','12514','12505']
-             NoAccess=['1017','1045', '1033', '28000', '28001']
-             if oraerr in NotExist :
+             except cx_Oracle.DatabaseError as exc:
+             # Handle all the things that could go wrong with this connection attempt
+             # If there was a database error we need the ORA-##### error
+             # This might mean the database exists
+
+               error, = exc.args
+               oraerr=str(error.code)
+               NotExist=['12545','12541','12543','12514','12505']
+               NoAccess=['1017','1045', '1033', '28000', '28001']
+               if oraerr in NotExist :
                  TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
                  TargetLogger.error('TNS Error: Correct the issue or remove from DBList')
                  RC=-1
-             elif oraerr in NoAccess:
+               elif oraerr in NoAccess:
                  # We can add this target to inventory even though we can't log in
                  TargetLogger.info('Target %s exists, but couldn''t log in. %s', str(target), oraerr)
                  RC=0
-             else:
+               else:
                  TargetLogger.error('Other Error: %s', str(error))
                  RC=-1
-             
         
        else:
            TargetLogger.info('Skipping host %s is not pingable. Please check. %s', host, ping_result)
@@ -297,7 +345,7 @@ def Scan(target, owner, port, TargetLogger):
 # Ouptut:      Returns a boolean if its new and the target info 
 #              [host, vendor, instance, status, owner, homedir]
 # ============================================================================
-def Reject(host, vendor, instance, status, owner, homedir, importantnotes, TargetLogger):
+def Reject(host, vendor, instance, status, owner, homedir, importantnotes, TARGETTYPE, TargetLogger):
 
     result=0
     postgres_conn = psycopg2.connect(INVENTORYDB)
@@ -337,7 +385,7 @@ def Reject(host, vendor, instance, status, owner, homedir, importantnotes, Targe
 # Ouptut:      Returns a boolean if its new and the target info 
 #              [instance,host,DBCreateDate,DBID,status, port]
 # ============================================================================
-def Add(host, instance, container, DBID, owner, homedir, status, port, TargetLogger):
+def Add(host, instance, container, DBID, owner, homedir, status, port, TARGETTYPE, TargetLogger):
 
     result=0
     count=0
@@ -348,11 +396,11 @@ def Add(host, instance, container, DBID, owner, homedir, status, port, TargetLog
 
       insert_cursor = postgres_conn.cursor()
       insert_stmt = """INSERT INTO public.dbc_target 
-                       (InventoryCreate, HostName, InstanceName, Container, SerialNumber, owner, homedirectory, Vendor, Status, Port) 
-                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
+                       (InventoryCreate, TargetType, HostName, InstanceName, Container, SerialNumber, owner, homedirectory, Vendor, Status, Port) 
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
               
       try:
-          insert_cursor.execute(insert_stmt, ( date.today(),host,instance,container,DBID,owner,homedir,'ORACLE',status,port) )
+          insert_cursor.execute(insert_stmt, ( date.today(),TARGETTYPE, host,instance,container,DBID,owner,homedir,'ORACLE',status,port) )
           # Make the changes to the database persistent
           postgres_conn.commit()
   
@@ -386,35 +434,31 @@ def Add(host, instance, container, DBID, owner, homedir, status, port, TargetLog
 #              home_dir for the call to the check_os_target routine
 # Returns:     The result of the OS check query
 # ============================================================================
-def GetOSInfo(InventoryID, target, check, result_column, TargetLogger):
-    instance, host=target.split('_')
-    value=''
-    owner=''
-    homedir=''
-    QUERY='select owner, homedirectory from dbc_target where inventoryid = ' + str(InventoryID) + '' 
-    if InventoryID > 0:
+def GetOSInfo(check, connection, TargetLogger):
 
-      try:
-          postgres_conn = psycopg2.connect(INVENTORYDB)
-          select_cursor = postgres_conn.cursor()
-  
-          # Get just the info about the target for comparison
-          select_cursor.execute(QUERY)
-          owner, homedir = select_cursor.fetchone()
-  
-          value=check_os(InventoryID, owner, host, homedir, check, result_column, TargetLogger)
-          if "FAILED" in value:
-            TargetLogger.error('Target: %s Owner: %s Command: %s Result: $s ', str(target), str(owner), str(check), str(value))    
-            value=''
- 
-    
-      except cx_Oracle.DatabaseError as exc:
-      # If there was a database error we need the ORA-##### error
-          error, = exc.args
-          oraerr=str(error.code)
-          TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))    
+  try: 
+    TargetLogger.info("Running %s ", check)
+    stdin, stdout, stderr = connection.exec_command(check, get_pty=True)
+    result_row = stdout.readlines()
+    result_err = stderr.readlines()
 
-    return value
+    if result_row :
+      result=str(result_row[len(result_row)-1].strip())
+      if result=="logout" :
+        result=str(result_row[len(result_row)-2].strip())
+
+    if result_err :
+      TargetLogger.info("OS Check Errors: %s ", result_err )
+      result='FAILED: os command failed'
+
+  except  Exception as sshException:
+    TargetLogger.error("Unable to run check: %s Result: %s", check, sshException)
+    result='FAILED: os command failed'
+            
+  finally:
+    TargetLogger.info("Returning result from OS command: %s ", result )
+
+  return result
 
 # ============================================================================
 # END GetOSInfo
@@ -434,12 +478,10 @@ def UpdateColumn(inventoryid, column_name, value, TargetLogger):
     result = 0
 
     if column_name == 'hostname' or column_name == 'instancename' :
-        TargetLogger.info('InventoryID: %s Column: %s Old Value: %s New Value: %s ',\
-                                inventoryid, column_name, Curr_Value, value)
+        TargetLogger.info('InventoryID: %s Column: %s New Value: %s ',\
+                                inventoryid, column_name,  value)
         TargetLogger.error('TO CHANGE HOSTNAME OR INSTANCENAME PLEASE UPDATE MANUALLY') 
         return 0
-
-
  
     if value != '':
         # ============================================================================
@@ -521,7 +563,7 @@ def UpdateColumn(inventoryid, column_name, value, TargetLogger):
 # ============================================================================
 
 
-def Update(InventoryID, host, instance, TargetLogger):
+def Update(InventoryID, host, instance, TARGETTYPE, TargetLogger):
   RC=0  
   TargetLogger.debug("Update Target: InventoryID: %s Host: %s Instance: %s", InventoryID, host, instance)
 
@@ -529,7 +571,7 @@ def Update(InventoryID, host, instance, TargetLogger):
   target_cursor = postgres_conn.cursor()
 
   # Get ALL the checks to perform on these targets
-  CHECKQUERY="select check_command, check_type, result_column from public.checklist where frequency='TARGET' order by priority"
+  CHECKQUERY="select check_command, check_type, result_column from public.checklist where frequency='"+TARGETTYPE+"' order by priority"
   target_cursor.execute(CHECKQUERY)
   all_checks = target_cursor.fetchall()
   TargetLogger.debug("All Checks: %s" , all_checks)
@@ -542,8 +584,8 @@ def Update(InventoryID, host, instance, TargetLogger):
       if check_type == 'DB' and DBConnection == 'TRUE' :
           # if (VENDOR == 'ORACLE') or (VENDOR == '%') :
              if "+ASM" not in instance:
-                 value=GetDBInfo(instance+'_'+host, check, TargetLogger)
-                 NotExist=['12545','12541','12543','12514','12505']
+                 value=GetOracleInfo(instance+'_'+host, check, TargetLogger)
+                 NotExist=['12545','12541','12543','12514','12505','12154','12170']
                  NoAccess=['1017','1045', '1033', '28000', '28001']
                  if value in NotExist or value in NoAccess :
                    DBConnnection='FALSE'

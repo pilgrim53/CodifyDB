@@ -9,7 +9,9 @@ from decouple  import config     # Allows us to read .env
 
 INV_USER = config('INV_USER')
 INV_PWD  = config('INV_PWD')
-INVENTORYDB = "dbname=testdb user="+INV_USER+" password="+INV_PWD+" host=caddld-498.belldev.dev.bce.ca"
+CODIFYDB_HOST = config('CODIFYDB_HOST')
+CODIFYDB      = config('CODIFYDB')
+INVENTORYDB   = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
 
 # ============================================================================
 # Function:     add
