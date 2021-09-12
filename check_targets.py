@@ -15,20 +15,20 @@
 #
 # Script name:        check_targets.py
 #
-# Version:            1.03
+# Version:            1.04
 #
 # Purpose:            This script monitors database targets from the
 #                     DBC Inventory Database. If the target exists and
 #                     something has changed, then it updates the entry.
 #
-# Input files:        DBC_TARGETS Table
+# Input files:        TARGETS Table
 #                     checklist table
 #                     $TNS_ADMIN/tnsnames.ora
 #
 # Output:             Entries into the CheckResults table
-#                     Log files to ./logs directory
+#                     Log files to $LOG_DIR/check_results_$date.log
 #
-# Syntax:             check_targets.py -v vendor -f frequency -t type
+# Syntax:             check_targets.py -t targettype -v vendor -f frequency -c checktype
 #
 # Called Routines:    cx_Oracle - for Oracle database calls
 #                     psycopg2 - for PostgreSQL database calls
@@ -36,8 +36,9 @@
 #
 # Return Codes:       none
 #
-# Restrictions:       You must first run "source ~/venv/bin/activate
-#                     to enter the necessary Python virtual environment
+# Restrictions:       Enter the correct python environment prior to running.
+#                     ex)  "source ~/<venv>/bin/activate"
+#                           to enter the necessary virtual environment
 #
 # Abend instructions: Resolve and rerun
 #
@@ -52,6 +53,7 @@
 #                                         2) Update results for each check
 #                                         3) Move environment variables to file
 # 2021/07/06     M.Pankratz       1.03      Extract common routines
+# 2021/09/05     M.Pankratz       1.04      Add TargetType for OS Targets, etc.
 # ============================================================================
 
 # ============================================================================
@@ -69,6 +71,8 @@ from datetime  import datetime
 from datetime  import date
 from check_oms import CheckOMS   # Allows us to query the OEM Dev instance
 from decouple  import config     # Allows us to read .env
+import Targets
+import Results
 
 # ============================================================================
 
@@ -85,100 +89,12 @@ ORACLE_HOME   = config('ORACLE_HOME')
 TNS_ADMIN     = config('TNS_ADMIN')
 LOG_DIR       = config('LOG_DIR')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
+CODIFYDB      = config('CODIFYDB')
+INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
 
-GlobalLogFile = LOG_DIR+"\check_targets_"+str(date.today())+".log"
-GlobalLogLevel = 'DEBUG'
 GlobalLogName = "Check_Targets"
-INVENTORYDB = "dbname=codifydb user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
-
-# ============================================================================
-
-# ============================================================================
-# Define Functions
-# ============================================================================
-
-# ============================================================================
-# Function:     check_oracle_target
-# Description:  Connect to the target and check it
-# Input:        Valid TNS Entry
-# Ouptut:       Return code
-# ============================================================================
-
-def check_oracle_target(ID, tns, all_db_checks):
-
-    TargetLogger.info("Start Oracle DB Check on: %s ", tns)
-    result=''
-    RC=0
-
-    try:
-        target = cx_Oracle.connect(DBC_USER, DBC_PWD, tns, encoding="UTF-8")
-
-        # lets only allow a few seconds per database query to collect what we want
-        # note:  summing used space on some databases can take overa minute
-        timer = threading.Timer(60,target.cancel)
-        timer.start()    # start counting right before connecting to the database
-
-        for check, check_type, result_column in all_db_checks:
-
-          TargetLogger.debug("check: %s checktype: %s result_column: %s ", \
-                                       check, check_type, result_column)
-          if check_type == 'DB':
-            if (VENDOR == 'ORACLE') or (VENDOR == '%') :
-               target_cursor = target.cursor()
-               target_cursor.execute(check)
-               result = target_cursor.fetchone()
-
-            elif check_type == 'OMS':
-              result = CheckOMS(tns, check, TargetLogger)
-
-            add_result(ID, result, result_column, TargetLogger)
-
-            TargetLogger.info("InventoryID: %s result: %s result_column: %s ", \
-                                     ID, result, result_column)
-
-
-    except (OSError, ValueError, RuntimeError, TypeError, NameError) as exc:
-        error, = exc.args
-        TargetLogger.error("Error:    %s ", error)
-    except cx_Oracle.DatabaseError as exc:
-        error, = exc.args
-        TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-        RC=error.code
-    except cx_Oracle.OperationalError as exc:
-        error, = exc.args
-        TargetLogger.error("OperationalError-Code: %s %s", error.code, error.message)
-    except cx_Oracle.InternalError as exc:
-        error, = exc.args
-        TargetLogger.error("OperationalError-Code: %s %s    ", error.code, error.message)
-    except cx_Oracle.InterfaceError as exc:
-        error, = exc.args
-        TargetLogger.error("InterfaceError-Code: %s %s ", error.code, error.message)
-    except cx_Oracle.ProgrammingError as exc:
-        error, = exc.args
-        TargetLogger.error("ProgrammingError-Code: %s %s ", error.code, error.message)
-    except cx_Oracle.NotSupportedError as exc:
-        error, = exc.args
-        TargetLogger.error("NotSupportedError-Code: %s %s ", error.code, error.message)
-    except cx_Oracle.Error as exc:
-        error, = exc.args
-        TargetLogger.error("Error-Code: %s %s", error.code, error.message)
-    except:
-        TargetLogger.error("Unexpected error: %s ", sys.exc_info()[0])
-        raise
-
-    else:
-        TargetLogger.debug("Oracle DB Check result: %s ", result)
-        timer.cancel()
-        target.close()
-
-    finally:
-        TargetLogger.info("Oracle DB Check Completed")
-
-    return RC
-
-# ============================================================================
-# END check_oracle_target
-# ============================================================================
+GlobalLogFile = LOG_DIR+GlobalLogName+"_"+str(date.today())+".log"
+GlobalLogLevel = 'DEBUG'
 
 # ============================================================================
 # ============================================================================
@@ -193,9 +109,9 @@ def main(argv):
     VENDOR = '%'
     FREQUENCY = 'HOURLY'    # Default to the hourly checks if not specified
     CHECKTYPE = '%'
-    TARGETTYPE = 'Database'
+    TARGETTYPE = 'Database'  # Default to Database right now for development
 
-    CHECKQUERY='select check_command, check_type, result_column from public.checklist where 1=1 '
+    CHECKQUERY='select check_command, check_type, result_column, handler from public.checklist where 1=1 '
     TARGETQUERY='select inventoryid, instancename, owner, homedirectory, hostname, targettype from public.dbc_target where decommissioned is null '
 
     try:
@@ -232,12 +148,11 @@ def main(argv):
             FREQUENCY = arg
 
 
-    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\' order by priority'
+    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\' order by priority, handler'
 
-
-    TargetLogger.info("Running CheckTargets.py with TARGETTYPE= %s VENDOR= %s FREQUENCY= %s CHECKTYPE= %s", TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
-    TargetLogger.debug("Query: %s", CHECKQUERY)
-    TargetLogger.info("Running Target Query: %s", TARGETQUERY)
+    TargetLogger.info("Running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
+    TargetLogger.debug("Check Query: %s", CHECKQUERY)
+    TargetLogger.debug("Target Query: %s", TARGETQUERY)
 
     # ============================================================================
     # Fetch all the valid database targets from the InventoryDB and
@@ -250,7 +165,6 @@ def main(argv):
     inventory_conn = psycopg2.connect(INVENTORYDB)
     target_cursor = inventory_conn.cursor()
 
-
     # Get ALL the active targets
     target_cursor.execute(TARGETQUERY)
     all_targets = target_cursor.fetchall()
@@ -261,29 +175,38 @@ def main(argv):
     all_checks = target_cursor.fetchall()
     TargetLogger.debug("All Checks: %s" , all_checks)
 
+    ######################################################
+    # * * * *  Main Loop of all in-scope Targets * * * * #
+    ######################################################
     for InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType in all_targets:
-      if TARGETTYPE == 'Database' :
-        OracleRC=0
-        RC=0
-
         TargetLogger.debug("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s TargetType: %s " , \
                           InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType)
+        oldHandler = ''
+        ###############################################################################
+        # Sub Loop of All Checks for the Target 
+        # Reuse the connection to the target for all similar checks with same handler
+        ###############################################################################     
+        for check, check_type, result_column, handler in all_checks:
+            result=''
+            if handler != oldHandler :
+                if oldHandler != '' and curr_connection != '':
+                    # Targets.Disconnect(curr_connection)
+                    curr_connection.close()
+                oldHandler = handler
 
-        OracleRC=check_oracle_target(InventoryID, InstanceName+'_'+HostName, all_checks)
-        add_result(InventoryID, OracleRC, 'dbstatus', TargetLogger)
+                curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
+            
+            if curr_connection:  # connection still works
+                result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
+                if result :
+                    Results.add(InventoryID, result, result_column, TargetLogger)
+            else:   # connection no longer works
+                Targets.UpdateColumn(InventoryID, 'status', 'No '+handler+' Connection', TargetLogger)
 
-        if OracleRC > 0 :
-          TargetLogger.info("Inventory ID: %s Returned Error Code: %s" , InventoryID, OracleRC)
+            TargetLogger.info("Inventory ID: %s Attribute: %s Value: %s" , InventoryID, result_column, result)
 
-      for check, check_type, result_column in all_checks:
-          OSRC=''
-          if check_type == 'OS':
-              OSRC=check_os_target(InventoryID, Owner, HostName, HomeDir, check, result_column, TargetLogger)
-              if OSRC != '' :
-                add_result(InventoryID, OSRC, result_column, TargetLogger)
-
-
-
+        # Targets.Disconnect(curr_connection)  
+        curr_connection.close()        
     inventory_conn.close()
 # ============================================================================
 # END main program

@@ -1,5 +1,6 @@
 #!/home/orac4i/Inventory/bin/python
 
+
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
@@ -7,79 +8,187 @@ from datetime     import date          # not included by default
 from decouple     import config        # Allows us to read .env
 from Inv_Logging  import StartLogging  # Allows us to log to a file
 import Targets                         # All target functions
-# ============================================================================
+import sys, getopt                     # Allows us to interact with the o/s
+import psycopg2                        # for PostgreSQL database calls
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
 # ============================================================================
 target_file="./discovery.txt"
-LogFile="/home/orac4i/Inventory/src/logs/scan_targets_"+str(date.today())+".log"
-LogLevel="DEBUG"
-LogName="Scan_Targets"
+LOG_DIR  = config('LOG_DIR')
+LogName  = "Scan_Targets"
+LogFile  = LOG_DIR+LogName+"_"+str(date.today())+".log"
+LogLevel = "DEBUG"
+DBC_USER = config('DBC_USER')
+DBC_PWD  = config('DBC_PWD')
+INV_USER = config('INV_USER')
+INV_PWD  = config('INV_PWD')
+ORACLE_BASE = "/u01/app/oracle"
+ORACLE_HOME = "/u01/app/oracle/product/12.2.0.1"
+TNS_ADMIN   = "/u01/app/oracle/DBTools/"
+CODIFYDB_HOST = config('CODIFYDB_HOST')
+CODIFYDB      = config('CODIFYDB')
+INVENTORYDB   = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
 # ============================================================================
 
-
+# ============================================================================
 # ============================================================================
 # ============================================================================
 # ---------------------------   MAIN PROGRAM   -------------------------------
 # ============================================================================
 # ============================================================================
+# ============================================================================
+# Function:     scan_target
+# Description:  Evaluate target info and look for changes to targets.
+# Input:        -a (ADD) -t Database|Server -v Vendor 
+# Ouptut:       Insert new or update existing records in Targets table 
+# Returns:      None
+# ============================================================================
+def main(argv):
 
-TargetLogger=StartLogging(LogLevel, LogFile, LogName)  # Log to File 
+  TargetLogger=StartLogging(LogLevel, LogFile, LogName)  # Log to File 
+  TARGETQUERY='select inventoryid, instancename, owner, homedirectory, hostname, targettype \
+                from public.dbc_target where decommissioned is null '
+
+  global CHECKTYPE
+  CHECKTYPE = 'ADD'   # Default to scan / update existing known Targets
+
+  try:
+    opts, args = getopt.getopt(argv,":t:v:ah")
+
+  except getopt.GetoptError:
+          print ('scan_targets.py [ -a (ADD) -t Database|Server -v Vendor  ] | -h (help) ')
+          sys.exit(2)
+
+  TargetLogger.debug("All Options passed: {}".format(opts))
+  TargetLogger.debug("All arguments passed: {}".format(args))
+
+  for opt, arg in opts:
+    TargetLogger.debug("Option: {} Argument: {}".format(opt,arg))
+    if opt == '-h':
+      print ('scan_targets.py [ -t Database|Server -v Vendor -a (ADD) ] | -h (help) ')
+      sys.exit()
+
+    elif opt == "-a" :
+      CHECKTYPE = 'ADD'
+
+    elif opt == "-t" :
+      TARGETTYPE = arg
+      TARGETQUERY += ' and targettype = \'' + TARGETTYPE + '\''
+    elif opt == "-v" :
+      VENDOR = arg
+      TARGETQUERY += ' and vendor = \'' + VENDOR + '\''
+
+  TARGETQUERY += ' order by inventoryid'
+
+  # ============================================================================
+  # Update existing targets that match the target criteria
+  # ============================================================================
+
+  if CHECKTYPE == 'UPDATE' :
+
+    # ============================================================================
+    # Fetch all the valid database targets from the InventoryDB and
+    # check each one database by database
+    # Attempt to query that target and record the results
+    # ============================================================================
+    
+    # Connect to the Inventory DB
+    
+    inventory_conn = psycopg2.connect(INVENTORYDB)
+    target_cursor = inventory_conn.cursor()
+
+    # Get ALL the active targets
+    target_cursor.execute(TARGETQUERY)
+    
+    all_targets = target_cursor.fetchall()
+
+    inventory_conn.close()
+
+    for InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType in all_targets:
+        result=0
+        TargetLogger.debug("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s TargetType: %s", \
+                        InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType)
+    
+        result=Targets.Update(InventoryID, HostName, InstanceName, TargetType, TargetLogger)
+        TargetLogger.info('Host: %s Instance: %s InventoryID: %s result: %s ', HostName, InstanceName, InventoryID, result)
+
+  # ============================================================================
+  # Look for and add NEW Targets to the inventory
+  # ============================================================================
+
+  elif CHECKTYPE == 'ADD' :  
+    # ============================================================================
+    # Read through the target_file record by record
+    # Attempt to query that target and record the results
+    # DB Record Format: 1) host_instance 2) owner FID 3) homedir 4) listener 5) ports
+    # Server Record Format: 1) hostname 2) IP Address
+    # ============================================================================
+    with open(target_file) as tf:
+      for entry in tf:
+        TargetLogger.info('Parsing new line: %s', entry)
+        target="NONE"
+        result="NONE"
+        inventoryid=0
+        entry=entry.strip()
+
+        if TARGETTYPE == "Server":
+          target=entry+"_"+entry
+          host=entry
+          instance=entry
+          ports='22'
+          owner,homedir,exists='','',''
+        else:
+          scan_list=entry.split(",")
+      
+          if len(scan_list) > 4 :
+            target, owner, homedir, listener, *ports = entry.split(",")
+          elif len(scan_list) == 4 :
+            target, owner, homedir, listener = entry.split(",")
+            ports=1521, 2349
+          elif len(scan_list) == 3 :
+            target, owner, homedir = entry.split(",")
+            exists=''
+            ports=1521, 2349
+          elif len(scan_list) == 2 :
+            target, owner = entry.split(",")
+            homedir,exists='',''
+            ports=1521, 2349
+          elif len(scan_list) == 1:
+            target = entry
+            owner,homedir,exists='','',''
+            ports=1521, 2349
+
+          target=target.upper().strip()
+          owner=owner.lower().strip()
+          # host, instance=target.split("_")     # Needed for oracle_discovery.ksh output
+          instance, host=target.split("_")
+    
+        if host > '' and instance > '' :
+          TargetLogger.info('Checking target: %s', str(target))
+          #  Try connecting to the database and get info if possible
+          for port in ports:
+            if port != '':
+              print('Target: %s Port: ''%s''', target, port)
+              exists=Targets.Scan(target, owner, port, TARGETTYPE, TargetLogger)
+              if exists == 0 and TARGETTYPE == "Database" :  # 0=host exists
+                exists=Targets.CreateDBC(target, owner, TargetLogger)
+                break
+              if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC exist  2=Target exists
+                inventoryid=Targets.Add(host, instance, 'TBD', '0', owner, homedir, exists, port, TARGETTYPE, TargetLogger)
+                if inventoryid > 0 :
+                  result=Targets.Update(inventoryid, host, instance, TARGETTYPE, TargetLogger)
+                  break
+              else:
+                result=Targets.Reject(host, 'ORACLE', instance, exists, owner, homedir, entry, TARGETTYPE, TargetLogger)
+
+        TargetLogger.info('Host: %s Instance: %s InventoryID: %s results: %s ', host, instance, inventoryid, result)
 
 # ============================================================================
-# Read through the AddToDBList.txt file database by database
-# Attempt to query that target and record the results
-# Record Format: 1) host_instance 2) owner FID 3) homedir 4) listener 5) ports
+# END main program
 # ============================================================================
-with open(target_file) as tf:
-  for entry in tf:
-    TargetLogger.info('Parsing new line: %s', entry)
-    target="NONE"
-    result="NONE"
-    inventoryid=0
-    scan_list=entry.split(",")
 
-    if len(scan_list) > 4 :
-      target, owner, homedir, listener, *ports = entry.split(",")
-    elif len(scan_list) == 4 :
-      target, owner, homedir, listener = entry.split(",")
-      ports=1521, 2349
-    elif len(scan_list) == 3 :
-      target, owner, homedir = entry.split(",")
-      exists=''
-      ports=1521, 2349
-    elif len(scan_list) == 2 :
-      target, owner = entry.split(",")
-      homedir,exists='',''
-      ports=1521, 2349
-    elif len(scan_list) == 1:
-      target = entry
-      owner,homedir,exists='','',''
-      ports=1521, 2349
+if __name__ == "__main__":
+    TargetLogger=StartLogging(LogLevel, LogFile, LogName)    # Log to File
+    main(sys.argv[1:])
 
-    target=target.upper().strip()
-    owner=owner.lower().strip()
-    # host, instance=target.split("_")     # Needed for oracle_discovery.ksh output
-    instance, host=target.split("_")
-
-    if host > '' and instance > '' :
-      TargetLogger.info('Checking target: %s', str(target))
-      #  Try connecting to the database and get info if possible
-      for port in ports:
-        if port != '':
-          print('Target: %s Port: ''%s''', target, port)
-          exists=Targets.Scan(target, owner, port, TargetLogger)
-          if exists == 0 : 
-            exists=Targets.CreateDBC(target, owner, TargetLogger)
-            break
-          if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC exist  2=Target exists
-            inventoryid=Targets.Add(host, instance, 'TBD', '0', owner, homedir, exists, port, TargetLogger)
-            if inventoryid > 0 :
-              result=Targets.Update(inventoryid, host, instance, TargetLogger)
-            break
-          else:
-            result=Targets.Reject(host, 'ORACLE', instance, exists, owner, homedir, entry, TargetLogger)
-
-
-    TargetLogger.info('Host: %s Instance: %s InventoryID: %s results: %s ', host, instance, inventoryid, result)

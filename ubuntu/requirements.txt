@@ -1,0 +1,14 @@
+bcrypt==3.2.0
+cffi==1.14.4
+cx-Oracle==8.1.0
+psycopg2==2.8.6
+pycparser==2.20
+setuptools-rust==0.11.6
+six==1.15.0
+cryptography==3.4.3
+paramiko-ng==2.8.4
+python-decouple==3.4
+semantic-version==2.8.5
+setuptools-scm==5.0.1
+toml==0.10.2
+python-gnupg==0.4.7
