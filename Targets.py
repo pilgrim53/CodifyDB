@@ -200,7 +200,7 @@ def GetInfo(check, handler, connection, TargetLogger):
     result=GetOSInfo(check, connection, TargetLogger)
     # result=check_os_target(InventoryID, Owner, HostName, HomeDir, check, result_column, TargetLogger)
 
-  return
+  return result
 
 # ============================================================================
 # Function:    GetDBInfo
