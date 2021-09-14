@@ -40,13 +40,13 @@ INVENTORYDB   = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host
 # ============================================================================
 # Function:     scan_target
 # Description:  Evaluate target info and look for changes to targets.
-# Input:        -a (ADD) -t Database|Server -v Vendor 
-# Ouptut:       Insert new or update existing records in Targets table 
+# Input:        -a (ADD) -t Database|Server -v Vendor
+# Ouptut:       Insert new or update existing records in Targets table
 # Returns:      None
 # ============================================================================
 def main(argv):
 
-  TargetLogger=StartLogging(LogLevel, LogFile, LogName)  # Log to File 
+  TargetLogger=StartLogging(LogLevel, LogFile, LogName)  # Log to File
   TARGETQUERY='select inventoryid, instancename, owner, homedirectory, hostname, targettype \
                 from public.dbc_target where decommissioned is null '
 
@@ -92,15 +92,15 @@ def main(argv):
     # check each one database by database
     # Attempt to query that target and record the results
     # ============================================================================
-    
+
     # Connect to the Inventory DB
-    
+
     inventory_conn = psycopg2.connect(INVENTORYDB)
     target_cursor = inventory_conn.cursor()
 
     # Get ALL the active targets
     target_cursor.execute(TARGETQUERY)
-    
+
     all_targets = target_cursor.fetchall()
 
     inventory_conn.close()
@@ -109,7 +109,7 @@ def main(argv):
         result=0
         TargetLogger.debug("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s TargetType: %s", \
                         InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType)
-    
+
         result=Targets.Update(InventoryID, HostName, InstanceName, TargetType, TargetLogger)
         TargetLogger.info('Host: %s Instance: %s InventoryID: %s result: %s ', HostName, InstanceName, InventoryID, result)
 
@@ -117,7 +117,7 @@ def main(argv):
   # Look for and add NEW Targets to the inventory
   # ============================================================================
 
-  elif CHECKTYPE == 'ADD' :  
+  elif CHECKTYPE == 'ADD' :
     # ============================================================================
     # Read through the target_file record by record
     # Attempt to query that target and record the results
@@ -133,14 +133,16 @@ def main(argv):
         entry=entry.strip()
 
         if TARGETTYPE == "Server":
-          target=entry+"_"+entry
-          host=entry
-          instance=entry
+          host, owner = entry.split(",")
+          host=host.upper().strip()
+          owner=owner.lower().strip()
+          target=host+"_"+host
+          instance=host
           ports='22'
-          owner,homedir,exists='','',''
+          homedir,exists='',''
         else:
           scan_list=entry.split(",")
-      
+
           if len(scan_list) > 4 :
             target, owner, homedir, listener, *ports = entry.split(",")
           elif len(scan_list) == 4 :
@@ -163,7 +165,7 @@ def main(argv):
           owner=owner.lower().strip()
           # host, instance=target.split("_")     # Needed for oracle_discovery.ksh output
           instance, host=target.split("_")
-    
+
         if host > '' and instance > '' :
           TargetLogger.info('Checking target: %s', str(target))
           #  Try connecting to the database and get info if possible
@@ -175,9 +177,10 @@ def main(argv):
                 exists=Targets.CreateDBC(target, owner, TargetLogger)
                 break
               if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC exist  2=Target exists
+                #  Why add if already there?
                 inventoryid=Targets.Add(host, instance, 'TBD', '0', owner, homedir, exists, port, TARGETTYPE, TargetLogger)
                 if inventoryid > 0 :
-                  result=Targets.Update(inventoryid, host, instance, TARGETTYPE, TargetLogger)
+                  result=Targets.Update(inventoryid, host, instance, owner, TARGETTYPE, TargetLogger)
                   break
               else:
                 result=Targets.Reject(host, 'ORACLE', instance, exists, owner, homedir, entry, TARGETTYPE, TargetLogger)
@@ -191,4 +194,3 @@ def main(argv):
 if __name__ == "__main__":
     TargetLogger=StartLogging(LogLevel, LogFile, LogName)    # Log to File
     main(sys.argv[1:])
-
