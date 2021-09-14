@@ -37,10 +37,10 @@ def add(ID, check_result, column_name, TargetLogger):
 
     except psycopg2.Error as exc:
         error, = exc.args
-        TargetLogger.error("Data Exception: %s ", error) 
+        TargetLogger.error("Data Exception: %s ", error)
 
     else:
-        TargetLogger.info("Result added: %s  %s  %s  %s", ID, column_name, check_result, check_date) 
+        TargetLogger.info("Result added: %s  %s  %s  %s", ID, column_name, check_result, check_date)
 
         # Make the changes to the database persistent
         postgres_insert_connection.commit()
