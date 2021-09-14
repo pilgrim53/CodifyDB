@@ -14,7 +14,7 @@ from decouple  import config     # Allows us to read .env
 # from update_targets import check_os # Allows us to reuse the os check function
 import socket
 import os
-import Results    
+import Results
 import Inventory
 import check_oms
 
@@ -38,7 +38,7 @@ INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="
 # Function:     connect
 # Description:  Connects to a target using the specified handler
 # Input:        Hostname, InstanceName, Handler
-# Ouptut:       None 
+# Ouptut:       None
 # Returns:      the connection
 # ============================================================================
 
@@ -62,14 +62,14 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
     curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     timer = threading.Timer(10,curr_connection.close)
-    timer.start()    # start counting right before connecting 
+    timer.start()    # start counting right before connecting
 
     try:
-        curr_connection.connect(HostName, 22, Owner) 
+        curr_connection.connect(HostName, 22, Owner)
 
     except paramiko.ssh_exception.AuthenticationException:
         TargetLogger.error("Authentication failed, Host: %s    Owner: %s", HostName, Owner)
-        
+
     except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
         TargetLogger.error("Unable to verify server's host key: %s", badHostKeyException)
 
@@ -108,12 +108,12 @@ sqlOUT"""
     ssh_connection = paramiko.SSHClient()
     ssh_connection.load_system_host_keys()
     ssh_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-  
+
     timer = threading.Timer(30,ssh_connection.close)
     timer.start()    # start counting right before connecting to the database
-  
+
     TargetLogger.info("Connecting to %s as %s ", host, owner)
-    ssh_connection.connect(host, 22, owner) 
+    ssh_connection.connect(host, 22, owner)
 
   except paramiko.ssh_exception.AuthenticationException:
     TargetLogger.error("Authentication failed, Host: %s    Owner: %s", host, owner)
@@ -128,7 +128,7 @@ sqlOUT"""
         result_err = stderr.readlines()
         TargetLogger.info("OS Check stdout: %s ", str(result_row) )
         TargetLogger.info("OS Check Errors: %s ", str(result_err) )
-        result=1 
+        result=1
 
     except  Exception as sshException:
       TargetLogger.error("Unable to run on host: %s as %s Result: %s",   \
@@ -152,7 +152,7 @@ def UpdatePassword(target, TargetLogger):
     value=0
     TargetLogger.debug('Fix CLOUD_DBC on: %s', str(target))
 
-        
+
     try:
         connection = cx_Oracle.connect(DBC_USER, OLD_DBC_PWD, target, encoding="UTF-8")
         timer = threading.Timer(15,connection.cancel)
@@ -174,10 +174,10 @@ def UpdatePassword(target, TargetLogger):
 
             TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
             timer.cancel()  # cancel the timer before leaving this function
-        
+
         connection.close()   # All done
         timer.cancel()  # cancel the timer before leaving this function
-    
+
     # Handle all the things that could go wrong with this connection attempt
     except cx_Oracle.DatabaseError as exc:
     # If there was a database error we need the ORA-##### error
@@ -219,7 +219,10 @@ def GetOracleInfo(check, connection, TargetLogger):
     timer.start()  # start counting right before connecting to the database
     db_info_cursor.execute(check)
     value=db_info_cursor.fetchone()
-    value=str(value[0]).strip()
+    if value:
+      value=str(value[0]).strip()
+    else:
+      value = ''
 
   except cx_Oracle.DatabaseError as exc:
   # Now Handle all the things that could go wrong with this request
@@ -227,10 +230,11 @@ def GetOracleInfo(check, connection, TargetLogger):
     error, = exc.args
     oraerr=str(error.code)
     TargetLogger.error('GetOracleInfo Error: ORA-%s  Message: %s',  oraerr, str(error))
-        
+
   timer.cancel()  # cancel the timer before leaving this function
   TargetLogger.info('GetOracleInfo returning Result: %s', str(value))
-  return value
+
+  return str(value)
 
 # ============================================================================
 # END GetDBInfo
@@ -240,14 +244,14 @@ def GetOracleInfo(check, connection, TargetLogger):
 # ============================================================================
 # Function:    Scan
 # Description: Attempts to acquire new targets by scanning a list of potential
-#              targets.   If a target is found, the inventory database is 
+#              targets.   If a target is found, the inventory database is
 #              checked to see if it is already a known target.
 # Input:       Takes target in the format of host_instance, owner, homedir, port
 # Ouptut:      RC=0  If the target exists but login is unsuccessful
 #            RC=2  If the target is already in the inventory DB
 #            RC=1  If it is a new target ready to be added
-#            RC=-1 If the potential target is not reachable, a REJECT record is created.  
-# 
+#            RC=-1 If the potential target is not reachable, a REJECT record is created.
+#
 # Recommended action for calling routine:
 # RC=-1   REJECT - Review connectivity to host and target. Fix and/or update candidate list
 # RC=0    Deploy standard credentials / tools to target and re-run / Record Target Info
@@ -266,33 +270,35 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
   if inventoryid > 0 :
     owner=Inventory.GetAttribute(inventoryid, target, 'owner', TargetLogger)
 
-  if TARGETTYPE == 'Database' :  
+  if TARGETTYPE == 'Database' :
     # Try a default connection to this target first. Chances are "we know dis".
-    RC=GetOracleInfo(target, "select \'1\' from dual", TargetLogger)
+    RC=GetInfo(target, "select \'1\' from dual", TargetLogger)
+   def GetInfo(check, handler, connection, TargetLogger):
+
 
   if RC in NoAccess :
     RC=CreateDBC(target, owner, TargetLogger)
-  
+
   if int(RC) == 1 :
       inventoryid=Inventory.GetID(host, instance, TargetLogger)
       if inventoryid > 0:
          TargetLogger.info('Target: %s corresponds to active InventoryID: %s', target, inventoryid )
          RC=2 # Elevate this to an existing target status
       elif inventoryid == 0:
-	  # if inventoryid == 0:
+          # if inventoryid == 0:
          TargetLogger.info('Target: %s has working TNSNames but no InventoryID' )
          RC=1  # Ready to be added to Inventory
 
 
-  else:   # Try making our own TNS String 
+  else:   # Try making our own TNS String
        ping_result=os.system('ping %s -4 -c 4 -w 10 >/dev/null ' % (host))     # Ping 4 times or 10 seconds, whichever comes first
 
        if ping_result < 1 :
            RC = 0
            TargetLogger.info('Host: %s is pingable.', host)
 
-           if TARGETTYPE == "Database": 
-           
+           if TARGETTYPE == "Database":
+
              try:
                target_dsn = cx_Oracle.makedsn(host, port, service_name=instance)
                connection = cx_Oracle.connect(user=DBC_USER, password=DBC_PWD, dsn=target_dsn)
@@ -325,13 +331,17 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
                else:
                  TargetLogger.error('Other Error: %s', str(error))
                  RC=-1
-        
+
+           elif TARGETTYPE == "Server":
+             TargetLogger.debug('Found an active server to add %s', host)
+
+
        else:
            TargetLogger.info('Skipping host %s is not pingable. Please check. %s', host, ping_result)
            RC=-1
-      
+
   TargetLogger.info('Target: %s Scan result: %s InventoryID: %s', target, RC, inventoryid)
-      
+
   return RC
 # ============================================================================
 # END Scan
@@ -342,7 +352,7 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
 # Function:    Reject
 # Description: Creates the initial Target entry in the DBC_Target table
 # Input:       Takes target in the format of host, instance, container, port
-# Ouptut:      Returns a boolean if its new and the target info 
+# Ouptut:      Returns a boolean if its new and the target info
 #              [host, vendor, instance, status, owner, homedir]
 # ============================================================================
 def Reject(host, vendor, instance, status, owner, homedir, importantnotes, TARGETTYPE, TargetLogger):
@@ -350,15 +360,15 @@ def Reject(host, vendor, instance, status, owner, homedir, importantnotes, TARGE
     result=0
     postgres_conn = psycopg2.connect(INVENTORYDB)
     insert_cursor = postgres_conn.cursor()
-    insert_stmt = """INSERT INTO public.dbc_target_rejects 
-                       (InventoryCreate, HostName, InstanceName, vendor, status, owner, homedirectory, importantnotes) 
+    insert_stmt = """INSERT INTO public.dbc_target_rejects
+                       (InventoryCreate, HostName, InstanceName, vendor, status, owner, homedirectory, importantnotes)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s); """
-              
+
     try:
           insert_cursor.execute(insert_stmt, ( date.today(),host,instance,vendor,status,owner,homedir,importantnotes ))
           # Make the changes to the database persistent
           postgres_conn.commit()
-  
+
     except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
           error, = exc.args
           TargetLogger.error('Error inserting reject record: %s %s %s ', str(host),str(instance),str(error))
@@ -382,7 +392,7 @@ def Reject(host, vendor, instance, status, owner, homedir, importantnotes, TARGE
 # Function:    Add
 # Description: Creates the initial Target entry in the DBC_Target table
 # Input:       Takes target in the format of host, instance, container, port
-# Ouptut:      Returns a boolean if its new and the target info 
+# Ouptut:      Returns a boolean if its new and the target info
 #              [instance,host,DBCreateDate,DBID,status, port]
 # ============================================================================
 def Add(host, instance, container, DBID, owner, homedir, status, port, TARGETTYPE, TargetLogger):
@@ -395,20 +405,20 @@ def Add(host, instance, container, DBID, owner, homedir, status, port, TARGETTYP
     if result < 1:
 
       insert_cursor = postgres_conn.cursor()
-      insert_stmt = """INSERT INTO public.dbc_target 
-                       (InventoryCreate, TargetType, HostName, InstanceName, Container, SerialNumber, owner, homedirectory, Vendor, Status, Port) 
+      insert_stmt = """INSERT INTO public.dbc_target
+                       (InventoryCreate, TargetType, HostName, InstanceName, Container, SerialNumber, owner, homedirectory, Vendor, Status, Port)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
-              
+
       try:
           insert_cursor.execute(insert_stmt, ( date.today(),TARGETTYPE, host,instance,container,DBID,owner,homedir,'ORACLE',status,port) )
           # Make the changes to the database persistent
           postgres_conn.commit()
-  
+
       except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
           error, = exc.args
           TargetLogger.error('Error inserting new target: %s %s %s ', str(host),str(instance), str(error))
           result=-1
-           
+
       except Exception as exc:
           error, = exc.args
           TargetLogger.error('Exception occurred inserting target: %s %s Container: %s %s', \
@@ -430,13 +440,15 @@ def Add(host, instance, container, DBID, owner, homedir, status, port, TARGETTYP
 
 # ============================================================================
 # Function:    GetOSInfo
-# Description: Takes a target and an OS check and first obtains the FID and 
+# Description: Takes a target and an OS check and first obtains the FID and
 #              home_dir for the call to the check_os_target routine
 # Returns:     The result of the OS check query
 # ============================================================================
 def GetOSInfo(check, connection, TargetLogger):
 
-  try: 
+  result=''
+
+  try:
     TargetLogger.info("Running %s ", check)
     stdin, stdout, stderr = connection.exec_command(check, get_pty=True)
     result_row = stdout.readlines()
@@ -454,7 +466,7 @@ def GetOSInfo(check, connection, TargetLogger):
   except  Exception as sshException:
     TargetLogger.error("Unable to run check: %s Result: %s", check, sshException)
     result='FAILED: os command failed'
-            
+
   finally:
     TargetLogger.info("Returning result from OS command: %s ", result )
 
@@ -469,7 +481,7 @@ def GetOSInfo(check, connection, TargetLogger):
 # Function:    UpdateColumn
 # Description: Checks the Inventory database for 1 target and 1 attribute / column
 # Input:       InventoryID, column_name, value
-# Ouptut:      Updates dbc_target attribute if it has changed 
+# Ouptut:      Updates dbc_target attribute if it has changed
 # RC=-1   Target no longer exists
 # RC=0    No change
 # RC=1    Target updated
@@ -480,28 +492,28 @@ def UpdateColumn(inventoryid, column_name, value, TargetLogger):
     if column_name == 'hostname' or column_name == 'instancename' :
         TargetLogger.info('InventoryID: %s Column: %s New Value: %s ',\
                                 inventoryid, column_name,  value)
-        TargetLogger.error('TO CHANGE HOSTNAME OR INSTANCENAME PLEASE UPDATE MANUALLY') 
+        TargetLogger.error('TO CHANGE HOSTNAME OR INSTANCENAME PLEASE UPDATE MANUALLY')
         return 0
- 
+
     if value != '':
         # ============================================================================
-        # Open a connection to the Inventory Database 
+        # Open a connection to the Inventory Database
         # Update the results if anything has changed about the target (i.e. version or logmode)
         # ============================================================================
-            
+
         postgres_conn = psycopg2.connect(INVENTORYDB)
         select_cursor = postgres_conn.cursor()
         TARGET_QUERY='select ' + column_name + ' from public.DBC_Target where inventoryid = \'' + str(inventoryid) + '\''
         TargetLogger.info('QUERY: %s', TARGET_QUERY)
 
-        try:  
+        try:
             # Get just the info about the target for comparison
             select_cursor.execute(TARGET_QUERY)
             Curr_Value = select_cursor.fetchone()
 
             if type(Curr_Value)==type(None) :
               Curr_Value = ''
-            else: 
+            else:
               Curr_Value=str(Curr_Value[0]).strip()
 
             TargetLogger.info('InventoryID: %s Column: %s Old Value: %s New Value: %s ',\
@@ -521,7 +533,7 @@ def UpdateColumn(inventoryid, column_name, value, TargetLogger):
               INSERT_STMT='UPDATE public.dbc_target set '+column_name+'='+ str(value) +' where inventoryid=' + str(inventoryid)
             else:
               INSERT_STMT='UPDATE public.dbc_target set '+column_name+'=\''+ str(value) + '\' where inventoryid=' + str(inventoryid)
-             
+
             try:
                 insert_cursor.execute(INSERT_STMT)
                 # Make the changes to the database persistent
@@ -532,7 +544,7 @@ def UpdateColumn(inventoryid, column_name, value, TargetLogger):
                 TargetLogger.error('Error updating target: %s Column_name %s from %s to %s', \
                                     inventoryid, column_name, Curr_Value, value )
                 result=-1
-         
+
             except Exception as exc:
                 error, = exc.args
                 TargetLogger.error('Error updating target: %s Column_name: %s Error:  %s ', \
@@ -556,32 +568,37 @@ def UpdateColumn(inventoryid, column_name, value, TargetLogger):
 # Function:    Update
 # Description: Recheck an item in the inventory ie dbc_target.
 # Input:       Takes a target in the format of InventoryID, host, instance
-# Ouptut:      Updates dbc_target attributes that have changed. 
+# Ouptut:      Updates dbc_target attributes that have changed.
 # RC=-1   Target no longer exists
 # RC=0    No change
 # RC=1    Target updated
 # ============================================================================
 
 
-def Update(InventoryID, host, instance, TARGETTYPE, TargetLogger):
-  RC=0  
+def Update(InventoryID, host, instance, owner, TARGETTYPE, TargetLogger):
+  RC=0
   TargetLogger.debug("Update Target: InventoryID: %s Host: %s Instance: %s", InventoryID, host, instance)
 
   postgres_conn = psycopg2.connect(INVENTORYDB)
   target_cursor = postgres_conn.cursor()
 
   # Get ALL the checks to perform on these targets
-  CHECKQUERY="select check_command, check_type, result_column from public.checklist where frequency='"+TARGETTYPE+"' order by priority"
+  CHECKQUERY="select check_command, check_type, result_column from public.checklist where frequency='"+TARGETTYPE+"' order by handler, priority"
   target_cursor.execute(CHECKQUERY)
   all_checks = target_cursor.fetchall()
   TargetLogger.debug("All Checks: %s" , all_checks)
-  
+
   TargetLogger.info("Updating Host: %s Instance: %s", host, instance)
-  # Try connecting to the database and get info if possible
-  DBConnection='TRUE'
+
+  if TARGETTYPE == 'Database':
+    # Try connecting to the database and get info if possible
+    DBConnection=Connect(host, instance, owner, 'Oracle', TargetLogger)
+
+  OSConnection=Connect(host, instance, owner, 'ssh', TargetLogger)
+
   for check, check_type, result_column in all_checks:
       value=-1
-      if check_type == 'DB' and DBConnection == 'TRUE' :
+      if check_type == 'DB' and DBConnection  :
           # if (VENDOR == 'ORACLE') or (VENDOR == '%') :
              if "+ASM" not in instance:
                  value=GetOracleInfo(instance+'_'+host, check, TargetLogger)
@@ -592,24 +609,28 @@ def Update(InventoryID, host, instance, TARGETTYPE, TargetLogger):
                    value = -1
 
       elif check_type == 'OS':
-          value=GetOSInfo(InventoryID, instance+'_'+host, check, result_column, TargetLogger)
+          value=GetOSInfo(check, OSConnection, TargetLogger)
 
       if value != -1 :
         COL_RC=UpdateColumn(InventoryID, result_column, value, TargetLogger )
 
     # Lastly Update the Last Updated Column
   UpdateColumn(InventoryID, "lastcheckdate", str(datetime.now()), TargetLogger)
+  OSConnection.close
+
+  if TARGETTYPE == 'Database':
+    DBConnection.close
 
   return
-  
+
 # ============================================================================
-# END Update  
+# END Update
 # ============================================================================
 
 
 # ============================================================================
 # Function:    Check_OS
-# Description: Performs an operating system based check.  
+# Description: Performs an operating system based check.
 #              i.e. login as the Oracle owner and run a unix command
 # Input:       ID, owner, host, homedir, check, result_column, TargetLogger
 # Ouptut:      Returns the output of the command as a string.
@@ -627,12 +648,12 @@ def check_os(ID, owner, host, homedir, command, result_column, TargetLogger):
 
     try:
         TargetLogger.info("Connecting to %s as %s to run %s ", host, owner, command)
-        ssh_connection.connect(host, 22, owner) 
+        ssh_connection.connect(host, 22, owner)
 
     except paramiko.ssh_exception.AuthenticationException:
         TargetLogger.error("Authentication failed, Host: %s    Owner: %s", host, owner)
         result='FAILED: ssh_exception.AuthenticationException'
-        
+
     except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
         TargetLogger.error("Unable to verify server's host key: %s", badHostKeyException)
         result='FAILED: ssh_exception.BadHostKeyException'
@@ -647,7 +668,7 @@ def check_os(ID, owner, host, homedir, command, result_column, TargetLogger):
         result='FAILED: general_ssh_exception'
 
     else:
-        try: 
+        try:
             if result_column == 'swrelease':
                command = homedir + '/OPatch/' + command
 
@@ -662,7 +683,7 @@ def check_os(ID, owner, host, homedir, command, result_column, TargetLogger):
                 if result=="logout" :
                   result=str(result_row[len(result_row)-2].strip())
                 TargetLogger.info("InventoryID: %s result: %s result_column: %s ", \
-                            ID, result, result_column)   
+                            ID, result, result_column)
 
             if result_err :
                 TargetLogger.info("OS Check Errors: %s ", result_err )
@@ -674,13 +695,13 @@ def check_os(ID, owner, host, homedir, command, result_column, TargetLogger):
             TargetLogger.error("Unable to run: %s on host: %s as %s Result: %s",   \
                                command, host, owner, sshException)
             result='FAILED: command failed'
-            
+
     finally:
-        ssh_connection.close() 
+        ssh_connection.close()
         TargetLogger.info("Returning result from OS command: %s ", result )
 
     return result
 
 # ============================================================================
-# END check_os   
+# END check_os
 # ============================================================================
