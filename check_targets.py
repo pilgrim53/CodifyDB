@@ -1,4 +1,5 @@
 #!/home/orac4i/Inventory/bin/python
+
 #    -*- coding: utf-8
 # ============================================================================
 # Copyright (c) 2020 Bell Canada
@@ -132,7 +133,6 @@ def main(argv):
 
         elif opt == "-t" :
             TARGETTYPE = arg
-            TARGETQUERY += ' and targettype = \'' + TARGETTYPE + '\''
             if TARGETTYPE == 'Server' :
               CHECKTYPE='OS'
               CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
@@ -149,6 +149,7 @@ def main(argv):
 
 
     CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\' order by priority, handler'
+    TARGETQUERY += ' and targettype = \'' + TARGETTYPE + '\' order by inventoryid'
 
     TargetLogger.info("Running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
     TargetLogger.debug("Check Query: %s", CHECKQUERY)
@@ -183,9 +184,9 @@ def main(argv):
                           InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType)
         oldHandler = ''
         ###############################################################################
-        # Sub Loop of All Checks for the Target 
+        # Sub Loop of All Checks for the Target
         # Reuse the connection to the target for all similar checks with same handler
-        ###############################################################################     
+        ###############################################################################
         for check, check_type, result_column, handler in all_checks:
             result=''
             if handler != oldHandler :
@@ -195,9 +196,10 @@ def main(argv):
                 oldHandler = handler
 
                 curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
-            
+
             if curr_connection:  # connection still works
                 result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
+                print ('Result: %s', result)
                 if result :
                     Results.add(InventoryID, result, result_column, TargetLogger)
             else:   # connection no longer works
@@ -205,8 +207,8 @@ def main(argv):
 
             TargetLogger.info("Inventory ID: %s Attribute: %s Value: %s" , InventoryID, result_column, result)
 
-        # Targets.Disconnect(curr_connection)  
-        curr_connection.close()        
+        # Targets.Disconnect(curr_connection)
+        curr_connection.close()
     inventory_conn.close()
 # ============================================================================
 # END main program
