@@ -15,7 +15,7 @@ from decouple  import config     # Allows us to read .env
 import socket
 import os
 from Inv_Logging    import StartLogging
-import Results    
+import Results
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
@@ -50,7 +50,7 @@ def GetID(host, instance,  TargetLogger):
       select_cursor.execute(select_stmt)
       result = select_cursor.fetchone()
       TargetLogger.info('Check %s %s returned: ''%s''', host, instance, result )
-      if result is None : 
+      if result is None :
         InventoryID=0
       else:
         InventoryID = result[0]
@@ -71,13 +71,13 @@ def GetID(host, instance,  TargetLogger):
 
 # ============================================================================
 # Function:    GetAttribute
-# Description: Takes a target and an OS check and first obtains the FID and 
+# Description: Takes a target and an OS check and first obtains the FID and
 #              home_dir for the call to the check_os_target routine
 # Returns:     The result of the OS check query
 # ============================================================================
 def GetAttribute(InventoryID, target, column, TargetLogger):
     value=''
-    QUERY='select '+column+' from dbc_target where inventoryid='+str(InventoryID)+'' 
+    QUERY='select '+column+' from dbc_target where inventoryid='+str(InventoryID)+''
 
     try:
         postgres_conn = psycopg2.connect(INVENTORYDB)
@@ -91,7 +91,7 @@ def GetAttribute(InventoryID, target, column, TargetLogger):
         # If there was a database error we need the ORA-##### error
         error, = exc.args
         oraerr=str(error.code)
-        TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))    
+        TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
 
     return value
 
