@@ -1,3 +1,4 @@
+
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
@@ -45,12 +46,13 @@ INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="
 def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
 
   TargetLogger.debug("Connecting to: %s with %s as %s", HostName, Handler, Owner)
-  curr_connection=''
   RC=0
 
   if Handler == 'Oracle' :
     try:
         curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, InstanceName+'_'+HostName, encoding="UTF-8")
+        curr_connection.callTimeout(30)
+
         TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
     except cx_Oracle.DatabaseError as exc:
         error, = exc.args
@@ -65,7 +67,7 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
     timer.start()    # start counting right before connecting
 
     try:
-        curr_connection.connect(HostName, 22, Owner)
+        curr_connection.connect(hostname=HostName, port=22, username=Owner, timeout=15)
 
     except paramiko.ssh_exception.AuthenticationException:
         TargetLogger.error("Authentication failed, Host: %s    Owner: %s", HostName, Owner)
@@ -122,7 +124,7 @@ sqlOUT"""
     try:
       if owner != '':
         TargetLogger.info("Running %s as %s on %s ", DBC_COMMAND, owner, host)
-        stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, get_pty=True)
+        stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, timeout=30, get_pty=True)
 
         result_row = stdout.readlines()
         result_err = stderr.readlines()
@@ -273,8 +275,6 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
   if TARGETTYPE == 'Database' :
     # Try a default connection to this target first. Chances are "we know dis".
     RC=GetInfo(target, "select \'1\' from dual", TargetLogger)
-   def GetInfo(check, handler, connection, TargetLogger):
-
 
   if RC in NoAccess :
     RC=CreateDBC(target, owner, TargetLogger)
@@ -302,6 +302,7 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
              try:
                target_dsn = cx_Oracle.makedsn(host, port, service_name=instance)
                connection = cx_Oracle.connect(user=DBC_USER, password=DBC_PWD, dsn=target_dsn)
+               connection.callTimeout(30)
                timer = threading.Timer(5,connection.cancel)
                timer.start()  # start counting right before connecting to the database
                db_info_cursor = connection.cursor()
@@ -450,7 +451,7 @@ def GetOSInfo(check, connection, TargetLogger):
 
   try:
     TargetLogger.info("Running %s ", check)
-    stdin, stdout, stderr = connection.exec_command(check, get_pty=True)
+    stdin, stdout, stderr = connection.exec_command(check, timeout=30, get_pty=True)
     result_row = stdout.readlines()
     result_err = stderr.readlines()
 
@@ -601,7 +602,7 @@ def Update(InventoryID, host, instance, owner, TARGETTYPE, TargetLogger):
       if check_type == 'DB' and DBConnection  :
           # if (VENDOR == 'ORACLE') or (VENDOR == '%') :
              if "+ASM" not in instance:
-                 value=GetOracleInfo(instance+'_'+host, check, TargetLogger)
+                 value=GetOracleInfo(check, DBConnection, TargetLogger)
                  NotExist=['12545','12541','12543','12514','12505','12154','12170']
                  NoAccess=['1017','1045', '1033', '28000', '28001']
                  if value in NotExist or value in NoAccess :
@@ -673,7 +674,7 @@ def check_os(ID, owner, host, homedir, command, result_column, TargetLogger):
                command = homedir + '/OPatch/' + command
 
             TargetLogger.info("Running %s as %s on %s ", command, owner, host)
-            stdin, stdout, stderr = ssh_connection.exec_command(command, get_pty=True)
+            stdin, stdout, stderr = ssh_connection.exec_command(command, timeout=30, get_pty=True)
 
             result_row = stdout.readlines()
             result_err = stderr.readlines()
