@@ -1,4 +1,4 @@
-#!/home/fidBIN/inventory/bin/python
+#!/home/orac4i/Inventory/bin/python
 
 # ============================================================================
 # Import all the external Python modules that we need
@@ -96,9 +96,9 @@ def main(argv):
   TargetLogger.debug("All Checks: %s" , all_checks)
 
   if CHECKTYPE == 'UPDATE' :
-     # ============================================================================
-     # Update existing targets that match the target criteria
-     # ============================================================================
+    # ============================================================================
+    # Update existing targets that match the target criteria
+    # ============================================================================
     # ============================================================================
     # Fetch all the valid database targets from the InventoryDB and
     # check each one database by database
@@ -109,7 +109,6 @@ def main(argv):
     target_cursor.execute(TARGETQUERY)
     all_targets = target_cursor.fetchall()
     # TargetLogger.debug("All Targets: %s" , all_targets)
-
 
     inventory_conn.close()
 
@@ -134,6 +133,7 @@ def main(argv):
                     curr_connection.close()
                 oldHandler = handler
                 curr_connection=Targets.Connect(host, instance, owner, handler, TargetLogger)
+
 
             if curr_connection:  # connection still works
                 result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
@@ -208,7 +208,7 @@ def main(argv):
 
         if host > '' and instance > '' :
           TargetLogger.info('Checking target: %s', str(target))
-          #  Try connecting to the database and get info if possible
+          # Try connecting to the database and get info if possible
           # exists=Targets.CreateDBC(target, owner, TargetLogger)
           # if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC exist  2=Target exists
           #  Why add if already there?
@@ -243,7 +243,6 @@ def main(argv):
                     Targets.UpdateColumn(inventoryid, 'status', 'No '+handler+' Connection', TargetLogger)
 
                 TargetLogger.info("Inventory ID: %s Attribute: %s Value: %s" , inventoryid, result_column, result)
-
 
             # Targets.Disconnect(curr_connection)
             Targets.UpdateColumn(inventoryid, "lastcheckdate", str(datetime.now()), TargetLogger)
