@@ -1,4 +1,3 @@
-
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
@@ -47,11 +46,12 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
 
   TargetLogger.debug("Connecting to: %s with %s as %s", HostName, Handler, Owner)
   RC=0
+  curr_connection = ''
 
   if Handler == 'Oracle' :
     try:
         curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, InstanceName+'_'+HostName, encoding="UTF-8")
-        curr_connection.callTimeout(30)
+        curr_connection.callTimeout=60
 
         TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
     except cx_Oracle.DatabaseError as exc:
@@ -60,14 +60,20 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
 
   elif Handler == 'ssh' :
     curr_connection = paramiko.SSHClient()
-    curr_connection.load_system_host_keys()
-    curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    timer = threading.Timer(10,curr_connection.close)
+    timer = threading.Timer(15,curr_connection.close)
     timer.start()    # start counting right before connecting
 
+    # curr_connection.load_system_host_keys(filename="/home/fidBIN/.ssh/bin_auto_rsa" )
+    # curr_connection.load_host_keys( filename="/home/fidBIN/.ssh/bin_auto_rsa" )
+
+
+    curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    private_key = paramiko.RSAKey.from_private_key_file("/home/fidBIN/.ssh/bin_auto_rsa" )
+
+
     try:
-        curr_connection.connect(hostname=HostName, port=22, username=Owner, timeout=15)
+        curr_connection.connect(hostname=HostName, port=22, username=Owner, timeout=30, \
+                                banner_timeout=10, auth_timeout=10, pkey=private_key)
 
     except paramiko.ssh_exception.AuthenticationException:
         TargetLogger.error("Authentication failed, Host: %s    Owner: %s", HostName, Owner)
@@ -119,12 +125,16 @@ sqlOUT"""
 
   except paramiko.ssh_exception.AuthenticationException:
     TargetLogger.error("Authentication failed, Host: %s    Owner: %s", host, owner)
+  except paramiko.TimeoutError:
+    TargetLogger.error("Timeout connecting to Host: %s    Owner: %s", host, owner)
+
 
   else:
     try:
       if owner != '':
         TargetLogger.info("Running %s as %s on %s ", DBC_COMMAND, owner, host)
-        stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, timeout=30, get_pty=True)
+        stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, timeout=30, get_pty=True, \
+                                banner_timeout=10, auth_timeout=10, pkey=private_key)
 
         result_row = stdout.readlines()
         result_err = stderr.readlines()
@@ -276,10 +286,10 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
     # Try a default connection to this target first. Chances are "we know dis".
     RC=GetInfo(target, "select \'1\' from dual", TargetLogger)
 
-  if RC in NoAccess :
-    RC=CreateDBC(target, owner, TargetLogger)
+    if RC in NoAccess :
+      RC=CreateDBC(target, owner, TargetLogger)
 
-  if int(RC) == 1 :
+    if int(RC) == 1 :
       inventoryid=Inventory.GetID(host, instance, TargetLogger)
       if inventoryid > 0:
          TargetLogger.info('Target: %s corresponds to active InventoryID: %s', target, inventoryid )
@@ -290,7 +300,7 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
          RC=1  # Ready to be added to Inventory
 
 
-  else:   # Try making our own TNS String
+    else:   # Try making our own TNS String
        ping_result=os.system('ping %s -4 -c 4 -w 10 >/dev/null ' % (host))     # Ping 4 times or 10 seconds, whichever comes first
 
        if ping_result < 1 :
@@ -302,7 +312,7 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
              try:
                target_dsn = cx_Oracle.makedsn(host, port, service_name=instance)
                connection = cx_Oracle.connect(user=DBC_USER, password=DBC_PWD, dsn=target_dsn)
-               connection.callTimeout(30)
+               connection.callTimeout=60
                timer = threading.Timer(5,connection.cancel)
                timer.start()  # start counting right before connecting to the database
                db_info_cursor = connection.cursor()
@@ -451,7 +461,9 @@ def GetOSInfo(check, connection, TargetLogger):
 
   try:
     TargetLogger.info("Running %s ", check)
-    stdin, stdout, stderr = connection.exec_command(check, timeout=30, get_pty=True)
+    stdin, stdout, stderr = connection.exec_command(check, timeout=30, get_pty=True, \
+                                banner_timeout=10, auth_timeout=10, pkey=private_key)
+
     result_row = stdout.readlines()
     result_err = stderr.readlines()
 
@@ -619,7 +631,7 @@ def Update(InventoryID, host, instance, owner, TARGETTYPE, TargetLogger):
   UpdateColumn(InventoryID, "lastcheckdate", str(datetime.now()), TargetLogger)
   OSConnection.close
 
-  if TARGETTYPE == 'Database':
+  if TARGETTYPE == 'Database' and DBConnection != '' :
     DBConnection.close
 
   return
@@ -674,7 +686,9 @@ def check_os(ID, owner, host, homedir, command, result_column, TargetLogger):
                command = homedir + '/OPatch/' + command
 
             TargetLogger.info("Running %s as %s on %s ", command, owner, host)
-            stdin, stdout, stderr = ssh_connection.exec_command(command, timeout=30, get_pty=True)
+            stdin, stdout, stderr = ssh_connection.exec_command(command, timeout=30, get_pty=True, \
+                                banner_timeout=10, auth_timeout=10, pkey=private_key)
+
 
             result_row = stdout.readlines()
             result_err = stderr.readlines()
