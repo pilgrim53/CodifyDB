@@ -1,10 +1,9 @@
-#!/home/orac4i/Inventory/bin/python
-
+#!/home/fidBIN/inventory/bin/python
 
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
-from datetime     import date          # not included by default
+from datetime     import date,datetime # not included by default
 from decouple     import config        # Allows us to read .env
 from Inv_Logging  import StartLogging  # Allows us to log to a file
 import Targets                         # All target functions
@@ -23,8 +22,8 @@ DBC_USER = config('DBC_USER')
 DBC_PWD  = config('DBC_PWD')
 INV_USER = config('INV_USER')
 INV_PWD  = config('INV_PWD')
-ORACLE_BASE = "/u01/app/oracle"
-ORACLE_HOME = "/u01/app/oracle/product/12.2.0.1"
+ORACLE_BASE = config('ORACLE_BASE')
+ORACLE_HOME = config('ORACLE_HOME')
 TNS_ADMIN   = "/u01/app/oracle/DBTools/"
 CODIFYDB_HOST = config('CODIFYDB_HOST')
 CODIFYDB      = config('CODIFYDB')
@@ -46,12 +45,15 @@ INVENTORYDB   = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host
 # ============================================================================
 def main(argv):
 
+  global CHECKTYPE
+  global TARGETTYPE
+  CHECKTYPE  = 'UPDATE'     # Default to scan / update existing known Targets
+  TARGETTYPE = 'Database'   # Default to database targets
+
   TargetLogger=StartLogging(LogLevel, LogFile, LogName)  # Log to File
   TARGETQUERY='select inventoryid, instancename, owner, homedirectory, hostname, targettype \
                 from public.dbc_target where decommissioned is null '
 
-  global CHECKTYPE
-  CHECKTYPE = 'ADD'   # Default to scan / update existing known Targets
 
   try:
     opts, args = getopt.getopt(argv,":t:v:ah")
@@ -81,37 +83,71 @@ def main(argv):
 
   TARGETQUERY += ' order by inventoryid'
 
-  # ============================================================================
-  # Update existing targets that match the target criteria
-  # ============================================================================
+  CHECKQUERY="select check_command, check_type, result_column, handler from public.checklist \
+               where frequency='"+TARGETTYPE+"' order by handler, priority"
+
+  # Connect to the Inventory DB
+  inventory_conn = psycopg2.connect(INVENTORYDB)
+  target_cursor = inventory_conn.cursor()
+
+  # Get ALL the checks to perform on these targets
+  target_cursor.execute(CHECKQUERY)
+  all_checks = target_cursor.fetchall()
+  TargetLogger.debug("All Checks: %s" , all_checks)
 
   if CHECKTYPE == 'UPDATE' :
-
+     # ============================================================================
+     # Update existing targets that match the target criteria
+     # ============================================================================
     # ============================================================================
     # Fetch all the valid database targets from the InventoryDB and
     # check each one database by database
     # Attempt to query that target and record the results
     # ============================================================================
 
-    # Connect to the Inventory DB
-
-    inventory_conn = psycopg2.connect(INVENTORYDB)
-    target_cursor = inventory_conn.cursor()
-
     # Get ALL the active targets
     target_cursor.execute(TARGETQUERY)
-
     all_targets = target_cursor.fetchall()
+    # TargetLogger.debug("All Targets: %s" , all_targets)
+
 
     inventory_conn.close()
 
-    for InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType in all_targets:
+    ######################################################
+    # * * * *  Main Loop of all in-scope Targets * * * * #
+    ######################################################
+    for inventoryid, instance, owner, homedir, host, TargetType in all_targets:
         result=0
-        TargetLogger.debug("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s TargetType: %s", \
-                        InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType)
+        TargetLogger.debug("inventoryid: %s instance: %s owner: %s homedir: %s HostName: %s TargetType: %s", \
+                        inventoryid, instance, owner, homedir, host, TargetType)
 
-        result=Targets.Update(InventoryID, HostName, InstanceName, TargetType, TargetLogger)
-        TargetLogger.info('Host: %s Instance: %s InventoryID: %s result: %s ', HostName, InstanceName, InventoryID, result)
+        oldHandler = ''
+        ###############################################################################
+        # Sub Loop of All Checks for the Target
+        # Reuse the connection to the target for all similar checks with same handler
+        ###############################################################################
+        for check, check_type, result_column, handler in all_checks:
+            result=''
+            if handler != oldHandler :
+                if oldHandler != '' and curr_connection != '':
+                    # Targets.Disconnect(curr_connection)
+                    curr_connection.close()
+                oldHandler = handler
+                curr_connection=Targets.Connect(host, instance, owner, handler, TargetLogger)
+
+            if curr_connection:  # connection still works
+                result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
+                print ('Result: %s', result)
+                if result :
+                  Targets.UpdateColumn(inventoryid, result_column, result, TargetLogger)
+
+            else:   # connection no longer works
+                Targets.UpdateColumn(inventoryid, 'status', 'No '+handler+' Connection', TargetLogger)
+
+            TargetLogger.info("Inventory ID: %s Attribute: %s Value: %s" , inventoryid, result_column, result)
+
+        # Targets.Disconnect(curr_connection)
+        curr_connection.close()
 
   # ============================================================================
   # Look for and add NEW Targets to the inventory
@@ -131,17 +167,21 @@ def main(argv):
         result="NONE"
         inventoryid=0
         entry=entry.strip()
+        scan_list=entry.split(",")
 
         if TARGETTYPE == "Server":
-          host, owner = entry.split(",")
-          host=host.upper().strip()
-          owner=owner.lower().strip()
+          if len(scan_list) == 2 :
+            host, owner = entry.split(",")
+          else :
+            owner="fidBIN"
+
+          host=entry.upper().strip()
+          owner=owner.strip()
           target=host+"_"+host
           instance=host
           ports='22'
           homedir,exists='',''
         else:
-          scan_list=entry.split(",")
 
           if len(scan_list) > 4 :
             target, owner, homedir, listener, *ports = entry.split(",")
@@ -162,30 +202,57 @@ def main(argv):
             ports=1521, 2349
 
           target=target.upper().strip()
-          owner=owner.lower().strip()
+          owner=owner.strip()
           # host, instance=target.split("_")     # Needed for oracle_discovery.ksh output
           instance, host=target.split("_")
 
         if host > '' and instance > '' :
           TargetLogger.info('Checking target: %s', str(target))
           #  Try connecting to the database and get info if possible
-          for port in ports:
-            if port != '':
-              print('Target: %s Port: ''%s''', target, port)
-              exists=Targets.Scan(target, owner, port, TARGETTYPE, TargetLogger)
-              if exists == 0 and TARGETTYPE == "Database" :  # 0=host exists
-                exists=Targets.CreateDBC(target, owner, TargetLogger)
-                break
-              if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC exist  2=Target exists
-                #  Why add if already there?
-                inventoryid=Targets.Add(host, instance, 'TBD', '0', owner, homedir, exists, port, TARGETTYPE, TargetLogger)
-                if inventoryid > 0 :
-                  result=Targets.Update(inventoryid, host, instance, owner, TARGETTYPE, TargetLogger)
-                  break
-              else:
-                result=Targets.Reject(host, 'ORACLE', instance, exists, owner, homedir, entry, TARGETTYPE, TargetLogger)
+          # exists=Targets.CreateDBC(target, owner, TargetLogger)
+          # if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC exist  2=Target exists
+          #  Why add if already there?
+          inventoryid=Targets.Add(host, instance, 'TBD', '0', owner, homedir, exists, 0, TARGETTYPE, TargetLogger)
+          if inventoryid > 0 :
+            result=0
+            TargetLogger.debug("inventoryid: %s instance: %s owner: %s homedir: %s HostName: %s TargetType: %s", \
+                            inventoryid, instance, owner, homedir, host, TARGETTYPE)
 
-        TargetLogger.info('Host: %s Instance: %s InventoryID: %s results: %s ', host, instance, inventoryid, result)
+            oldHandler = ''
+            ###############################################################################
+            # Sub Loop of All Checks for the Target
+            # Reuse the connection to the target for all similar checks with same handler
+            ###############################################################################
+            for check, check_type, result_column, handler in all_checks:
+                result=''
+                if handler != oldHandler :
+                    if oldHandler != '' and curr_connection != '':
+                        # Targets.Disconnect(curr_connection)
+                        curr_connection.close()
+                    oldHandler = handler
+                    curr_connection=Targets.Connect(host, instance, owner, handler, TargetLogger)
+
+                if curr_connection:  # connection still works
+                    Targets.UpdateColumn(inventoryid, 'status', handler+' Connected', TargetLogger)
+                    result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
+                    print ('Result: %s', result)
+                    if result :
+                      Targets.UpdateColumn(inventoryid, result_column, result, TargetLogger)
+
+                else:   # connection no longer works
+                    Targets.UpdateColumn(inventoryid, 'status', 'No '+handler+' Connection', TargetLogger)
+
+                TargetLogger.info("Inventory ID: %s Attribute: %s Value: %s" , inventoryid, result_column, result)
+
+
+            # Targets.Disconnect(curr_connection)
+            Targets.UpdateColumn(inventoryid, "lastcheckdate", str(datetime.now()), TargetLogger)
+            curr_connection.close()
+
+          else:
+            result=Targets.Reject(host, '', instance, exists, owner, homedir, entry, TARGETTYPE, TargetLogger)
+
+        TargetLogger.info('Host: %s Instance: %s inventoryid: %s results: %s ', host, instance, inventoryid, result)
 
 # ============================================================================
 # END main program
@@ -194,3 +261,4 @@ def main(argv):
 if __name__ == "__main__":
     TargetLogger=StartLogging(LogLevel, LogFile, LogName)    # Log to File
     main(sys.argv[1:])
+    
