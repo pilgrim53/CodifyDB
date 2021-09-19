@@ -27,7 +27,8 @@ INV_PWD  = config('INV_PWD')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
 CODIFYDB      = config('CODIFYDB')
 INVENTORYDB   = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
-ORACLE_HOME="/u01/app/oracle/product/12.2.0.1"
+ORACLE_BASE=config('ORACLE_BASE')
+ORACLE_HOME=config('ORACLE_HOME')
 TNS_ADMIN="/u01/app/oracle/DBTools/"
 target_file="./discovery.txt"
 
