@@ -1,5 +1,4 @@
-#!/home/orac4i/Inventory/bin/python
-
+#!/home/fidBIN/inventory/bin/python
 #    -*- coding: utf-8
 # ============================================================================
 # Copyright (c) 2020 Bell Canada
@@ -66,21 +65,18 @@ import psycopg2
 import sys, getopt               # Allows us to interact with the o/s
 import paramiko                  # Allows us to ssh to the Database Servers
 import threading                 # Allows us to time and kill hung db connections
-from check_os_target import check_os_target  #Allows us to send o/s level checks to target
-from add_result import add_result
 from datetime  import datetime
 from datetime  import date
 from check_oms import CheckOMS   # Allows us to query the OEM Dev instance
 from decouple  import config     # Allows us to read .env
+# ============================================================================
 import Targets
 import Results
-
 # ============================================================================
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
 # ============================================================================
-
 DBC_USER      = config('DBC_USER')
 DBC_PWD       = config('DBC_PWD')
 INV_USER      = config('INV_USER')
@@ -162,7 +158,6 @@ def main(argv):
     # ============================================================================
 
     # Connect to the Inventory DB
-
     inventory_conn = psycopg2.connect(INVENTORYDB)
     target_cursor = inventory_conn.cursor()
 
@@ -175,6 +170,7 @@ def main(argv):
     target_cursor.execute(CHECKQUERY)
     all_checks = target_cursor.fetchall()
     TargetLogger.debug("All Checks: %s" , all_checks)
+    inventory_conn.close()
 
     ######################################################
     # * * * *  Main Loop of all in-scope Targets * * * * #
@@ -192,12 +188,19 @@ def main(argv):
             if handler != oldHandler :
                 if oldHandler != '' and curr_connection != '':
                     # Targets.Disconnect(curr_connection)
-                    curr_connection.close()
+                    try:
+                       curr_connection.close()
+
+                    except cx_Oracle.DatabaseError as exc:
+                      error, = exc.args
+                      TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+
                 oldHandler = handler
 
                 curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
 
             if curr_connection:  # connection still works
+                # timer = threading.Timer(60,curr_connection.cancel)
                 result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
                 print ('Result: %s', result)
                 if result :
@@ -208,8 +211,8 @@ def main(argv):
             TargetLogger.info("Inventory ID: %s Attribute: %s Value: %s" , InventoryID, result_column, result)
 
         # Targets.Disconnect(curr_connection)
-        curr_connection.close()
-    inventory_conn.close()
+        if curr_connection != '':
+          curr_connection.close()
 # ============================================================================
 # END main program
 # ============================================================================
