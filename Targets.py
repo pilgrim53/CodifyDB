@@ -33,13 +33,15 @@ LOG_DIR       = config('LOG_DIR')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
 CODIFYDB      = config('CODIFYDB')
 INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
+NotExist=[12545,12541,12543,12514,12505]
+NoAccess=[1017,1045,1033,15000,28000,28001]
 
 # ============================================================================
 # Function:     connect
 # Description:  Connects to a target using the specified handler
 # Input:        Hostname, InstanceName, Handler
 # Ouptut:       None
-# Returns:      the connection
+# Returns:      Return Code and the connection if successful   1=Success
 # ============================================================================
 
 def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
@@ -52,11 +54,12 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
     try:
         curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, InstanceName+'_'+HostName, encoding="UTF-8")
         curr_connection.callTimeout=60
-
+        RC = 1
         TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
     except cx_Oracle.DatabaseError as exc:
         error, = exc.args
         TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+        RC=error.code
 
   elif Handler == 'ssh' :
     curr_connection = paramiko.SSHClient()
@@ -70,27 +73,32 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
     curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     private_key = paramiko.RSAKey.from_private_key_file("/home/fidBIN/.ssh/bin_auto_rsa" )
 
-
     try:
         curr_connection.connect(hostname=HostName, port=22, username=Owner, timeout=30, \
                                 banner_timeout=10, auth_timeout=10, pkey=private_key)
+                                # banner_timeout=10, auth_timeout=10)
+        RC=1
 
     except paramiko.ssh_exception.AuthenticationException:
         TargetLogger.error("Authentication failed, Host: %s    Owner: %s", HostName, Owner)
+        RC="AuthenticationException"
 
     except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
         TargetLogger.error("Unable to verify server's host key: %s", badHostKeyException)
+        RC="BadHostKeyException"
 
     except    paramiko.ssh_exception.SSHException as sshException:
         TargetLogger.error("Unable to establish SSH connection: %s",    sshException)
+        RC="SSHException"
 
     except Exception as sshException:
         TargetLogger.error("General Exception in os command: %s ",    sshException)
         result='FAILED: general_ssh_exception'
+        RC="sshException"
 
     else: timer.cancel()    # cancel the connection thread if it's still alive after 30 seconds
 
-  return curr_connection
+  return RC, curr_connection
 
 # ============================================================================
 # Function:    CreateDBC
@@ -133,8 +141,8 @@ sqlOUT"""
     try:
       if owner != '':
         TargetLogger.info("Running %s as %s on %s ", DBC_COMMAND, owner, host)
-        stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, timeout=30, get_pty=True, \
-                                banner_timeout=10, auth_timeout=10, pkey=private_key)
+        stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, timeout=30, get_pty=True)
+                                # banner_timeout=10, auth_timeout=10, pkey=private_key)
 
         result_row = stdout.readlines()
         result_err = stderr.readlines()
@@ -207,22 +215,23 @@ def UpdatePassword(target, TargetLogger):
 
 def GetInfo(check, handler, connection, TargetLogger):
   if handler == 'Oracle' :
-    result=GetOracleInfo(check, connection, TargetLogger)
+    rc, result=GetOracleInfo(check, connection, TargetLogger)
   elif handler == 'ssh' :
-    result=GetOSInfo(check, connection, TargetLogger)
-    # result=check_os_target(InventoryID, Owner, HostName, HomeDir, check, result_column, TargetLogger)
+    rc, result=GetOSInfo(check, connection, TargetLogger)
 
-  return result
+  return rc, result
 
 # ============================================================================
-# Function:    GetDBInfo
+# Function:    GetOracleInfo
 # Description: Checks the target database for a single spcific key attribute
 # Returns:     The result of the check query
 #              RC=-1 means could not connect
-#              RC=0 means check failed
+#              RC=0 means the command failed
+#              RC=1 success
 #Future:   Make the check timeout a parameter and setting for each check
 # ============================================================================
 def GetOracleInfo(check, connection, TargetLogger):
+  RC=-1
   timer = threading.Timer(15,connection.cancel)
   db_info_cursor = connection.cursor()
   value=''
@@ -233,6 +242,7 @@ def GetOracleInfo(check, connection, TargetLogger):
     value=db_info_cursor.fetchone()
     if value:
       value=str(value[0]).strip()
+      RC=1
     else:
       value = ''
 
@@ -242,6 +252,8 @@ def GetOracleInfo(check, connection, TargetLogger):
     error, = exc.args
     oraerr=str(error.code)
     TargetLogger.error('GetOracleInfo Error: ORA-%s  Message: %s',  oraerr, str(error))
+    RC=0
+    value=oraerr
 
   timer.cancel()  # cancel the timer before leaving this function
   TargetLogger.info('GetOracleInfo returning Result: %s', str(value))
@@ -274,7 +286,6 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
 
   inventoryid=0
   RC = 0
-  NoAccess=['1017','1045', '1033', '28000', '28001']
 
   # host, instance=target.split('_')    # needed for oracle_discovery.ksh v1.0
   instance, host=target.split('_')
@@ -329,8 +340,7 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
 
                error, = exc.args
                oraerr=str(error.code)
-               NotExist=['12545','12541','12543','12514','12505']
-               NoAccess=['1017','1045', '1033', '28000', '28001']
+
                if oraerr in NotExist :
                  TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
                  TargetLogger.error('TNS Error: Correct the issue or remove from DBList')
@@ -458,16 +468,18 @@ def Add(host, instance, container, DBID, owner, homedir, status, port, TARGETTYP
 def GetOSInfo(check, connection, TargetLogger):
 
   result=''
+  RC=0
 
   try:
     TargetLogger.info("Running %s ", check)
-    stdin, stdout, stderr = connection.exec_command(check, timeout=30, get_pty=True, \
-                                banner_timeout=10, auth_timeout=10, pkey=private_key)
+    stdin, stdout, stderr = connection.exec_command(check, timeout=30, get_pty=True)
+                                # banner_timeout=10, auth_timeout=10, pkey=private_key)
 
     result_row = stdout.readlines()
     result_err = stderr.readlines()
 
     if result_row :
+      RC=1
       result=str(result_row[len(result_row)-1].strip())
       if result=="logout" :
         result=str(result_row[len(result_row)-2].strip())
@@ -475,15 +487,17 @@ def GetOSInfo(check, connection, TargetLogger):
     if result_err :
       TargetLogger.info("OS Check Errors: %s ", result_err )
       result='FAILED: os command failed'
+      RC=-1
 
   except  Exception as sshException:
     TargetLogger.error("Unable to run check: %s Result: %s", check, sshException)
     result='FAILED: os command failed'
+    RC=-1
 
   finally:
     TargetLogger.info("Returning result from OS command: %s ", result )
 
-  return result
+  return RC, result
 
 # ============================================================================
 # END GetOSInfo
@@ -615,14 +629,12 @@ def Update(InventoryID, host, instance, owner, TARGETTYPE, TargetLogger):
           # if (VENDOR == 'ORACLE') or (VENDOR == '%') :
              if "+ASM" not in instance:
                  value=GetOracleInfo(check, DBConnection, TargetLogger)
-                 NotExist=['12545','12541','12543','12514','12505','12154','12170']
-                 NoAccess=['1017','1045', '1033', '28000', '28001']
                  if value in NotExist or value in NoAccess :
                    DBConnnection='FALSE'
                    value = -1
 
       elif check_type == 'OS':
-          value=GetOSInfo(check, OSConnection, TargetLogger)
+          RC, value=GetOSInfo(check, OSConnection, TargetLogger)
 
       if value != -1 :
         COL_RC=UpdateColumn(InventoryID, result_column, value, TargetLogger )
@@ -686,8 +698,8 @@ def check_os(ID, owner, host, homedir, command, result_column, TargetLogger):
                command = homedir + '/OPatch/' + command
 
             TargetLogger.info("Running %s as %s on %s ", command, owner, host)
-            stdin, stdout, stderr = ssh_connection.exec_command(command, timeout=30, get_pty=True, \
-                                banner_timeout=10, auth_timeout=10, pkey=private_key)
+            stdin, stdout, stderr = ssh_connection.exec_command(command, timeout=30, get_pty=True)
+                                # banner_timeout=10, auth_timeout=10, pkey=private_key)
 
 
             result_row = stdout.readlines()
