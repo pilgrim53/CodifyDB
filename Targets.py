@@ -32,6 +32,7 @@ TNS_ADMIN     = config('TNS_ADMIN')
 LOG_DIR       = config('LOG_DIR')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
 CODIFYDB      = config('CODIFYDB')
+PKEY          = config('PKEY')
 INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
 NotExist=[12545,12541,12543,12514,12505]
 NoAccess=[1017,1045,1033,15000,28000,28001]
@@ -66,16 +67,11 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
     timer = threading.Timer(15,curr_connection.close)
     timer.start()    # start counting right before connecting
 
-    # curr_connection.load_system_host_keys(filename="/home/fidBIN/.ssh/bin_auto_rsa" )
-    # curr_connection.load_host_keys( filename="/home/fidBIN/.ssh/bin_auto_rsa" )
-
-
     curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    private_key = paramiko.RSAKey.from_private_key_file("/home/fidBIN/.ssh/bin_auto_rsa" )
+    private_key = paramiko.RSAKey.from_private_key_file(PKEY)
 
     try:
         curr_connection.connect(hostname=HostName, port=22, username=Owner, timeout=30, \
-    #                            banner_timeout=10, auth_timeout=10)
                                 banner_timeout=10, auth_timeout=10, pkey=private_key)
         RC=1
 
