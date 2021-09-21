@@ -75,8 +75,8 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
 
     try:
         curr_connection.connect(hostname=HostName, port=22, username=Owner, timeout=30, \
+    #                            banner_timeout=10, auth_timeout=10)
                                 banner_timeout=10, auth_timeout=10, pkey=private_key)
-                                # banner_timeout=10, auth_timeout=10)
         RC=1
 
     except paramiko.ssh_exception.AuthenticationException:
@@ -253,12 +253,12 @@ def GetOracleInfo(check, connection, TargetLogger):
     oraerr=str(error.code)
     TargetLogger.error('GetOracleInfo Error: ORA-%s  Message: %s',  oraerr, str(error))
     RC=0
-    value=oraerr
+    value=error.code
 
   timer.cancel()  # cancel the timer before leaving this function
   TargetLogger.info('GetOracleInfo returning Result: %s', str(value))
 
-  return str(value)
+  return RC, value
 
 # ============================================================================
 # END GetDBInfo
@@ -295,9 +295,9 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
 
   if TARGETTYPE == 'Database' :
     # Try a default connection to this target first. Chances are "we know dis".
-    RC=GetInfo(target, "select \'1\' from dual", TargetLogger)
+    RC, value=GetInfo(target, "select \'1\' from dual", TargetLogger)
 
-    if RC in NoAccess :
+    if value in NoAccess :
       RC=CreateDBC(target, owner, TargetLogger)
 
     if int(RC) == 1 :
@@ -619,21 +619,23 @@ def Update(InventoryID, host, instance, owner, TARGETTYPE, TargetLogger):
 
   if TARGETTYPE == 'Database':
     # Try connecting to the database and get info if possible
-    DBConnection=Connect(host, instance, owner, 'Oracle', TargetLogger)
+    dbrc, DBConnection=Connect(host, instance, owner, 'Oracle', TargetLogger)
 
-  OSConnection=Connect(host, instance, owner, 'ssh', TargetLogger)
+  osrc, OSConnection=Connect(host, instance, owner, 'ssh', TargetLogger)
+  TargetLogger.info("connection result to Host: %s Result: %s", host, osrc)
 
   for check, check_type, result_column in all_checks:
       value=-1
       if check_type == 'DB' and DBConnection  :
           # if (VENDOR == 'ORACLE') or (VENDOR == '%') :
              if "+ASM" not in instance:
-                 value=GetOracleInfo(check, DBConnection, TargetLogger)
+                 RC, value=GetOracleInfo(check, DBConnection, TargetLogger)
                  if value in NotExist or value in NoAccess :
                    DBConnnection='FALSE'
                    value = -1
 
-      elif check_type == 'OS':
+      elif check_type == 'OS' and OSConnection :
+        if osrc == 1:
           RC, value=GetOSInfo(check, OSConnection, TargetLogger)
 
       if value != -1 :
@@ -641,7 +643,9 @@ def Update(InventoryID, host, instance, owner, TARGETTYPE, TargetLogger):
 
     # Lastly Update the Last Updated Column
   UpdateColumn(InventoryID, "lastcheckdate", str(datetime.now()), TargetLogger)
-  OSConnection.close
+
+  if TARGETTYPE == 'Server' and OSConnection != '' :
+    OSConnection.close
 
   if TARGETTYPE == 'Database' and DBConnection != '' :
     DBConnection.close
