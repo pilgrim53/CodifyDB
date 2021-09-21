@@ -1,4 +1,4 @@
-#!/home/fidBIN/inventory/bin/python
+#!../bin/python
 #    -*- coding: utf-8
 # ============================================================================
 # Copyright (c) 2020 Bell Canada
@@ -188,6 +188,7 @@ def main(argv):
         for check, check_type, result_column, handler in all_checks:
             result=''
             if handler != oldHandler :
+              if oldHandler == 'Oracle' :
                 if RC in Targets.NotExist :
                       Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
                       TargetLogger.debug("Instance %s is unreachable: %s " , InstanceName, RC)
@@ -197,20 +198,26 @@ def main(argv):
                 elif RC == -1 :
                       Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
                       TargetLogger.debug("Instance %s connection failed: %s " , InstanceName, RC)
+              elif oldHandler == 'ssh' :
+                if RC != 1 :
+                      Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
+                      Results.add(InventoryID, RC, 'osaccess', TargetLogger)
+                      TargetLogger.debug("% ssh connection failed: %s " , HostName, RC)
 
-                if oldHandler != '' and curr_connection != '':
-                    try:
-                       curr_connection.close()
-                       RC = 1
 
-                    except cx_Oracle.DatabaseError as exc:
-                      error, = exc.args
-                      TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+              if oldHandler != '' and curr_connection != '':
+                  try:
+                     curr_connection.close()
+                     RC = 1
 
-                oldHandler = handler
+                  except cx_Oracle.DatabaseError as exc:
+                    error, = exc.args
+                    TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
 
-                RC, curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
-                TargetLogger.info("Connecting to Host: %s Instance: %s returned: %s " , HostName, InstanceName, RC )
+              oldHandler = handler
+
+              RC, curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
+              TargetLogger.info("Connecting to Host: %s Instance: %s returned: %s " , HostName, InstanceName, RC )
 
             if RC == 1:  # connection still works
                 # timer = threading.Timer(60,curr_connection.cancel)
