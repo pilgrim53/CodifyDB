@@ -51,7 +51,10 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
   RC=0
   curr_connection = ''
 
-  if Handler == 'Oracle' :
+  if Handler == 'OMS' :
+    TargetLogger.info("Unhandled OMS check for database: %s", InstanceName)
+
+  elif Handler == 'Oracle' :
     try:
         curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, InstanceName+'_'+HostName, encoding="UTF-8")
         curr_connection.callTimeout=60
@@ -61,11 +64,13 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
         error, = exc.args
         TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
         RC=error.code
+        if curr_connection :
+          curr_connection.close()
 
   elif Handler == 'ssh' :
     curr_connection = paramiko.SSHClient()
-    timer = threading.Timer(15,curr_connection.close)
-    timer.start()    # start counting right before connecting
+    timer = threading.Timer(35,curr_connection.close)
+    timer.start()    # start counting right before connecting - wait longer than the longest ssh timeout value
 
     curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     private_key = paramiko.RSAKey.from_private_key_file(PKEY)
@@ -78,19 +83,27 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
     except paramiko.ssh_exception.AuthenticationException:
         TargetLogger.error("Authentication failed, Host: %s    Owner: %s", HostName, Owner)
         RC="AuthenticationException"
+        if curr_connection != '' :
+          curr_connection.close()
 
     except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
         TargetLogger.error("Unable to verify server's host key: %s", badHostKeyException)
         RC="BadHostKeyException"
+        if curr_connection != '' :
+          curr_connection.close()
 
     except    paramiko.ssh_exception.SSHException as sshException:
         TargetLogger.error("Unable to establish SSH connection: %s",    sshException)
         RC="SSHException"
+        if curr_connection != '' :
+          curr_connection.close()
 
     except Exception as sshException:
         TargetLogger.error("General Exception in os command: %s ",    sshException)
         result='FAILED: general_ssh_exception'
         RC="sshException"
+        if curr_connection != '' :
+          curr_connection.close()
 
     else: timer.cancel()    # cancel the connection thread if it's still alive after 30 seconds
 
@@ -138,7 +151,6 @@ sqlOUT"""
       if owner != '':
         TargetLogger.info("Running %s as %s on %s ", DBC_COMMAND, owner, host)
         stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, timeout=30, get_pty=True)
-                                # banner_timeout=10, auth_timeout=10, pkey=private_key)
 
         result_row = stdout.readlines()
         result_err = stderr.readlines()
@@ -202,6 +214,7 @@ def UpdatePassword(target, TargetLogger):
         oraerr=str(error.code)
         TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
         value=-1
+        connection.close()   # All done
 
     return value
 
@@ -469,7 +482,6 @@ def GetOSInfo(check, connection, TargetLogger):
   try:
     TargetLogger.info("Running %s ", check)
     stdin, stdout, stderr = connection.exec_command(check, timeout=30, get_pty=True)
-                                # banner_timeout=10, auth_timeout=10, pkey=private_key)
 
     result_row = stdout.readlines()
     result_err = stderr.readlines()
@@ -622,7 +634,7 @@ def Update(InventoryID, host, instance, owner, TARGETTYPE, TargetLogger):
 
   for check, check_type, result_column in all_checks:
       value=-1
-      if check_type == 'DB' and DBConnection  :
+      if check_type == 'DB' and DBConnection != '' :
           # if (VENDOR == 'ORACLE') or (VENDOR == '%') :
              if "+ASM" not in instance:
                  RC, value=GetOracleInfo(check, DBConnection, TargetLogger)
@@ -699,8 +711,6 @@ def check_os(ID, owner, host, homedir, command, result_column, TargetLogger):
 
             TargetLogger.info("Running %s as %s on %s ", command, owner, host)
             stdin, stdout, stderr = ssh_connection.exec_command(command, timeout=30, get_pty=True)
-                                # banner_timeout=10, auth_timeout=10, pkey=private_key)
-
 
             result_row = stdout.readlines()
             result_err = stderr.readlines()
