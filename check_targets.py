@@ -1,4 +1,3 @@
-#!../bin/python
 #    -*- coding: utf-8
 # ============================================================================
 # Copyright (c) 2020 Bell Canada
@@ -124,14 +123,14 @@ def main(argv):
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt,arg))
         if opt == '-h':
-            print ('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
+            print ('check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] ')
             sys.exit()
 
         elif opt == "-t" :
             TARGETTYPE = arg
             if TARGETTYPE == 'Server' :
               CHECKTYPE='OS'
-              CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
+              CHECKQUERY += ' and vendor != \'ORACLE\' and check_type = \'' + CHECKTYPE + '\''
             elif opt == "-c":
               CHECKTYPE = arg
               CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
@@ -139,12 +138,13 @@ def main(argv):
         elif opt== "-v":
             VENDOR = arg
             CHECKQUERY += ' and vendor = \'' + VENDOR + '\''
+            TARGETQUERY += ' and split_part(upper(os),' ',1) =  \'' + VENDOR + '\''
 
         elif opt =="-f":
             FREQUENCY = arg
 
 
-    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\' order by priority, handler'
+    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\'  order by priority, handler'
     TARGETQUERY += ' and targettype = \'' + TARGETTYPE + '\' order by inventoryid'
 
     TargetLogger.info("Running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
@@ -234,6 +234,12 @@ def main(argv):
         # Targets.Disconnect(curr_connection)
         if curr_connection != '':
           curr_connection.close()
+
+
+    TargetLogger.info("Completed running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", \
+                       TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
+    TargetLogger.info("====================================================================================")
+
 # ============================================================================
 # END main program
 # ============================================================================
