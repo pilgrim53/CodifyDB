@@ -190,6 +190,7 @@ def main(argv):
             if handler != oldHandler :
               if oldHandler == 'Oracle' :
                 if RC in Targets.NotExist :
+                      Results.add(InventoryID, RC, 'dbcaccess', TargetLogger)
                       Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
                       TargetLogger.debug("Instance %s is unreachable: %s " , InstanceName, RC)
                 elif RC in Targets.NoAccess :
