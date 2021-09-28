@@ -34,7 +34,7 @@ CODIFYDB_HOST = config('CODIFYDB_HOST')
 CODIFYDB      = config('CODIFYDB')
 PKEY          = config('PKEY')
 INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
-NotExist=[12545,12541,12543,12514,12505]
+NotExist=[12154,12521,12545,12541,12543,12514,12505,12547,28860]
 NoAccess=[1017,1045,1033,15000,28000,28001]
 
 # ============================================================================
@@ -57,7 +57,7 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
   elif Handler == 'Oracle' :
     try:
         curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, InstanceName+'_'+HostName, encoding="UTF-8")
-        curr_connection.callTimeout=60
+        curr_connection.callTimeout=600
         RC = 1
         TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
     except cx_Oracle.DatabaseError as exc:
@@ -66,6 +66,7 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
         RC=error.code
         if curr_connection :
           curr_connection.close()
+          curr_connection = ''
 
   elif Handler == 'ssh' :
     curr_connection = paramiko.SSHClient()
@@ -85,18 +86,21 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
         RC="AuthenticationException"
         if curr_connection != '' :
           curr_connection.close()
+          curr_connection = ''
 
     except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
         TargetLogger.error("Unable to verify server's host key: %s", badHostKeyException)
         RC="BadHostKeyException"
         if curr_connection != '' :
           curr_connection.close()
+          curr_connection = ''
 
     except    paramiko.ssh_exception.SSHException as sshException:
         TargetLogger.error("Unable to establish SSH connection: %s",    sshException)
         RC="SSHException"
         if curr_connection != '' :
           curr_connection.close()
+          curr_connection = ''
 
     except Exception as sshException:
         TargetLogger.error("General Exception in os command: %s ",    sshException)
@@ -104,6 +108,7 @@ def Connect(HostName, InstanceName, Owner, Handler, TargetLogger):
         RC="sshException"
         if curr_connection != '' :
           curr_connection.close()
+          curr_connection = ''
 
     else: timer.cancel()    # cancel the connection thread if it's still alive after 30 seconds
 
@@ -241,7 +246,7 @@ def GetInfo(check, handler, connection, TargetLogger):
 # ============================================================================
 def GetOracleInfo(check, connection, TargetLogger):
   RC=-1
-  timer = threading.Timer(15,connection.cancel)
+  timer = threading.Timer(45,connection.cancel())
   db_info_cursor = connection.cursor()
   value=''
 
@@ -258,6 +263,13 @@ def GetOracleInfo(check, connection, TargetLogger):
   except cx_Oracle.DatabaseError as exc:
   # Now Handle all the things that could go wrong with this request
   # If there was a database error, return it as the value
+    error, = exc.args
+    oraerr=str(error.code)
+    TargetLogger.error('GetOracleInfo Error: ORA-%s  Message: %s',  oraerr, str(error))
+    RC=0
+    value=error.code
+
+  except cx_Oracle.OperationalError as exc:
     error, = exc.args
     oraerr=str(error.code)
     TargetLogger.error('GetOracleInfo Error: ORA-%s  Message: %s',  oraerr, str(error))
@@ -332,7 +344,7 @@ def Scan(target, owner, port, TARGETTYPE, TargetLogger):
              try:
                target_dsn = cx_Oracle.makedsn(host, port, service_name=instance)
                connection = cx_Oracle.connect(user=DBC_USER, password=DBC_PWD, dsn=target_dsn)
-               connection.callTimeout=60
+               connection.callTimeout=600
                timer = threading.Timer(5,connection.cancel)
                timer.start()  # start counting right before connecting to the database
                db_info_cursor = connection.cursor()
