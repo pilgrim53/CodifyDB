@@ -32,9 +32,7 @@ INVENTORYDB   = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host
 
 # ============================================================================
 # ============================================================================
-# ============================================================================
 # ---------------------------   MAIN PROGRAM   -------------------------------
-# ============================================================================
 # ============================================================================
 # ============================================================================
 # Function:     scan_target
@@ -132,11 +130,11 @@ def main(argv):
                     # Targets.Disconnect(curr_connection)
                     curr_connection.close()
                 oldHandler = handler
-                curr_connection=Targets.Connect(host, instance, owner, handler, TargetLogger)
+                rc, curr_connection=Targets.Connect(host, instance, owner, handler, TargetLogger)
 
 
             if curr_connection:  # connection still works
-                result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
+                rc, result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
                 print ('Result: %s', result)
                 if result :
                   Targets.UpdateColumn(inventoryid, result_column, result, TargetLogger)
@@ -230,11 +228,11 @@ def main(argv):
                         # Targets.Disconnect(curr_connection)
                         curr_connection.close()
                     oldHandler = handler
-                    curr_connection=Targets.Connect(host, instance, owner, handler, TargetLogger)
+                    rc, curr_connection=Targets.Connect(host, instance, owner, handler, TargetLogger)
 
                 if curr_connection:  # connection still works
                     Targets.UpdateColumn(inventoryid, 'status', handler+' Connected', TargetLogger)
-                    result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
+                    rc, result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
                     print ('Result: %s', result)
                     if result :
                       Targets.UpdateColumn(inventoryid, result_column, result, TargetLogger)
@@ -246,7 +244,8 @@ def main(argv):
 
             # Targets.Disconnect(curr_connection)
             Targets.UpdateColumn(inventoryid, "lastcheckdate", str(datetime.now()), TargetLogger)
-            curr_connection.close()
+            if curr_connection != '':
+              curr_connection.close()
 
           else:
             result=Targets.Reject(host, '', instance, exists, owner, homedir, entry, TARGETTYPE, TargetLogger)
@@ -260,4 +259,3 @@ def main(argv):
 if __name__ == "__main__":
     TargetLogger=StartLogging(LogLevel, LogFile, LogName)    # Log to File
     main(sys.argv[1:])
-    
