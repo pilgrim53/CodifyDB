@@ -178,64 +178,47 @@ def main(argv):
     for InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType in all_targets:
         TargetLogger.debug("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s TargetType: %s " , \
                           InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType)
-        oldHandler = ''
-        RC=1
 
         ###############################################################################
         # Sub Loop of All Checks for the Target
         # Reuse the connection to the target for all similar checks with same handler
         ###############################################################################
+        oldHandler = ''
+        RC=1
+        connected = 'FALSE'
+        
         for check, check_type, result_column, handler in all_checks:
             result=''
             if handler != oldHandler :
-              if oldHandler == 'Oracle' :
-                if RC in Targets.NotExist :
-                      Results.add(InventoryID, RC, 'dbcaccess', TargetLogger)
-                      Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
-                      TargetLogger.debug("Instance %s is unreachable: %s " , InstanceName, RC)
-                elif RC in Targets.NoAccess :
-                      Results.add(InventoryID, RC, 'dbcaccess', TargetLogger)
-                      TargetLogger.debug("No Access to Instance %s  %s" , InstanceName,  RC)
-                elif RC == -1 :
-                      Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
-                      TargetLogger.debug("Instance %s connection failed: %s " , InstanceName, RC)
-              elif oldHandler == 'ssh' :
-                if RC != 1 :
-                      Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
-                      Results.add(InventoryID, RC, 'osaccess', TargetLogger)
-                      TargetLogger.debug("% ssh connection failed: %s " , HostName, RC)
-
-
-              if oldHandler != '' and curr_connection != '':
-                  try:
+                oldHandler = handler
+                if connected :
+                   try:
+                     connected == 'FALSE'
                      curr_connection.close()
-                     RC = 1
+                   except cx_Oracle.DatabaseError as exc:
+                     error, = exc.args
+                     TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+                   
+                RC, curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
+                TargetLogger.info("Connecting to Host: %s Instance: %s returned: %s " , HostName, InstanceName, RC )
+                if RC != 1 :
+                    Results.add(InventoryID, handler+':'+RC, 'access', TargetLogger)
+                    TargetLogger.debug("% connection failed to Host: %s Instance: %s Error: %s", handler, HostName, InstanceName, RC)
+                    connected == 'FALSE'
+                else :
+                    connected == 'TRUE'
 
-                  except cx_Oracle.DatabaseError as exc:
-                    error, = exc.args
-                    TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-
-              oldHandler = handler
-
-              RC, curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
-              TargetLogger.info("Connecting to Host: %s Instance: %s returned: %s " , HostName, InstanceName, RC )
-
-            if RC == 1:  # connection still works
-                # timer = threading.Timer(60,curr_connection.cancel)
+            if connected : 
                 info_rc, result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
                 TargetLogger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s" , InventoryID, result_column, result, info_rc)
                 if info_rc == 1 :
                     Results.add(InventoryID, result, result_column, TargetLogger)
                 else:   # connection no longer works
-                  TargetLogger.debug("Check %s returned: %s ", check, info_rc )
-
-
-            TargetLogger.info("Inventory ID: %s Attribute: %s Value: %s" , InventoryID, result_column, result)
+                  TargetLogger.debug("Check %s RC: %s returned: %s ", check, info_rc, result )
 
         # Targets.Disconnect(curr_connection)
         if curr_connection != '':
           curr_connection.close()
-
 
     TargetLogger.info("Completed running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", \
                        TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
