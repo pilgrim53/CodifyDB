@@ -1,25 +1,26 @@
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
-import logging            # https://docs.python.org/3/library/logging.html
+import logging  # https://docs.python.org/3/library/logging.html
+
 
 # ============================================================================
 # Define Functions
 # ============================================================================
 
-def StartLogging(Log_Level, Log_File, Log_Name):
-    logging.basicConfig(filename=Log_File, level=Log_Level)
+def start_logging(log_level, log_file, log_name):
+    logging.basicConfig(filename=log_file, level=log_level)
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-    TargetLogger=logging.getLogger(Log_Name)
-    TargetLogger.setLevel(Log_Level)
+    target_logger = logging.getLogger(log_name)
+    target_logger.setLevel(log_level)
 
     # Create a console handler
     ch = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     ch.setFormatter(formatter)
-    TargetLogger.addHandler(ch)
+    target_logger.addHandler(ch)
 
-    return TargetLogger
+    return target_logger
     # End StartLogging
 
 # ============================================================================

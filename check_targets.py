@@ -58,39 +58,41 @@
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
-from Inv_Logging import StartLogging
+from Inv_Logging import start_logging
 import cx_Oracle
 import psycopg2
-import sys, getopt               # Allows us to interact with the o/s
-import paramiko                  # Allows us to ssh to the Database Servers
-import threading                 # Allows us to time and kill hung db connections
-from datetime  import datetime
-from datetime  import date
-from check_oms import CheckOMS   # Allows us to query the OEM Dev instance
-from decouple  import config     # Allows us to read .env
+import sys, getopt  # Allows us to interact with the o/s
+import paramiko  # Allows us to ssh to the Database Servers
+import threading  # Allows us to time and kill hung db connections
+from datetime import datetime
+from datetime import date
+from check_oms import CheckOMS  # Allows us to query the OEM Dev instance
+from decouple import config  # Allows us to read .env
 # ============================================================================
 import Targets
 import Results
+
 # ============================================================================
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
 # ============================================================================
-DBC_USER      = config('DBC_USER')
-DBC_PWD       = config('DBC_PWD')
-INV_USER      = config('INV_USER')
-INV_PWD       = config('INV_PWD')
-ORACLE_BASE   = config('ORACLE_BASE')
-ORACLE_HOME   = config('ORACLE_HOME')
-TNS_ADMIN     = config('TNS_ADMIN')
-LOG_DIR       = config('LOG_DIR')
+DBC_USER = config('DBC_USER')
+DBC_PWD = config('DBC_PWD')
+INV_USER = config('INV_USER')
+INV_PWD = config('INV_PWD')
+ORACLE_BASE = config('ORACLE_BASE')
+ORACLE_HOME = config('ORACLE_HOME')
+TNS_ADMIN = config('TNS_ADMIN')
+LOG_DIR = config('LOG_DIR')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
-CODIFYDB      = config('CODIFYDB')
-INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
+CODIFYDB = config('CODIFYDB')
+INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
 
-GlobalLogName = "Check_Targets"
-GlobalLogFile = LOG_DIR+GlobalLogName+"_"+str(date.today())+".log"
-GlobalLogLevel = 'DEBUG'
+GLOBAL_LOG_NAME = "Check_Targets"
+GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
+GLOBAL_LOG_LEVEL = 'DEBUG'
+
 
 # ============================================================================
 # ============================================================================
@@ -98,58 +100,60 @@ GlobalLogLevel = 'DEBUG'
 # ============================================================================
 # ============================================================================
 def main(argv):
-    global VENDOR
-    global FREQUENCY
-    global CHECKTYPE
-    global TARGETTYPE
-    VENDOR = '%'
-    FREQUENCY = 'HOURLY'    # Default to the hourly checks if not specified
-    CHECKTYPE = '%'
-    TARGETTYPE = 'Database'  # Default to Database right now for development
+    global vendor
+    global frequency
+    global check_type
+    global target_type
+    vendor = '%'
+    frequency = 'HOURLY'  # Default to the hourly checks if not specified
+    check_type = '%'
+    target_type = 'Database'  # Default to Database right now for development
 
-    CHECKQUERY='select check_command, check_type, result_column, handler from public.checklist where 1=1 '
-    TARGETQUERY='select inventoryid, instancename, owner, homedirectory, hostname, targettype from public.dbc_target where decommissioned is null '
+    check_query = 'select check_command, check_type, result_column, handler from public.checklist where 1=1 '
+    target_query = 'select InventoryID, instance_name, owner, home_directory, hostname, target_type from ' \
+                   'public.dbc_target where decommissioned is null '
 
     try:
-        opts, args = getopt.getopt(argv,":t:c:v:f:h")
+        opts, args = getopt.getopt(argv, ":t:c:v:f:h")
 
     except getopt.GetoptError:
-        print ('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
+        print('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
         sys.exit(2)
 
     print("All Options passed: {}".format(opts))
     print("All arguments passed: {}".format(args))
 
     for opt, arg in opts:
-        print("Option: {} Argument: {}".format(opt,arg))
+        print("Option: {} Argument: {}".format(opt, arg))
         if opt == '-h':
-            print ('check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] ')
+            print(
+                'check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] ')
             sys.exit()
 
-        elif opt == "-t" :
-            TARGETTYPE = arg
-            if TARGETTYPE == 'Server' :
-              CHECKTYPE='OS'
-              CHECKQUERY += ' and vendor != \'ORACLE\' and check_type = \'' + CHECKTYPE + '\''
+        elif opt == "-t":
+            target_type = arg
+            if target_type == 'Server':
+                check_type = 'OS'
+                check_query += ' and vendor != \'ORACLE\' and check_type = \'' + check_type + '\''
             elif opt == "-c":
-              CHECKTYPE = arg
-              CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
+                check_type = arg
+                check_query += ' and check_type = \'' + check_type + '\''
 
-        elif opt== "-v":
-            VENDOR = arg
-            CHECKQUERY += ' and vendor = \'' + VENDOR + '\''
-            TARGETQUERY += ' and split_part(upper(os),' ',1) =  \'' + VENDOR + '\''
+        elif opt == "-v":
+            vendor = arg
+            check_query += ' and vendor = \'' + vendor + '\''
+            target_query += ' and split_part(upper(os),' ',1) =  \'' + vendor + '\''
 
-        elif opt =="-f":
-            FREQUENCY = arg
+        elif opt == "-f":
+            frequency = arg
 
+    check_query += ' and frequency = \'' + frequency + '\'  order by priority, handler'
+    target_query += ' and target_type = \'' + target_type + '\' order by InventoryID'
 
-    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\'  order by priority, handler'
-    TARGETQUERY += ' and targettype = \'' + TARGETTYPE + '\' order by inventoryid'
-
-    TargetLogger.info("Running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
-    TargetLogger.debug("Check Query: %s", CHECKQUERY)
-    TargetLogger.debug("Target Query: %s", TARGETQUERY)
+    target_logger.info("Running CheckTargets.py with target_type=%s vendor=%s frequency=%s check_type=%s", target_type,
+                       vendor, frequency, check_type)
+    target_logger.debug("Check Query: %s", check_query)
+    target_logger.debug("Target Query: %s", target_query)
 
     # ============================================================================
     # Fetch all the valid database targets from the InventoryDB and
@@ -162,89 +166,88 @@ def main(argv):
     target_cursor = inventory_conn.cursor()
 
     # Get ALL the active targets
-    target_cursor.execute(TARGETQUERY)
+    target_cursor.execute(target_query)
     all_targets = target_cursor.fetchall()
-    TargetLogger.debug("# of Targets: %s" , len(all_targets))
+    target_logger.debug("# of Targets: %s", len(all_targets))
 
     # Get ALL the checks to perform on these targets
-    target_cursor.execute(CHECKQUERY)
+    target_cursor.execute(check_query)
     all_checks = target_cursor.fetchall()
-    TargetLogger.debug("All Checks: %s" , all_checks)
+    target_logger.debug("All Checks: %s", all_checks)
     inventory_conn.close()
 
     ######################################################
     # * * * *  Main Loop of all in-scope Targets * * * * #
     ######################################################
-    for InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType in all_targets:
-        TargetLogger.debug("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s TargetType: %s " , \
-                          InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType)
-        oldHandler = ''
-        RC=1
+    for inventory_id, instance_name, owner, home_dir, host_name, target_type in all_targets:
+        target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s host_name: %s target_type: %s ",
+                            inventory_id, instance_name, owner, home_dir, host_name, target_type)
+        old_handler = ''
+        rc = 1
 
         ###############################################################################
         # Sub Loop of All Checks for the Target
         # Reuse the connection to the target for all similar checks with same handler
         ###############################################################################
         for check, check_type, result_column, handler in all_checks:
-            result=''
-            if handler != oldHandler :
-              if oldHandler == 'Oracle' :
-                if RC in Targets.NotExist :
-                      Results.add(InventoryID, RC, 'dbcaccess', TargetLogger)
-                      Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
-                      TargetLogger.debug("Instance %s is unreachable: %s " , InstanceName, RC)
-                elif RC in Targets.NoAccess :
-                      Results.add(InventoryID, RC, 'dbcaccess', TargetLogger)
-                      TargetLogger.debug("No Access to Instance %s  %s" , InstanceName,  RC)
-                elif RC == -1 :
-                      Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
-                      TargetLogger.debug("Instance %s connection failed: %s " , InstanceName, RC)
-              elif oldHandler == 'ssh' :
-                if RC != 1 :
-                      Targets.UpdateColumn(InventoryID, 'status', RC, TargetLogger)
-                      Results.add(InventoryID, RC, 'osaccess', TargetLogger)
-                      TargetLogger.debug("% ssh connection failed: %s " , HostName, RC)
+            result = ''
+            if handler != old_handler:
+                if old_handler == 'Oracle':
+                    if rc in Targets.NOT_EXIST:
+                        Results.add(inventory_id, rc, 'dbcaccess', target_logger)
+                        Targets.update_column(inventory_id, 'status', rc, target_logger)
+                        target_logger.debug("Instance %s is unreachable: %s ", instance_name, rc)
+                    elif rc in Targets.NO_ACCESS:
+                        Results.add(inventory_id, rc, 'dbcaccess', target_logger)
+                        target_logger.debug("No access to instance %s  %s", instance_name, rc)
+                    elif rc == -1:
+                        Targets.update_column(inventory_id, 'status', rc, target_logger)
+                        target_logger.debug("Instance %s connection failed: %s ", instance_name, rc)
+                elif old_handler == 'ssh':
+                    if rc != 1:
+                        Targets.update_column(inventory_id, 'status', rc, target_logger)
+                        Results.add(inventory_id, rc, 'osaccess', target_logger)
+                        target_logger.debug("% ssh connection failed: %s ", host_name, rc)
 
+                if old_handler != '' and curr_connection != '':
+                    try:
+                        curr_connection.close()
+                        rc = 1
 
-              if oldHandler != '' and curr_connection != '':
-                  try:
-                     curr_connection.close()
-                     RC = 1
+                    except cx_Oracle.DatabaseError as exc:
+                        error, = exc.args
+                        target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
 
-                  except cx_Oracle.DatabaseError as exc:
-                    error, = exc.args
-                    TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+                old_handler = handler
 
-              oldHandler = handler
+                rc, curr_connection = Targets.connect(host_name, instance_name, owner, handler, target_logger)
+                target_logger.info("Connecting to Host: %s Instance: %s Returned: %s ", host_name, instance_name, rc)
 
-              RC, curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
-              TargetLogger.info("Connecting to Host: %s Instance: %s returned: %s " , HostName, InstanceName, RC )
-
-            if RC == 1:  # connection still works
+            if rc == 1:  # connection still works
                 # timer = threading.Timer(60,curr_connection.cancel)
-                info_rc, result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
-                TargetLogger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s" , InventoryID, result_column, result, info_rc)
-                if info_rc == 1 :
-                    Results.add(InventoryID, result, result_column, TargetLogger)
-                else:   # connection no longer works
-                  TargetLogger.debug("Check %s returned: %s ", check, info_rc )
+                info_rc, result = Targets.get_info(check, handler, curr_connection, target_logger)
+                target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
+                                    result, info_rc)
+                if info_rc == 1:
+                    Results.add(inventory_id, result, result_column, target_logger)
+                else:  # connection no longer works
+                    target_logger.debug("Check %s returned: %s ", check, info_rc)
 
-
-            TargetLogger.info("Inventory ID: %s Attribute: %s Value: %s" , InventoryID, result_column, result)
+            target_logger.info("Inventory ID: %s Attribute: %s Value: %s", inventory_id, result_column, result)
 
         # Targets.Disconnect(curr_connection)
         if curr_connection != '':
-          curr_connection.close()
+            curr_connection.close()
 
+    target_logger.info("Completed running CheckTargets.py with TARGET_TYPE=%s VENDOR=%s FREQUENCY=%s CHECK_TYPE=%s", \
+                       target_type, vendor, frequency, check_type)
+    target_logger.info("====================================================================================")
 
-    TargetLogger.info("Completed running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", \
-                       TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
-    TargetLogger.info("====================================================================================")
 
 # ============================================================================
 # END main program
 # ============================================================================
 
 if __name__ == "__main__":
-    TargetLogger=StartLogging(GlobalLogLevel, GlobalLogFile, GlobalLogName)    # Log to File
+    target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)  # Log to File
     main(sys.argv[1:])

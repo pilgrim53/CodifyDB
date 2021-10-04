@@ -49,46 +49,50 @@
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
-import paramiko           # Allows us to ssh to the target hosts
-import cx_Oracle          # https://oracle.github.io/python-cx_Oracle/
-import psycopg2           # https://pypi.org/project/psycopg2/
-import psycopg2.extras    # This gives access to the psycopg2 error messages
-import sys                # for some reason this is not included by default
-import logging            # https://docs.python.org/3/library/logging.html
-import threading          # Allows us to time and kill hung db connections
+import paramiko  # Allows us to ssh to the target hosts
+import cx_Oracle  # https://oracle.github.io/python-cx_Oracle/
+import psycopg2  # https://pypi.org/project/psycopg2/
+import psycopg2.extras  # This gives access to the psycopg2 error messages
+import sys  # for some reason this is not included by default
+import logging  # https://docs.python.org/3/library/logging.html
+import threading  # Allows us to time and kill hung db connections
 # from numpy import asarray # convert sql result tuples to python arrays
-from datetime import date # for some reason this is not included by default
+from datetime import date  # for some reason this is not included by default
+
 # ============================================================================
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
 # ============================================================================
-ORACLE_HOME="/u01/app/oracle/product/12.2.0.1"
-TNS_ADMIN="/u01/app/oracle/DBTools/"
-Log_File="/home/orac4i/Inventory/src/logs/check_sqlpatch_"+str(date.today())+".log"
-LogLevel="DEBUG"
+ORACLE_HOME = "/u01/app/oracle/product/12.2.0.1"
+TNS_ADMIN = "/u01/app/oracle/DBTools/"
+LOG_FILE = "/home/orac4i/Inventory/src/logs/check_sqlpatch_" + str(date.today()) + ".log"
+LOG_LEVEL = "DEBUG"
+
+
 # ============================================================================
 
 # ============================================================================
 # Define Functions
 # ============================================================================
 
-def StartLogging(LogLevel, Log_File):
-    logging.basicConfig(filename=Log_File, level=logging.DEBUG)
+
+def start_logging(log_level, log_file):
+    logging.basicConfig(filename=log_file, level=logging.DEBUG)
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-    TargetLogger=logging.getLogger('Check_Patch')
-    TargetLogger.setLevel(logging.DEBUG)
+    target_logger = logging.getLogger('Check_Patch')
+    target_logger.setLevel(logging.DEBUG)
 
     # Create a console handler
     ch = logging.StreamHandler()
-    #ch.setLevel(logging.LogLevel)
+    # ch.setLevel(logging.LogLevel)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     ch.setFormatter(formatter)
-    TargetLogger.addHandler(ch)
+    target_logger.addHandler(ch)
 
-
-    return TargetLogger
+    return target_logger
     # End StartLogging
+
 
 # ============================================================================
 # Logging examples
@@ -106,27 +110,27 @@ def StartLogging(LogLevel, Log_File):
 # Input:       Takes target in the format of host_instance
 # Ouptut:      Returns a "Y/N" result 
 # ============================================================================
-def CheckPatch(target):
-  # Set some initial values each time we do a check
-  Patch='Unknown'  # Set to Unknown until it is known
+def check_patch(target):
+    # Set some initial values each time we do a check
+    patch = 'Unknown'  # Set to Unknown until it is known
 
-  if "+ASM" in target:
-     # TargetLogger.info('ASM Instance found: %s', str(target))
-     a=1
-     # Build connection to
-     # return NewTarget, TargetRow
-  else:
-    Instance, Host=target.split('_')
-    TargetLogger.info('Check Patch on Target:  %s ', str(target))
+    if "+ASM" in target:
+        # TargetLogger.info('ASM Instance found: %s', str(target))
+        a = 1
+        # Build connection to
+        # return NewTarget, TargetRow
+    else:
+        instance, host = target.split('_')
+        TargetLogger.info('Check Patch on Target:  %s ', str(target))
 
-    try:
-      connection = cx_Oracle.connect("Cloud_DBC", "DBC#4Cloud2", target, encoding="UTF-8")
-      # lets allow 45 seconds per database to collect what we want
-      timer = threading.Timer(45,connection.cancel)
-      timer.start()  # start counting right before connecting to the database
+        try:
+            connection = cx_Oracle.connect("Cloud_DBC", "DBC#4Cloud2", target, encoding="UTF-8")
+            # lets allow 45 seconds per database to collect what we want
+            timer = threading.Timer(45, connection.cancel)
+            timer.start()  # start counting right before connecting to the database
 
-      db_info_cursor = connection.cursor()
-      plsql_stmt="""
+            db_info_cursor = connection.cursor()
+            plsql_stmt = """
 begin
 declare 
   ver number(2);
@@ -179,29 +183,29 @@ begin
 end;
 end;"""
 
-      db_info_cursor.execute(plsql_stmt)
-      # Patch = db_info_cursor.fetchone()
+            db_info_cursor.execute(plsql_stmt)
+            # Patch = db_info_cursor.fetchone()
 
-    except (OSError, ValueError, RuntimeError, TypeError, NameError) as exc:
-      error, = exc.args
-      Patch=('FAILED')
-      TargetLogger.error('Error:  %s ', error)
+        except (OSError, ValueError, RuntimeError, TypeError, NameError) as exc:
+            error, = exc.args
+            patch = 'FAILED'
+            TargetLogger.error('Error:  %s ', error)
 
-    except cx_Oracle.DatabaseError as exc:
-      error, = exc.args
-      Patch=('FAILED')
-      TargetLogger.error('DatabaseError-Code:  %s %s ', error.code, error.message)
+        except cx_Oracle.DatabaseError as exc:
+            error, = exc.args
+            patch = 'FAILED'
+            TargetLogger.error('DatabaseError-Code:  %s %s ', error.code, error.message)
 
-    except:
-      TargetLogger.error('Failed to check Patch:  %s %s ', str(target), str(Patch))
-      Patch=('FAILED')
+        except:
+            TargetLogger.error('Failed to check Patch:  %s %s ', str(target), str(patch))
+            patch = 'FAILED'
+
+        # finally:
+        #  connection.close()
+
+    return patch[0]
 
 
-    #finally:
-    #  connection.close()
-               
-
-  return Patch[0]
 # ============================================================================
 # END CheckPatch
 # ============================================================================
@@ -214,47 +218,43 @@ end;"""
 
 if __name__ == '__main__':
 
-  TargetLogger=StartLogging(LogLevel, Log_File)  # Log to File
+    TargetLogger = start_logging(LOG_LEVEL, LOG_FILE)  # Log to File
 
-  # ============================================================================
-  # Fetch all the valid database targets from the InventoryDB and
-  # check each one database by database
-  # Attempt to query that target and record the results
-  # ============================================================================
-  
-  # Connect to the Inventory DB
-  
-  postgres_conn = psycopg2.connect(INVENTORYDB)
-  target_cursor = postgres_conn.cursor()
-  
-  # Get ALL the active targets
-  target_cursor.execute("""
-      select inventoryid, instancename, owner, homedirectory, hostname
-        from public.dbc_target
-       where decommissioned is null
-         and hostname like 'AIAL%'
-      order by inventoryid """)
-  targets = target_cursor.fetchall()
-  
-  for InventoryID, instancename, owner, homedirectory, hostname in targets:
-     target=instancename + '_' + hostname
-     Patch=CheckPatch(target)
-  
-     update_cursor = postgres_conn.cursor()
-  
-     try:
-         update_cursor.execute("""
+    # ============================================================================
+    # Fetch all the valid database targets from the InventoryDB and
+    # check each one database by database
+    # Attempt to query that target and record the results
+    # ============================================================================
+
+    # Connect to the Inventory DB
+
+    postgres_conn = psycopg2.connect(INVENTORYDB)
+    target_cursor = postgres_conn.cursor()
+
+    # Get ALL the active targets
+    target_cursor.execute("""select InventoryID, instance_name, owner, home_directory, hostname from 
+    public.dbc_target where decommissioned is null and hostname like 'AIAL%' order by InventoryID """)
+    targets = target_cursor.fetchall()
+
+    for InventoryID, instance_name, owner, home_directory, hostname in targets:
+        target = instance_name + '_' + hostname
+        Patch = check_patch(target)
+
+        update_cursor = postgres_conn.cursor()
+
+        try:
+            update_cursor.execute("""
          UPDATE public.dbc_target
             set in_sqlpatch=%s
-          WHERE InventoryID=%s """, ( str(Patch), str(InventoryID)))
-  
-         # Make the changes to the database persistent
-         # # TargetLogger.info("InventoryID %s Updated to %s.", InventoryID, in_sqlpatch)
-         postgres_conn.commit()
-         update_cursor.close()
-     except:
-         # TargetLogger.error("Error setting Patch flag for InventoryID %s to Patch %s ", str(InventoryID), str(in_sqlpatch))
-         a=1
-      
-     
-  postgres_conn.close()
+          WHERE InventoryID=%s """, (str(Patch), str(InventoryID)))
+
+            # Make the changes to the database persistent
+            # # TargetLogger.info("InventoryID %s Updated to %s.", InventoryID, in_sqlpatch)
+            postgres_conn.commit()
+            update_cursor.close()
+        except:
+            # TargetLogger.error("Error setting Patch flag for InventoryID %s to Patch %s ", str(InventoryID),
+            # str(in_sqlpatch))
+            a = 1
+
+    postgres_conn.close()
