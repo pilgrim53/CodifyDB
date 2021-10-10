@@ -90,7 +90,7 @@ INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="
 
 GlobalLogName = "Check_Targets"
 GlobalLogFile = LOG_DIR+GlobalLogName+"_"+str(date.today())+".log"
-GlobalLogLevel = 'DEBUG'
+GlobalLogLevel = 'INFO'
 
 # ============================================================================
 # ============================================================================
@@ -117,8 +117,7 @@ def main(argv):
         print ('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
         sys.exit(2)
 
-    print("All Options passed: {}".format(opts))
-    print("All arguments passed: {}".format(args))
+    TargetLogger.debug('Command Options: %s  Arguments: ', opts, args ) 
 
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt,arg))
@@ -138,13 +137,16 @@ def main(argv):
         elif opt== "-v":
             VENDOR = arg
             CHECKQUERY += ' and vendor = \'' + VENDOR + '\''
-            TARGETQUERY += ' and split_part(upper(os),' ',1) =  \'' + VENDOR + '\''
+            TARGETQUERY += ' and vendor =  \'' + VENDOR + '\''
+
+        elif opt== "-c":
+            CHECKTYPE = arg
+            CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
 
         elif opt =="-f":
             FREQUENCY = arg
 
-
-    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\'  order by priority, handler'
+    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\'  order by handler, priority'
     TARGETQUERY += ' and targettype = \'' + TARGETTYPE + '\' order by inventoryid'
 
     TargetLogger.info("Running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
@@ -186,29 +188,29 @@ def main(argv):
         oldHandler = ''
         RC=1
         connected = 'FALSE'
-        
+
         for check, check_type, result_column, handler in all_checks:
             result=''
             if handler != oldHandler :
                 oldHandler = handler
-                if connected :
+                if connected == 'TRUE' :
                    try:
-                     connected == 'FALSE'
+                     connected = 'FALSE'
                      curr_connection.close()
                    except cx_Oracle.DatabaseError as exc:
                      error, = exc.args
                      TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-                   
+
                 RC, curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
                 TargetLogger.info("Connecting to Host: %s Instance: %s returned: %s " , HostName, InstanceName, RC )
                 if RC != 1 :
-                    Results.add(InventoryID, handler+':'+RC, 'access', TargetLogger)
-                    TargetLogger.debug("% connection failed to Host: %s Instance: %s Error: %s", handler, HostName, InstanceName, RC)
-                    connected == 'FALSE'
+                    Results.add(InventoryID, handler+':'+str(RC), 'access', TargetLogger)
+                    TargetLogger.debug("%s connection failed to Host: %s Instance: %s Error: %s", handler, HostName, InstanceName, RC)
+                    connected = 'FALSE'
                 else :
-                    connected == 'TRUE'
+                    connected = 'TRUE'
 
-            if connected : 
+            if connected == 'TRUE' :
                 info_rc, result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
                 TargetLogger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s" , InventoryID, result_column, result, info_rc)
                 if info_rc == 1 :
