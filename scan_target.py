@@ -17,7 +17,7 @@ target_file="./discovery.txt"
 LOG_DIR  = config('LOG_DIR')
 LogName  = "Scan_Targets"
 LogFile  = LOG_DIR+LogName+"_"+str(date.today())+".log"
-LogLevel = "DEBUG"
+LogLevel = "WARNING"
 DBC_USER = config('DBC_USER')
 DBC_PWD  = config('DBC_PWD')
 INV_USER = config('INV_USER')
@@ -259,3 +259,4 @@ def main(argv):
 if __name__ == "__main__":
     TargetLogger=StartLogging(LogLevel, LogFile, LogName)    # Log to File
     main(sys.argv[1:])
+    
