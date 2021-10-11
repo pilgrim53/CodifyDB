@@ -1,16 +1,18 @@
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
-import paramiko  # Allows us to ssh to the target hosts
-import cx_Oracle  # https://oracle.github.io/python-cx_Oracle/
-import psycopg2  # https://pypi.org/project/psycopg2/
-import psycopg2.extras  # This gives access to the psycopg2 error messages
-import sys  # for some reason this is not included by default
-import logging  # https://docs.python.org/3/library/logging.html
-import threading  # Allows us to time and kill hung db connections
+import paramiko           # Allows us to ssh to the target hosts
+import cx_Oracle          # https://oracle.github.io/python-cx_Oracle/
+import psycopg2           # https://pypi.org/project/psycopg2/
+import psycopg2.extras    # This gives access to the psycopg2 error messages
+import sys                # for some reason this is not included by default
+import logging            # https://docs.python.org/3/library/logging.html
+import threading          # Allows us to time and kill hung db connections
+import select
 # from numpy import asarray # convert sql result tuples to python arrays
-from datetime import date, datetime  # for some reason this is not included by default
-from decouple import config  # Allows us to read .env
+from datetime import date, datetime # for some reason this is not included by default
+from decouple  import config     # Allows us to read .env
+
 # from update_targets import check_os # Allows us to reuse the os check function
 import socket
 import os
@@ -54,67 +56,83 @@ def connect(host_name, instance_name, owner, handler, target_logger):
     if handler == 'OMS':
         target_logger.info("Unhandled OMS check for database: %s", instance_name)
 
-    elif handler == 'Oracle':
-        try:
-            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + host_name, encoding="UTF-8")
-            curr_connection.callTimeout = 600
-            rc = 1
-            target_logger.debug("Connected to: %s with %s ", host_name, handler)
-        except cx_Oracle.DatabaseError as exc:
-            error, = exc.args
-            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-            rc = error.code
-            if curr_connection:
-                curr_connection.close()
-                curr_connection = ''
+  elif Handler == 'ASM' :
+    if InstanceName == '+ASM' :
+      try:
+          curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, InstanceName+'_'+HostName, encoding="UTF-8", mode=cx_Oracle.SYSASM)
+          curr_connection.callTimeout=35000    # Oracle Connection timeout is milliseconds  - allow 35 seconds
+          RC = 1
+          TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
+      except cx_Oracle.DatabaseError as exc:
+          error, = exc.args
+          TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+          RC=error.code
+          if curr_connection :
+            curr_connection.close()  
+            curr_connection = ''
+    
 
-    elif handler == 'ssh':
-        curr_connection = paramiko.SSHClient()
-        timer = threading.Timer(35, curr_connection.close)
-        timer.start()  # start counting right before connecting - wait longer than the longest ssh timeout value
+  elif Handler == 'Oracle' or Handler == 'PLSQL' :
+    try:
+        curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, InstanceName+'_'+HostName, encoding="UTF-8")
+        curr_connection.callTimeout=35000    # Oracle Connection timeout is milliseconds  - allow 35 seconds
+        RC = 1
+        TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
+    except cx_Oracle.DatabaseError as exc:
+        error, = exc.args
+        TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+        RC=error.code
+        if curr_connection :
+          curr_connection.close()  
+          curr_connection = ''
 
-        curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        private_key = paramiko.RSAKey.from_private_key_file(PKEY)
+  elif Handler == 'ssh' :
+    curr_connection = paramiko.SSHClient()
 
-        try:
-            curr_connection.connect(hostname=host_name, port=22, username=owner, timeout=30,
-                                    banner_timeout=10, auth_timeout=10, pkey=private_key)
-            rc = 1
+    curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    private_key = paramiko.RSAKey.from_private_key_file(PKEY)
 
-        except paramiko.ssh_exception.AuthenticationException:
-            target_logger.error("Authentication failed, Host: %s    Owner: %s", host_name, owner)
-            rc = "AuthenticationException"
-            if curr_connection != '':
-                curr_connection.close()
-                curr_connection = ''
+    try:
+        curr_connection.connect(hostname=HostName, port=22, username=Owner, timeout=15, \
+                                banner_timeout=10, auth_timeout=10, pkey=private_key)
 
-        except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
-            target_logger.error("Unable to verify server's host key: %s", badHostKeyException)
-            rc = "BadHostKeyException"
-            if curr_connection != '':
-                curr_connection.close()
-                curr_connection = ''
+        TargetLogger.debug('Connection Established at: %s', str(datetime.now()))
+        RC=1
+        timer = threading.Timer(15,curr_connection.close)
+        timer.start()    # start counting right before connecting - wait longer than the longest ssh timeout value
 
-        except paramiko.ssh_exception.SSHException as sshException:
-            target_logger.error("Unable to establish SSH connection: %s", sshException)
-            rc = "SSHException"
-            if curr_connection != '':
-                curr_connection.close()
-                curr_connection = ''
+    except paramiko.ssh_exception.AuthenticationException:
+        TargetLogger.error("Authentication failed, Host: %s    Owner: %s", HostName, Owner)
+        RC="AuthenticationException"
+        if curr_connection != '' :
+          curr_connection.close()  
+          curr_connection = ''
 
-        except Exception as sshException:
-            target_logger.error("General Exception in os command: %s ", sshException)
-            result = 'FAILED: general_ssh_exception'
-            rc = "sshException"
-            if curr_connection != '':
-                curr_connection.close()
-                curr_connection = ''
+    except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
+        TargetLogger.error("Unable to verify server's host key: %s", badHostKeyException)
+        RC="BadHostKeyException"
+        if curr_connection != '' :
+          curr_connection.close()  
+          curr_connection = ''
 
-        else:
-            timer.cancel()  # cancel the connection thread if it's still alive after 30 seconds
+    except    paramiko.ssh_exception.SSHException as sshException:
+        TargetLogger.error("Unable to establish SSH connection: %s",    sshException)
+        RC="SSHException"
+        if curr_connection != '' :
+          curr_connection.close()  
+          curr_connection = ''
 
-    return rc, curr_connection
+    except Exception as sshException:
+        TargetLogger.error("General Exception in os command: %s ",    sshException)
+        result='FAILED: general_ssh_exception'
+        RC="sshException"
+        if curr_connection != '' :
+          curr_connection.close()  
+          curr_connection = ''
 
+  TargetLogger.debug('Connection RC: %s', str(RC))
+
+  return RC, curr_connection
 
 # ============================================================================
 # Function:    CreateDBC
@@ -144,10 +162,11 @@ def create_dbc(target, owner, target_logger):
         target_logger.info("Connecting to %s as %s ", host, owner)
         ssh_connection.connect(host, 22, owner)
 
-    except paramiko.ssh_exception.AuthenticationException:
-        target_logger.error("Authentication failed, Host: %s    Owner: %s", host, owner)
-    except paramiko.TimeoutError:
-        target_logger.error("Timeout connecting to Host: %s    Owner: %s", host, owner)
+  else:
+    try:
+      if owner != '':
+        TargetLogger.info("Running %s as %s on %s ", DBC_COMMAND, owner, host)
+        stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, timeout=15, get_pty=True)
 
     else:
         try:
@@ -223,15 +242,17 @@ def update_password(target, target_logger):
 # ============================================================================
 # END UpdatePassword
 # ============================================================================
+def GetInfo(check, handler, connection, TargetLogger):
+  rc=0
+  result=''
 
-def get_info(check, handler, connection, target_logger):
-    if handler == 'Oracle':
-        rc, result = get_oracle_info(check, connection, target_logger)
-    elif handler == 'ssh':
-        rc, result = get_os_info(check, connection, target_logger)
-
-    return rc, result
-
+  if connection != '':
+    if handler == 'Oracle' or handler == 'ASM' :
+      rc, result=GetOracleInfo(check, connection, TargetLogger)
+    elif handler == 'ssh' :
+      rc, result=GetOSInfo(check, connection, TargetLogger)
+    elif handler == 'PLSQL' :
+      rc, result=GetPLSQLInfo(check, connection, TargetLogger)
 
 # ============================================================================
 # Function:    GetOracleInfo
@@ -242,21 +263,21 @@ def get_info(check, handler, connection, target_logger):
 #              RC=1 success
 # Future:   Make the check timeout a parameter and setting for each check
 # ============================================================================
-def get_oracle_info(check, connection, target_logger):
-    rc = -1
-    timer = threading.Timer(45, connection.cancel())
-    db_info_cursor = connection.cursor()
-    value = ''
+def GetOracleInfo(check, connection, TargetLogger):
+  RC=-1
+  value=''
 
-    try:
-        timer.start()  # start counting right before connecting to the database
-        db_info_cursor.execute(check)
-        value = db_info_cursor.fetchone()
-        if value:
-            value = str(value[0]).strip()
-            rc = 1
-        else:
-            value = ''
+  try:
+    timer = threading.Timer(145,connection.cancel())
+    db_info_cursor = connection.cursor()
+    timer.start()  # start counting right before connecting to the database
+    db_info_cursor.execute(check)
+    value=db_info_cursor.fetchone()
+    if value:
+      value=str(value[0]).strip()
+      RC=1
+    else:
+      value = ''
 
     except cx_Oracle.DatabaseError as exc:
         # Now Handle all the things that could go wrong with this request
@@ -277,8 +298,89 @@ def get_oracle_info(check, connection, target_logger):
     timer.cancel()  # cancel the timer before leaving this function
     target_logger.info('GetOracleInfo returning Result: %s', str(value))
 
-    return rc, value
+  return RC, value
+# ============================================================================
+# END GetOracleInfo
+# ============================================================================
 
+# ============================================================================
+# Function:    GetASMInfo
+# Description: Checks the target database for a single spcific key attribute
+# Returns:     The result of the check query
+#              RC=-1 means could not connect
+#              RC=0 means the command failed
+#              RC=1 success
+#Future:   Make the check timeout a parameter and setting for each check
+# ============================================================================
+def GetASMInfo(check, connection, TargetLogger):
+  RC=-1
+  value=''
+
+  try:
+    timer = threading.Timer(145,connection.cancel())
+    db_info_cursor = connection.cursor()
+    timer.start()  # start counting right before connecting to the database
+    db_info_cursor.execute(check)
+    value=db_info_cursor.fetchone()
+    if value:
+      value=str(value[0]).strip()
+      RC=1
+    else:
+      value = ''
+
+  except cx_Oracle.DatabaseError as exc:
+  # Now Handle all the things that could go wrong with this request
+  # If there was a database error, return it as the value
+    error, = exc.args
+    oraerr=str(error.code)
+    TargetLogger.error('GetOracleInfo Error: ORA-%s  Message: %s',  oraerr, str(error))
+    RC=0
+    value=error.code
+
+  except cx_Oracle.OperationalError as exc:
+    error, = exc.args
+    oraerr=str(error.code)
+    TargetLogger.error('GetOracleInfo Error: ORA-%s  Message: %s',  oraerr, str(error))
+    RC=0
+    value=error.code
+
+  timer.cancel()  # cancel the timer before leaving this function
+  TargetLogger.info('GetOracleInfo returning Result: %s', str(value))
+
+  return RC, value
+# ============================================================================
+# END GetASMInfo
+# ============================================================================
+
+def GetPLSQLInfo(check, connection, TargetLogger):
+  TargetLogger.info('GetPLSQLInfo:  %s', check)
+  RC=1
+  db_info_cursor = connection.cursor()
+  db_info_cursor.callproc("dbms_output.enable")
+  db_info_cursor.execute(check)
+
+  # tune this size for your application
+  chunk_size = 100
+
+  # create variables to hold the output
+  lines_var = db_info_cursor.arrayvar(str, chunk_size)
+  num_lines_var = db_info_cursor.var(int)
+  num_lines_var.setvalue(0, chunk_size)
+
+  # fetch the text that was added by PL/SQL
+  while True:
+    db_info_cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
+    TargetLogger.info('GetPLSQLInfo: Lines:  %s Count %s ', lines_var, num_lines_var)
+    num_lines = num_lines_var.getvalue()
+    lines = lines_var.getvalue()[:num_lines]
+    for line in lines:
+        print(line or "")
+    if num_lines < chunk_size:
+        break
+
+  value=lines
+
+  return RC, value
 
 # ============================================================================
 # END GetDBInfo
@@ -302,89 +404,88 @@ def get_oracle_info(check, connection, target_logger):
 # RC=1    Add this target
 # RC=2    Update this target
 # ============================================================================
-def scan(target, owner, port, target_type, target_logger):
-    inventory_id = 0
-    rc = 0
+def Scan(target, owner, port, TARGETTYPE, TargetLogger):
 
-    # host, instance=target.split('_')    # needed for oracle_discovery.ksh v1.0
-    instance, host = target.split('_')
-    inventory_id = Inventory.get_id(host, instance, target_logger)
-    if inventory_id > 0:
-        owner = Inventory.get_attribute(inventory_id, target, 'owner', target_logger)
+  inventoryid=0
+  RC = 0
 
-    if target_type == 'Database':
-        # Try a default connection to this target first. Chances are "we know dis".
-        rc, value = get_info(target, "select \'1\' from dual", target_logger)
+  # host, instance=target.split('_')    # needed for oracle_discovery.ksh v1.0
+  instance, host=target.split('_')
+  inventoryid=Inventory.GetID(host, instance, TargetLogger)
+  if inventoryid > 0 :
+    owner=Inventory.GetAttribute(inventoryid, target, 'owner', TargetLogger)
 
-        if value in NO_ACCESS:
-            rc = create_dbc(target, owner, target_logger)
+  if TARGETTYPE == 'Database' :
+    # Try a default connection to this target first. Chances are "we know dis".
+    RC, value=GetInfo(target, "select \'1\' from dual", TargetLogger)
 
-        if int(rc) == 1:
-            inventory_id = Inventory.get_id(host, instance, target_logger)
-            if inventory_id > 0:
-                target_logger.info('Target: %s corresponds to active InventoryID: %s', target, inventory_id)
-                rc = 2  # Elevate this to an existing target status
-            elif inventory_id == 0:
-                # if inventory_id == 0:
-                target_logger.info('Target: %s has working TNSNames but no InventoryID')
-                rc = 1  # Ready to be added to Inventory
+    if value in NoAccess :
+      RC=CreateDBC(target, owner, TargetLogger)
 
-        else:  # Try making our own TNS String
-            ping_result = os.system(
-                'ping %s -4 -c 4 -w 10 >/dev/null ' % host)  # Ping 4 times or 10 seconds, whichever comes first
-
-            if ping_result < 1:
-                rc = 0
-                target_logger.info('Host: %s is pingable.', host)
-
-                if target_type == "Database":
-
-                    try:
-                        target_dsn = cx_Oracle.makedsn(host, port, service_name=instance)
-                        connection = cx_Oracle.connect(user=DBC_USER, password=DBC_PWD, dsn=target_dsn)
-                        connection.callTimeout = 600
-                        timer = threading.Timer(5, connection.cancel)
-                        timer.start()  # start counting right before connecting to the database
-                        db_info_cursor = connection.cursor()
-                        target_logger.info('Connected Port: %s Host: %s Instance: %s', port, host, instance)
-                        rc = 1
-                        timer.cancel()  # cancel the timer
-                        connection.close()
-                        # CreateTNS(target_dsn)
-
-                    except cx_Oracle.DatabaseError as exc:
-                        # Handle all the things that could go wrong with this connection attempt
-                        # If there was a database error we need the ORA-##### error
-                        # This might mean the database exists
-
-                        error, = exc.args
-                        oracle_error = str(error.code)
-
-                        if oracle_error in NOT_EXIST:
-                            target_logger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oracle_error,
-                                                str(error))
-                            target_logger.error('TNS Error: Correct the issue or remove from DBList')
-                            rc = -1
-                        elif oracle_error in NO_ACCESS:
-                            # We can add this target to inventory even though we can't log in
-                            target_logger.info("Target %s exists, but couldn't log in. %s", str(target), oracle_error)
-                            rc = 0
-                        else:
-                            target_logger.error('Other Error: %s', str(error))
-                            rc = -1
-
-                elif target_type == "Server":
-                    target_logger.debug('Found an active server to add %s', host)
-
-            else:
-                target_logger.info('Skipping host %s is not pingable. Please check. %s', host, ping_result)
-                rc = -1
-
-    target_logger.info('Target: %s Scan result: %s InventoryID: %s', target, rc, inventory_id)
-
-    return rc
+    if int(RC) == 1 :
+      inventoryid=Inventory.GetID(host, instance, TargetLogger)
+      if inventoryid > 0:
+         TargetLogger.info('Target: %s corresponds to active InventoryID: %s', target, inventoryid )
+         RC=2 # Elevate this to an existing target status
+      elif inventoryid == 0:
+          # if inventoryid == 0:
+         TargetLogger.info('Target: %s has working TNSNames but no InventoryID' )
+         RC=1  # Ready to be added to Inventory
 
 
+    else:   # Try making our own TNS String
+       ping_result=os.system('ping %s -4 -c 4 -w 10 >/dev/null ' % (host))     # Ping 4 times or 10 seconds, whichever comes first
+
+       if ping_result < 1 :
+           RC = 0
+           TargetLogger.info('Host: %s is pingable.', host)
+
+           if TARGETTYPE == "Database":
+
+             try:
+               target_dsn = cx_Oracle.makedsn(host, port, service_name=instance)
+               connection = cx_Oracle.connect(user=DBC_USER, password=DBC_PWD, dsn=target_dsn)
+               connection.callTimeout=35000   # Oracle connection timeout is milliseconds. allow 35 seconds for checks
+               timer = threading.Timer(35,connection.cancel)
+               timer.start()  # start counting right before connecting to the database
+               db_info_cursor = connection.cursor()
+               TargetLogger.info('Connected Port: %s Host: %s Instance: %s', port, host, instance)
+               RC=1
+               timer.cancel()  # cancel the timer
+               connection.close()
+               # CreateTNS(target_dsn)
+
+             except cx_Oracle.DatabaseError as exc:
+             # Handle all the things that could go wrong with this connection attempt
+             # If there was a database error we need the ORA-##### error
+             # This might mean the database exists
+
+               error, = exc.args
+               oraerr=str(error.code)
+
+               if oraerr in NotExist :
+                 TargetLogger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oraerr, str(error))
+                 TargetLogger.error('TNS Error: Correct the issue or remove from DBList')
+                 RC=-1
+               elif oraerr in NoAccess:
+                 # We can add this target to inventory even though we can't log in
+                 TargetLogger.info('Target %s exists, but couldn''t log in. %s', str(target), oraerr)
+                 RC=0
+               else:
+                 TargetLogger.error('Other Error: %s', str(error))
+                 RC=-1
+
+           elif TARGETTYPE == "Server":
+             TargetLogger.debug('Found an active server to add %s', host)
+
+
+       else:
+           TargetLogger.info('Skipping host %s is not pingable. Please check. %s', host, ping_result)
+           RC=-1
+
+  TargetLogger.info('Target: %s Scan result: %s InventoryID: %s', target, RC, inventoryid)
+
+  return RC
 # ============================================================================
 # END Scan
 # ============================================================================
@@ -425,7 +526,6 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
     postgres_conn.close()
 
     return result
-
 
 # ============================================================================
 # END Reject
@@ -477,8 +577,6 @@ def add(host, instance, container, DB_ID, owner, home_dir, status, port, target_
         postgres_conn.close()
 
     return result
-
-
 # ============================================================================
 # END Add
 # ============================================================================
@@ -491,37 +589,85 @@ def add(host, instance, container, DB_ID, owner, home_dir, status, port, target_
 # Returns:     The result of the OS check query
 # ============================================================================
 def get_os_info(check, connection, target_logger):
-    result = ''
-    rc = 0
+  result=''
+  RC=0
+  timer = threading.Timer(15,connection.close)
+  timer.start()    # start counting right before connecting to the database
 
-    try:
-        target_logger.info("Running %s ", check)
-        stdin, stdout, stderr = connection.exec_command(check, timeout=30, get_pty=True)
+  try:
 
-        result_row = stdout.readlines()
-        result_err = stderr.readlines()
+    TargetLogger.info("Running %s ", check)
+    stdin, stdout, stderr = connection.exec_command(check, timeout=15, get_pty=True)
 
-        if result_row:
-            rc = 1
-            result = str(result_row[len(result_row) - 1].strip())
-            if result == "logout":
-                result = str(result_row[len(result_row) - 2].strip())
+    # get the shared channel for stdout/stderr/stdin
+    channel = stdout.channel
 
-        if result_err:
-            target_logger.info("OS Check Errors: %s ", result_err)
-            result = 'FAILED: os command failed'
-            rc = -1
+    # we do not need stdin.
+    stdin.close()
+  
+    # indicate that we're not going to write to that channel anymore
+    channel.shutdown_write()
+  
+    # read stdout/stderr in order to prevent read block hangs
+    stdout_chunks = []
+    stdout_chunks.append(stdout.channel.recv(len(stdout.channel.in_buffer)))
+    # chunked read to prevent stalls
+    while not channel.closed or channel.recv_ready() or channel.recv_stderr_ready():
+        # stop if channel was closed prematurely, and there is no data in the buffers.
+        TargetLogger.debug('Reading stdout at: %s', str(datetime.now()))
+        timeout=15
+        got_chunk = False
+        readq, _, _ = select.select([stdout.channel], [], [], timeout)
+        for c in readq:
+            if c.recv_ready():
+                stdout_chunks.append(stdout.channel.recv(len(c.in_buffer)))
+                got_chunk = True
+            if c.recv_stderr_ready():
+                # make sure to read stderr to prevent stall
+                stderr.channel.recv_stderr(len(c.in_stderr_buffer))
+                got_chunk = True
+        '''
+        1) make sure that there are at least 2 cycles with no data in the input buffers in order to not exit too early (i.e. cat on a >200k file).
+        2) if no data arrived in the last loop, check if we already received the exit code
+        3) check if input buffers are empty
+        4) exit the loop
+        '''
+        if not got_chunk \
+            and stdout.channel.exit_status_ready() \
+            and not stderr.channel.recv_stderr_ready() \
+            and not stdout.channel.recv_ready():
+            # indicate that we're not going to read from this channel anymore
+            stdout.channel.shutdown_read()
+            # close the channel
+            stdout.channel.close()
+            break    # exit as remote side is finished and our bufferes are empty
 
-    except Exception as sshException:
-        target_logger.error("Unable to run check: %s Result: %s", check, sshException)
-        result = 'FAILED: os command failed'
-        rc = -1
 
-    finally:
-        target_logger.info("Returning result from OS command: %s ", result)
+    RC=stdout.channel.recv_exit_status()
+    if RC==0: RC=1
+    TargetLogger.info("OS result length : %s ", str(len(stdout_chunks)))
+    result=''.join(str(stdout_chunks[len(stdout_chunks)-1].decode("utf-8")).strip())
+
+    # result_list=[ str(v) for lst in stdout_chunks for key, value in lst.decode('utf-8').items() ]
+    # TargetLogger.info("OS result length: %s result: %s", str(len(result_list)), str(result_list) )
+
+    if stderr :
+      TargetLogger.info("OS Check Errors: %s ", stderr )
+
+    # if result != '' :
+      # result=str(result[2].strip())
+      #if result=="logout" :
+      #  result=str(result[len(result)-2].strip())
+
+    # close all the pseudofiles
+    stdout.close()
+    stderr.close()
+
+  finally:
+    TargetLogger.info("Returning result from OS command: %s ", result )
+    timer.cancel()    # start counting right before connecting to the database
 
     return rc, result
-
 
 # ============================================================================
 # END GetOSInfo
@@ -612,7 +758,6 @@ def update_column(inventory_id, column_name, value, target_logger):
 
     return result
 
-
 # ============================================================================
 # END UpdateColumn
 # ============================================================================
@@ -627,8 +772,6 @@ def update_column(inventory_id, column_name, value, target_logger):
 # RC=0    No change
 # RC=1    Target updated
 # ============================================================================
-
-
 def update(inventory_id, host, instance, owner, target_type, target_logger):
     rc = 0
     target_logger.debug("Update Target: InventoryID: %s Host: %s Instance: %s", inventory_id, host, instance)
@@ -662,9 +805,9 @@ def update(inventory_id, host, instance, owner, target_type, target_logger):
                     db_connnection = 'FALSE'
                     value = -1
 
-        elif check_type == 'OS' and os_connection:
-            if osrc == 1:
-                rc, value = get_os_info(check, os_connection, target_logger)
+      elif check_type == 'OS' and OSConnection :
+        if osrc == 1:  
+          RC, value=GetOSInfo(check, OSConnection, TargetLogger)
 
         if value != -1:
             col_rc = update_column(inventory_id, result_column, value, target_logger)
@@ -679,7 +822,6 @@ def update(inventory_id, host, instance, owner, target_type, target_logger):
         db_connection.close
 
     return
-
 
 # ============================================================================
 # END Update
@@ -701,8 +843,8 @@ def check_os(id, owner, host, home_dir, command, result_column, target_logger):
     ssh_connection.load_system_host_keys()
     ssh_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    timer = threading.Timer(10, ssh_connection.close)
-    timer.start()  # start counting right before connecting to the database
+    timer = threading.Timer(15,ssh_connection.close)
+    timer.start()    # start counting right before connecting to the database
 
     try:
         target_logger.info("Connecting to %s as %s to run %s ", host, owner, command)

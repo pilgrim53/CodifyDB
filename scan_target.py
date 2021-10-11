@@ -13,11 +13,12 @@ import psycopg2  # for PostgreSQL database calls
 # ============================================================================
 # Set DBTools Environment and Global Variables
 # ============================================================================
-TARGET_FILE = "./discovery.txt"
-LOG_DIR = config('LOG_DIR')
-LOG_NAME = "Scan_Targets"
-LOG_FILE = LOG_DIR + LOG_NAME + "_" + str(date.today()) + ".log"
-LOG_LEVEL = "DEBUG"
+
+target_file="./discovery.txt"
+LOG_DIR  = config('LOG_DIR')
+LogName  = "Scan_Targets"
+LogFile  = LOG_DIR+LogName+"_"+str(date.today())+".log"
+LogLevel = "WARNING"
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 INV_USER = config('INV_USER')
@@ -265,3 +266,4 @@ def main(argv):
 if __name__ == "__main__":
     TargetLogger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME)  # Log to File
     main(sys.argv[1:])
+    

@@ -93,7 +93,6 @@ GLOBAL_LOG_NAME = "Check_Targets"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
 
-
 # ============================================================================
 # ============================================================================
 # ---------------------------     MAIN PROGRAM     -------------------------------
@@ -120,8 +119,7 @@ def main(argv):
         print('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
         sys.exit(2)
 
-    print("All Options passed: {}".format(opts))
-    print("All arguments passed: {}".format(args))
+    TargetLogger.debug('Command Options: %s  Arguments: ', opts, args ) 
 
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt, arg))
@@ -139,21 +137,24 @@ def main(argv):
                 check_type = arg
                 check_query += ' and check_type = \'' + check_type + '\''
 
-        elif opt == "-v":
-            vendor = arg
-            check_query += ' and vendor = \'' + vendor + '\''
-            target_query += ' and split_part(upper(os),' ',1) =  \'' + vendor + '\''
+        elif opt== "-v":
+            VENDOR = arg
+            CHECKQUERY += ' and vendor = \'' + VENDOR + '\''
+            TARGETQUERY += ' and vendor =  \'' + VENDOR + '\''
+
+        elif opt== "-c":
+            CHECKTYPE = arg
+            CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
 
         elif opt == "-f":
             frequency = arg
 
-    check_query += ' and frequency = \'' + frequency + '\'  order by priority, handler'
-    target_query += ' and target_type = \'' + target_type + '\' order by InventoryID'
+    CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\'  order by handler, priority'
+    TARGETQUERY += ' and targettype = \'' + TARGETTYPE + '\' order by inventoryid'
 
-    target_logger.info("Running CheckTargets.py with target_type=%s vendor=%s frequency=%s check_type=%s", target_type,
-                       vendor, frequency, check_type)
-    target_logger.debug("Check Query: %s", check_query)
-    target_logger.debug("Target Query: %s", target_query)
+    TargetLogger.info("Running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
+    TargetLogger.debug("Check Query: %s", CHECKQUERY)
+    TargetLogger.debug("Target Query: %s", TARGETQUERY)
 
     # ============================================================================
     # Fetch all the valid database targets from the InventoryDB and
@@ -179,70 +180,54 @@ def main(argv):
     ######################################################
     # * * * *  Main Loop of all in-scope Targets * * * * #
     ######################################################
-    for inventory_id, instance_name, owner, home_dir, host_name, target_type in all_targets:
-        target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s host_name: %s target_type: %s ",
-                            inventory_id, instance_name, owner, home_dir, host_name, target_type)
-        old_handler = ''
-        rc = 1
+    for InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType in all_targets:
+        TargetLogger.debug("InventoryID: %s InstanceName: %s Owner: %s HomeDir: %s HostName: %s TargetType: %s " , \
+                          InventoryID, InstanceName, Owner, HomeDir, HostName, TargetType)
 
         ###############################################################################
         # Sub Loop of All Checks for the Target
         # Reuse the connection to the target for all similar checks with same handler
         ###############################################################################
+        oldHandler = ''
+        RC=1
+        connected = 'FALSE'
+
         for check, check_type, result_column, handler in all_checks:
-            result = ''
-            if handler != old_handler:
-                if old_handler == 'Oracle':
-                    if rc in Targets.NOT_EXIST:
-                        Results.add(inventory_id, rc, 'dbcaccess', target_logger)
-                        Targets.update_column(inventory_id, 'status', rc, target_logger)
-                        target_logger.debug("Instance %s is unreachable: %s ", instance_name, rc)
-                    elif rc in Targets.NO_ACCESS:
-                        Results.add(inventory_id, rc, 'dbcaccess', target_logger)
-                        target_logger.debug("No access to instance %s  %s", instance_name, rc)
-                    elif rc == -1:
-                        Targets.update_column(inventory_id, 'status', rc, target_logger)
-                        target_logger.debug("Instance %s connection failed: %s ", instance_name, rc)
-                elif old_handler == 'ssh':
-                    if rc != 1:
-                        Targets.update_column(inventory_id, 'status', rc, target_logger)
-                        Results.add(inventory_id, rc, 'osaccess', target_logger)
-                        target_logger.debug("% ssh connection failed: %s ", host_name, rc)
+            result=''
+            if handler != oldHandler :
+                oldHandler = handler
+                if connected == 'TRUE' :
+                   try:
+                     connected = 'FALSE'
+                     curr_connection.close()
+                   except cx_Oracle.DatabaseError as exc:
+                     error, = exc.args
+                     TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
 
-                if old_handler != '' and curr_connection != '':
-                    try:
-                        curr_connection.close()
-                        rc = 1
+                RC, curr_connection=Targets.Connect(HostName, InstanceName, Owner, handler, TargetLogger)
+                TargetLogger.info("Connecting to Host: %s Instance: %s returned: %s " , HostName, InstanceName, RC )
+                if RC != 1 :
+                    Results.add(InventoryID, handler+':'+str(RC), 'access', TargetLogger)
+                    TargetLogger.debug("%s connection failed to Host: %s Instance: %s Error: %s", handler, HostName, InstanceName, RC)
+                    connected = 'FALSE'
+                else :
+                    connected = 'TRUE'
 
-                    except cx_Oracle.DatabaseError as exc:
-                        error, = exc.args
-                        target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-
-                old_handler = handler
-
-                rc, curr_connection = Targets.connect(host_name, instance_name, owner, handler, target_logger)
-                target_logger.info("Connecting to Host: %s Instance: %s Returned: %s ", host_name, instance_name, rc)
-
-            if rc == 1:  # connection still works
-                # timer = threading.Timer(60,curr_connection.cancel)
-                info_rc, result = Targets.get_info(check, handler, curr_connection, target_logger)
-                target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
-                                    result, info_rc)
-                if info_rc == 1:
-                    Results.add(inventory_id, result, result_column, target_logger)
-                else:  # connection no longer works
-                    target_logger.debug("Check %s returned: %s ", check, info_rc)
-
-            target_logger.info("Inventory ID: %s Attribute: %s Value: %s", inventory_id, result_column, result)
+            if connected == 'TRUE' :
+                info_rc, result=Targets.GetInfo(check, handler, curr_connection, TargetLogger)
+                TargetLogger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s" , InventoryID, result_column, result, info_rc)
+                if info_rc == 1 :
+                    Results.add(InventoryID, result, result_column, TargetLogger)
+                else:   # connection no longer works
+                  TargetLogger.debug("Check %s RC: %s returned: %s ", check, info_rc, result )
 
         # Targets.Disconnect(curr_connection)
         if curr_connection != '':
             curr_connection.close()
 
-    target_logger.info("Completed running CheckTargets.py with TARGET_TYPE=%s VENDOR=%s FREQUENCY=%s CHECK_TYPE=%s", \
-                       target_type, vendor, frequency, check_type)
-    target_logger.info("====================================================================================")
-
+    TargetLogger.info("Completed running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", \
+                       TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
+    TargetLogger.info("====================================================================================")
 
 # ============================================================================
 # END main program
