@@ -58,40 +58,39 @@
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
-from Inv_Logging import start_logging
+from Inv_Logging import StartLogging
 import cx_Oracle
 import psycopg2
-import sys, getopt  # Allows us to interact with the o/s
-import paramiko  # Allows us to ssh to the Database Servers
-import threading  # Allows us to time and kill hung db connections
-from datetime import datetime
-from datetime import date
-from check_oms import CheckOMS  # Allows us to query the OEM Dev instance
-from decouple import config  # Allows us to read .env
+import sys, getopt               # Allows us to interact with the o/s
+import paramiko                  # Allows us to ssh to the Database Servers
+import threading                 # Allows us to time and kill hung db connections
+from datetime  import datetime
+from datetime  import date
+from check_oms import CheckOMS   # Allows us to query the OEM Dev instance
+from decouple  import config     # Allows us to read .env
 # ============================================================================
 import Targets
 import Results
-
 # ============================================================================
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
 # ============================================================================
-DBC_USER = config('DBC_USER')
-DBC_PWD = config('DBC_PWD')
-INV_USER = config('INV_USER')
-INV_PWD = config('INV_PWD')
-ORACLE_BASE = config('ORACLE_BASE')
-ORACLE_HOME = config('ORACLE_HOME')
-TNS_ADMIN = config('TNS_ADMIN')
-LOG_DIR = config('LOG_DIR')
+DBC_USER      = config('DBC_USER')
+DBC_PWD       = config('DBC_PWD')
+INV_USER      = config('INV_USER')
+INV_PWD       = config('INV_PWD')
+ORACLE_BASE   = config('ORACLE_BASE')
+ORACLE_HOME   = config('ORACLE_HOME')
+TNS_ADMIN     = config('TNS_ADMIN')
+LOG_DIR       = config('LOG_DIR')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
-CODIFYDB = config('CODIFYDB')
-INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
+CODIFYDB      = config('CODIFYDB')
+INVENTORYDB = "dbname="+CODIFYDB+" user="+INV_USER+" password="+INV_PWD+" host="+CODIFYDB_HOST
 
-GLOBAL_LOG_NAME = "Check_Targets"
-GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
-GLOBAL_LOG_LEVEL = 'DEBUG'
+GlobalLogName = "Check_Targets"
+GlobalLogFile = LOG_DIR+GlobalLogName+"_"+str(date.today())+".log"
+GlobalLogLevel = 'INFO'
 
 # ============================================================================
 # ============================================================================
@@ -99,43 +98,41 @@ GLOBAL_LOG_LEVEL = 'DEBUG'
 # ============================================================================
 # ============================================================================
 def main(argv):
-    global vendor
-    global frequency
-    global check_type
-    global target_type
-    vendor = '%'
-    frequency = 'HOURLY'  # Default to the hourly checks if not specified
-    check_type = '%'
-    target_type = 'Database'  # Default to Database right now for development
+    global VENDOR
+    global FREQUENCY
+    global CHECKTYPE
+    global TARGETTYPE
+    VENDOR = '%'
+    FREQUENCY = 'HOURLY'    # Default to the hourly checks if not specified
+    CHECKTYPE = '%'
+    TARGETTYPE = 'Database'  # Default to Database right now for development
 
-    check_query = 'select check_command, check_type, result_column, handler from public.checklist where 1=1 '
-    target_query = 'select InventoryID, instance_name, owner, home_directory, hostname, target_type from ' \
-                   'public.dbc_target where decommissioned is null '
+    CHECKQUERY='select check_command, check_type, result_column, handler from public.checklist where 1=1 '
+    TARGETQUERY='select inventoryid, instancename, owner, homedirectory, hostname, targettype from public.dbc_target where decommissioned is null '
 
     try:
-        opts, args = getopt.getopt(argv, ":t:c:v:f:h")
+        opts, args = getopt.getopt(argv,":t:c:v:f:h")
 
     except getopt.GetoptError:
-        print('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
+        print ('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
         sys.exit(2)
 
     TargetLogger.debug('Command Options: %s  Arguments: ', opts, args ) 
 
     for opt, arg in opts:
-        print("Option: {} Argument: {}".format(opt, arg))
+        print("Option: {} Argument: {}".format(opt,arg))
         if opt == '-h':
-            print(
-                'check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] ')
+            print ('check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] ')
             sys.exit()
 
-        elif opt == "-t":
-            target_type = arg
-            if target_type == 'Server':
-                check_type = 'OS'
-                check_query += ' and vendor != \'ORACLE\' and check_type = \'' + check_type + '\''
+        elif opt == "-t" :
+            TARGETTYPE = arg
+            if TARGETTYPE == 'Server' :
+              CHECKTYPE='OS'
+              CHECKQUERY += ' and vendor != \'ORACLE\' and check_type = \'' + CHECKTYPE + '\''
             elif opt == "-c":
-                check_type = arg
-                check_query += ' and check_type = \'' + check_type + '\''
+              CHECKTYPE = arg
+              CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
 
         elif opt== "-v":
             VENDOR = arg
@@ -146,8 +143,8 @@ def main(argv):
             CHECKTYPE = arg
             CHECKQUERY += ' and check_type = \'' + CHECKTYPE + '\''
 
-        elif opt == "-f":
-            frequency = arg
+        elif opt =="-f":
+            FREQUENCY = arg
 
     CHECKQUERY += ' and frequency = \'' + FREQUENCY + '\'  order by handler, priority'
     TARGETQUERY += ' and targettype = \'' + TARGETTYPE + '\' order by inventoryid'
@@ -167,14 +164,14 @@ def main(argv):
     target_cursor = inventory_conn.cursor()
 
     # Get ALL the active targets
-    target_cursor.execute(target_query)
+    target_cursor.execute(TARGETQUERY)
     all_targets = target_cursor.fetchall()
-    target_logger.debug("# of Targets: %s", len(all_targets))
+    TargetLogger.debug("# of Targets: %s" , len(all_targets))
 
     # Get ALL the checks to perform on these targets
-    target_cursor.execute(check_query)
+    target_cursor.execute(CHECKQUERY)
     all_checks = target_cursor.fetchall()
-    target_logger.debug("All Checks: %s", all_checks)
+    TargetLogger.debug("All Checks: %s" , all_checks)
     inventory_conn.close()
 
     ######################################################
@@ -223,7 +220,7 @@ def main(argv):
 
         # Targets.Disconnect(curr_connection)
         if curr_connection != '':
-            curr_connection.close()
+          curr_connection.close()
 
     TargetLogger.info("Completed running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", \
                        TARGETTYPE, VENDOR, FREQUENCY, CHECKTYPE )
@@ -234,5 +231,5 @@ def main(argv):
 # ============================================================================
 
 if __name__ == "__main__":
-    target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)  # Log to File
+    TargetLogger=StartLogging(GlobalLogLevel, GlobalLogFile, GlobalLogName)    # Log to File
     main(sys.argv[1:])
