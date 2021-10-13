@@ -14,8 +14,8 @@ from decouple import config  # Allows us to read .env
 # from update_targets import check_os # Allows us to reuse the os check function
 import socket
 import os
-from Inv_Logging import start_logging
-import Results
+from inv_logging import start_logging
+import results
 
 # ============================================================================
 # Set DBTools Environment and Global Variables

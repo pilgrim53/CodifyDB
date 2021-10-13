@@ -5,8 +5,8 @@
 # ============================================================================
 from datetime import date, datetime  # not included by default
 from decouple import config  # Allows us to read .env
-from Inv_Logging import start_logging  # Allows us to log to a file
-import Targets  # All target functions
+from inv_logging import start_logging  # Allows us to log to a file
+import targets  # All target functions
 import sys, getopt  # Allows us to interact with the o/s
 import psycopg2  # for PostgreSQL database calls
 
@@ -50,7 +50,7 @@ def main(argv):
     target_type = 'Database'  # Default to database targets
 
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME)  # Log to File
-    target_query = 'select inventory_id, instance_name, owner, home_directory, hostname, target_type \
+    target_query = 'select inventory_id, instance_name, owner, home_dir, host_name, target_type \
                 from public.dbc_target where decommissioned is null '
 
     try:
@@ -131,16 +131,16 @@ def main(argv):
                         # Targets.Disconnect(curr_connection)
                         curr_connection.close()
                     old_handler = handler
-                    rc, curr_connection = Targets.connect(host_name, instance_name, owner, handler, target_logger)
+                    rc, curr_connection = targets.connect(host_name, instance_name, owner, handler, target_logger)
 
                 if curr_connection:  # connection still works
-                    rc, result = Targets.get_info(check, handler, curr_connection, target_logger)
+                    rc, result = targets.get_info(check, handler, curr_connection, target_logger)
                     print('Result: %s', result)
                     if result:
-                        Targets.update_column(inventory_id, result_column, result, target_logger)
+                        targets.update_column(inventory_id, result_column, result, target_logger)
 
                 else:  # connection no longer works
-                    Targets.update_column(inventory_id, 'status', 'No ' + handler + ' Connection', target_logger)
+                    targets.update_column(inventory_id, 'status', 'No ' + handler + ' Connection', target_logger)
 
                 target_logger.info("Inventory ID: %s Attribute: %s Value: %s", inventory_id, result_column, result)
 
@@ -209,12 +209,12 @@ def main(argv):
                     # Try connecting to the database and get info if possible exists=Targets.CreateDBC(target, owner,
                     # TargetLogger) if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC
                     # exist  2=Target exists Why add if already there?
-                    inventory_id = Targets.add(host_name, instance_name, 'TBD', '0', owner, home_dir, exists, 0, target_type,
-                                               target_logger)
+                    inventory_id = targets.add(host_name, instance_name, 'TBD', '0', owner, home_dir, exists, 0,
+                                               target_type, target_logger)
                     if inventory_id > 0:
                         result = 0
                         target_logger.debug(
-                            "inventory_id: %s instance: %s owner: %s home_dir: %s HostName: %s target_type: %s",
+                            "inventory_id: %s instance_name: %s owner: %s home_dir: %s host_name: %s target_type: %s",
                             inventory_id, instance_name, owner, home_dir, host_name, target_type)
 
                         old_handler = ''
@@ -229,33 +229,35 @@ def main(argv):
                                     # Targets.Disconnect(curr_connection)
                                     curr_connection.close()
                                 old_handler = handler
-                                rc, curr_connection = Targets.connect(host_name, instance_name, owner, handler, target_logger)
+                                rc, curr_connection = targets.connect(host_name, instance_name,
+                                                                      owner, handler, target_logger)
 
                             if curr_connection:  # connection still works
-                                Targets.update_column(inventory_id, 'status', handler + ' Connected', target_logger)
-                                rc, result = Targets.get_info(check, handler, curr_connection, target_logger)
+                                targets.update_column(inventory_id, 'status', handler + ' Connected', target_logger)
+                                rc, result = targets.get_info(check, handler, curr_connection, target_logger)
                                 print('Result: %s', result)
                                 if result:
-                                    Targets.update_column(inventory_id, result_column, result, target_logger)
+                                    targets.update_column(inventory_id, result_column, result, target_logger)
 
                             else:  # connection no longer works
-                                Targets.update_column(inventory_id, 'status', 'No ' + handler + ' Connection',
+                                targets.update_column(inventory_id, 'status', 'No ' + handler + ' Connection',
                                                       target_logger)
 
-                            target_logger.info("Inventory ID: %s Attribute: %s Value: %s", inventory_id, result_column,
+                            target_logger.info("inventory_id: %s Attribute: %s Value: %s", inventory_id, result_column,
                                                result)
 
                         # Targets.Disconnect(curr_connection)
-                        Targets.update_column(inventory_id, "lastcheckdate", str(datetime.now()), target_logger)
+                        targets.update_column(inventory_id, "lastcheckdate", str(datetime.now()), target_logger)
                         if curr_connection != '':
                             curr_connection.close()
 
                     else:
-                        result = Targets.reject(host_name, '', instance_name, exists, owner, home_dir, entry, target_type,
+                        result = targets.reject(host_name, '', instance_name, exists, owner, home_dir, entry,
+                                                target_type,
                                                 target_logger)
 
-                target_logger.info('Host: %s Instance: %s inventoryid: %s results: %s ', host_name, instance_name, inventory_id,
-                                   result)
+                target_logger.info('host_name: %s instance_name: %s inventory_id: %s results: %s ',
+                                   host_name, instance_name, inventory_id, result)
 
 
 # ============================================================================
