@@ -58,7 +58,7 @@
 # ============================================================================
 # Import all the external Python modules that we need
 # ============================================================================
-from Inv_Logging import StartLogging
+from inv_logging import start_logging
 import cx_Oracle
 import psycopg2
 import sys, getopt  # Allows us to interact with the o/s
@@ -66,11 +66,11 @@ import paramiko  # Allows us to ssh to the Database Servers
 import threading  # Allows us to time and kill hung db connections
 from datetime import datetime
 from datetime import date
-from check_oms import CheckOMS  # Allows us to query the OEM Dev instance
+
 from decouple import config  # Allows us to read .env
 # ============================================================================
 import targets
-import Results
+import results
 
 # ============================================================================
 
@@ -111,7 +111,7 @@ def main(argv):
 
     check_query = 'select check_command, check_type, result_column, handler from public.checklist where 1=1 '
     target_query = 'select inventoryid, instancename, owner, homedirectory, hostname,' \
-                   ' targettype from public.dbc_target where decommissioned is null '
+                   ' targettype from target where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv, ":t:c:v:f:h")
@@ -209,7 +209,7 @@ def main(argv):
                 rc, curr_connection = targets.connect(host_name, instance_name, owner, handler, target_logger)
                 target_logger.info("Connecting to Host: %s Instance: %s returned: %s ", host_name, instance_name, rc)
                 if rc != 1:
-                    Results.add(inventory_id, handler + ':' + str(rc), 'access', target_logger)
+                    results.add(inventory_id, handler + ':' + str(rc), 'access', target_logger)
                     target_logger.debug("%s connection failed to Host: %s Instance: %s Error: %s", handler, host_name,
                                         instance_name, rc)
                     connected = 'FALSE'
@@ -221,7 +221,7 @@ def main(argv):
                 target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
                                     result, info_rc)
                 if info_rc == 1:
-                    Results.add(inventory_id, result, result_column, target_logger)
+                    results.add(inventory_id, result, result_column, target_logger)
                 else:  # connection no longer works
                     target_logger.debug("Check %s RC: %s returned: %s ", check, info_rc, result)
 
@@ -239,5 +239,5 @@ def main(argv):
 # ============================================================================
 
 if __name__ == "__main__":
-    target_logger = StartLogging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)  # Log to File
+    target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)  # Log to File
     main(sys.argv[1:])

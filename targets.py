@@ -13,12 +13,10 @@ import select
 from datetime import date, datetime  # for some reason this is not included by default
 from decouple import config  # Allows us to read .env
 
-# from update_targets import check_os # Allows us to reuse the os check function
 import socket
 import os
-import Results
-import Inventory
-import check_oms
+import results
+import inventory
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
@@ -489,7 +487,7 @@ def get_OS_info(check, connection, target_logger):
 # Function:    update_column
 # Description: Checks the Inventory database for 1 target and 1 attribute / column
 # Input:       InventoryID, column_name, value
-# Output:      Updates dbc_target attribute if it has changed
+# Output:      Updates target attribute if it has changed
 # rc=-1   Target no longer exists
 # rc=0    No change
 # rc=1    Target updated
@@ -497,7 +495,7 @@ def get_OS_info(check, connection, target_logger):
 def update_column(inventory_id, column_name, value, target_logger):
     result = 0
 
-    if column_name == 'hostname' or column_name == 'instancename':
+    if column_name == 'hostname' or column_name == 'instance_name':
         target_logger.info('InventoryID: %s Column: %s New Value: %s ',
                            inventory_id, column_name, value)
         target_logger.error('TO CHANGE HOSTNAME OR INSTANCENAME PLEASE UPDATE MANUALLY')
@@ -511,7 +509,7 @@ def update_column(inventory_id, column_name, value, target_logger):
 
         postgres_conn = psycopg2.connect(INVENTORYDB)
         select_cursor = postgres_conn.cursor()
-        target_query = 'select ' + column_name + ' from public.DBC_Target where inventoryid = \'' + str(
+        target_query = 'select ' + column_name + ' from public.target where inventory_id = \'' + str(
             inventory_id) + '\''
         target_logger.info('QUERY: %s', target_query)
 
@@ -539,11 +537,11 @@ def update_column(inventory_id, column_name, value, target_logger):
         else:
             insert_cursor = postgres_conn.cursor()
             if column_name == 'blocksize' or column_name == 'port':
-                insert_stmt = 'UPDATE public.dbc_target set ' + column_name + '=' + str(
-                    value) + ' where inventoryid=' + str(inventory_id)
+                insert_stmt = 'UPDATE public.target set ' + column_name + '=' + str(
+                    value) + ' where inventory_id=' + str(inventory_id)
             else:
-                insert_stmt = 'UPDATE public.dbc_target set ' + column_name + '=\'' + str(
-                    value) + '\' where inventoryid=' + str(inventory_id)
+                insert_stmt = 'UPDATE public.target set ' + column_name + '=\'' + str(
+                    value) + '\' where inventory_id=' + str(inventory_id)
 
             try:
                 insert_cursor.execute(insert_stmt)

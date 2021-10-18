@@ -1,0 +1,4 @@
+INFO:Check_Targets:Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+INFO:Check_Targets:Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+INFO:Check_Targets:Completed running CheckTargets.py with target_type=Database vendor=% frequency=HOURLY check_type=%
+INFO:Check_Targets:====================================================================================

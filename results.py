@@ -27,8 +27,6 @@ def add(id, check_result, column_name, target_logger):
     insert_cursor = postgres_insert_connection.cursor()
     insert_statement = "INSERT INTO check_results (inventory_id, check_date, check_result, check_column) \
                           VALUES ( %s, %s, %s, %s ); "
-    # insert_statement  =  "INSERT INTO check_results (inventory_id, check_date," \
-    #                      + column_name + " ) VALUES ( %s, %s, %s); "
     check_date = datetime.now()
 
     # Pass data to fill a query placeholders and let Psycopg perform

@@ -51,7 +51,7 @@ def main(argv):
 
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME)  # Log to File
     target_query = 'select inventory_id, instance_name, owner, home_dir, host_name, target_type \
-                from public.dbc_target where decommissioned is null '
+                from public.target where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv, ":t:v:ah")
@@ -247,7 +247,7 @@ def main(argv):
                                                result)
 
                         # Targets.Disconnect(curr_connection)
-                        targets.update_column(inventory_id, "lastcheckdate", str(datetime.now()), target_logger)
+                        targets.update_column(inventory_id, "last_check_date", str(datetime.now()), target_logger)
                         if curr_connection != '':
                             curr_connection.close()
 
