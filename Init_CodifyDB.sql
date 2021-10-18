@@ -100,10 +100,10 @@ CREATE SEQUENCE public.inventoryid
 ALTER TABLE public.inventoryid OWNER TO codify;
 
 --
--- Name: dbc_target; Type: TABLE; Schema: public; Owner: postgres
+-- Name: target; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.dbc_target (
+CREATE TABLE public.target (
     inventoryid integer DEFAULT nextval('public.inventoryid'::regclass) NOT NULL,
     inventorycreate date NOT NULL,
     dbcreateddate text,
@@ -133,20 +133,20 @@ CREATE TABLE public.dbc_target (
 );
 
 
-ALTER TABLE public.dbc_target OWNER TO codify;
+ALTER TABLE public.target OWNER TO codify;
 
 --
--- Name: COLUMN dbc_target.targettype; Type: COMMENT; Schema: public; Owner: postgres
+-- Name: COLUMN target.targettype; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.dbc_target.targettype IS 'Database,  Server, Other';
+COMMENT ON COLUMN public.target.targettype IS 'Database,  Server, Other';
 
 
 --
--- Name: dbc_target_rejects; Type: TABLE; Schema: public; Owner: postgres
+-- Name: target_rejects; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.dbc_target_rejects (
+CREATE TABLE public.target_rejects (
     inventoryid integer,
     inventorycreate date,
     lastcheckdate timestamp without time zone,
@@ -162,7 +162,7 @@ CREATE TABLE public.dbc_target_rejects (
 );
 
 
-ALTER TABLE public.dbc_target_rejects OWNER TO codify;
+ALTER TABLE public.target_rejects OWNER TO codify;
 
 --
 -- Name: lastcheck; Type: VIEW; Schema: public; Owner: postgres
@@ -186,7 +186,7 @@ CREATE VIEW public.lastcheck AS
     l.check_result AS badfileloc,
     m.check_result AS dbstatus,
     n.check_result AS inoms
-   FROM ((((((((((((((public.dbc_target id
+   FROM ((((((((((((((public.target id
      LEFT JOIN public.checkresults a ON (((id.inventoryid = a.inventoryid) AND (a.checkdate = ( SELECT max(a1.checkdate) AS max
            FROM public.checkresults a1
           WHERE ((a1.inventoryid = id.inventoryid) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
@@ -250,7 +250,7 @@ CREATE VIEW public.servers AS
     id.hosttype,
     a.check_result AS started,
     b.check_result AS osaccess
-   FROM ((public.dbc_target id
+   FROM ((public.target id
      LEFT JOIN public.checkresults a ON (((id.inventoryid = a.inventoryid) AND (a.checkdate = ( SELECT max(a1.checkdate) AS max
            FROM public.checkresults a1
           WHERE ((a1.inventoryid = id.inventoryid) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
@@ -272,11 +272,11 @@ ALTER TABLE ONLY public.checklist
 
 
 --
--- Name: dbc_target dbc_target_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: target target_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.dbc_target
-    ADD CONSTRAINT dbc_target_pkey PRIMARY KEY (inventoryid);
+ALTER TABLE ONLY public.target
+    ADD CONSTRAINT target_pkey PRIMARY KEY (inventoryid);
 
 
 --
@@ -311,7 +311,7 @@ CREATE INDEX check_inv ON public.checkresults USING btree (inventoryid);
 -- Name: inv_inst; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX inv_inst ON public.dbc_target USING btree (inventoryid, instancename, hostname);
+CREATE INDEX inv_inst ON public.target USING btree (inventoryid, instancename, hostname);
 
 
 --
