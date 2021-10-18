@@ -5,7 +5,7 @@ DROP SCHEMA   CODIFY;
 DROP VIEW     codify.lastcheck;
 DROP TABLE    codify.checkresults;
 DROP TABLE    codify.target;
-DROP SEQUENCE codify.inventoryid;
+DROP SEQUENCE codify.inventory_id;
 DROP INDEX    codify.inv_inst;
 DROP INDEX    codify.CR_Column;
 DROP INDEX    codify.check_date;
@@ -76,8 +76,8 @@ ALTER TABLE public.checklist OWNER TO codify;
 --
 
 CREATE TABLE public.checkresults (
-    inventoryid integer,
-    checkdate timestamp without time zone,
+    inventory_id integer,
+    check_date timestamp without time zone,
     check_result text,
     check_column text
 );
@@ -86,10 +86,10 @@ CREATE TABLE public.checkresults (
 ALTER TABLE public.checkresults OWNER TO codify;
 
 --
--- Name: inventoryid; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: inventory_id; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.inventoryid
+CREATE SEQUENCE public.inventory_id
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -97,49 +97,49 @@ CREATE SEQUENCE public.inventoryid
     CACHE 1;
 
 
-ALTER TABLE public.inventoryid OWNER TO codify;
+ALTER TABLE public.inventory_id OWNER TO codify;
 
 --
 -- Name: target; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.target (
-    inventoryid integer DEFAULT nextval('public.inventoryid'::regclass) NOT NULL,
-    inventorycreate date NOT NULL,
-    dbcreateddate text,
-    lastcheckdate timestamp without time zone,
-    serialnumber character varying(20),
+    inventory_id integer DEFAULT nextval('public.inventory_id'::regclass) NOT NULL,
+    inventory_create date NOT NULL,
+    db_created_date text,
+    last_check_date timestamp without time zone,
+    serial_number character varying(20),
     vendor character varying(50),
-    instancename character varying(50),
+    instance_name character varying(50),
     hostname character varying(50),
     version character varying(50),
-    homedirectory character varying(255),
+    home_dir character varying(255),
     owner character varying(50),
     port integer,
     status character varying(255),
-    archivelogmode character varying(50),
+    archivelog_mode character varying(50),
     blocksize integer,
     highlysensitiveinfo bit(1),
-    databasetype character varying(50),
-    importantnotes character varying(1000),
+    database_type character varying(50),
+    important_notes character varying(1000),
     role character varying(25),
     container character varying(15),
     decommissioned date,
-    hosttype text,
+    host_type text,
     standbydest text,
     os text,
     v_instance text,
-    targettype text NOT NULL
+    target_type text NOT NULL
 );
 
 
 ALTER TABLE public.target OWNER TO codify;
 
 --
--- Name: COLUMN target.targettype; Type: COMMENT; Schema: public; Owner: postgres
+-- Name: COLUMN target.target_type; Type: COMMENT; Schema: public; Owner: postgres
 --
 
-COMMENT ON COLUMN public.target.targettype IS 'Database,  Server, Other';
+COMMENT ON COLUMN public.target.target_type IS 'Database,  Server, Other';
 
 
 --
@@ -147,13 +147,13 @@ COMMENT ON COLUMN public.target.targettype IS 'Database,  Server, Other';
 --
 
 CREATE TABLE public.target_rejects (
-    inventoryid integer,
+    inventory_id integer,
     inventorycreate date,
-    lastcheckdate timestamp without time zone,
+    last_check_date timestamp without time zone,
     vendor character varying(50),
-    instancename character varying(50),
+    instance_name character varying(50),
     hostname character varying(50),
-    homedirectory character varying(255),
+    home_dir character varying(255),
     owner character varying(50),
     port integer,
     status character varying(255),
@@ -169,9 +169,9 @@ ALTER TABLE public.target_rejects OWNER TO codify;
 --
 
 CREATE VIEW public.lastcheck AS
- SELECT id.inventoryid,
+ SELECT id.inventory_id,
     id.hostname,
-    id.instancename,
+    id.instance_name,
     a.check_result AS started,
     b.check_result AS closedwallet,
     c.check_result AS dbcaccess,
@@ -187,50 +187,50 @@ CREATE VIEW public.lastcheck AS
     m.check_result AS dbstatus,
     n.check_result AS inoms
    FROM ((((((((((((((public.target id
-     LEFT JOIN public.checkresults a ON (((id.inventoryid = a.inventoryid) AND (a.checkdate = ( SELECT max(a1.checkdate) AS max
+     LEFT JOIN public.checkresults a ON (((id.inventory_id = a.inventory_id) AND (a.check_date = ( SELECT max(a1.check_date) AS max
            FROM public.checkresults a1
-          WHERE ((a1.inventoryid = id.inventoryid) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
-     LEFT JOIN public.checkresults b ON (((id.inventoryid = b.inventoryid) AND (b.checkdate = ( SELECT max(b1.checkdate) AS max
+          WHERE ((a1.inventory_id = id.inventory_id) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
+     LEFT JOIN public.checkresults b ON (((id.inventory_id = b.inventory_id) AND (b.check_date = ( SELECT max(b1.check_date) AS max
            FROM public.checkresults b1
-          WHERE ((b1.inventoryid = id.inventoryid) AND (b1.check_column = 'closedwallet'::text)))) AND (b.check_column = 'closedwallet'::text))))
-     LEFT JOIN public.checkresults c ON (((id.inventoryid = c.inventoryid) AND (c.checkdate = ( SELECT max(c1.checkdate) AS max
+          WHERE ((b1.inventory_id = id.inventory_id) AND (b1.check_column = 'closedwallet'::text)))) AND (b.check_column = 'closedwallet'::text))))
+     LEFT JOIN public.checkresults c ON (((id.inventory_id = c.inventory_id) AND (c.check_date = ( SELECT max(c1.check_date) AS max
            FROM public.checkresults c1
-          WHERE ((c1.inventoryid = id.inventoryid) AND (c1.check_column = 'dbcaccess'::text)))) AND (c.check_column = 'dbcaccess'::text))))
-     LEFT JOIN public.checkresults d ON (((id.inventoryid = d.inventoryid) AND (d.checkdate = ( SELECT max(d1.checkdate) AS max
+          WHERE ((c1.inventory_id = id.inventory_id) AND (c1.check_column = 'dbcaccess'::text)))) AND (c.check_column = 'dbcaccess'::text))))
+     LEFT JOIN public.checkresults d ON (((id.inventory_id = d.inventory_id) AND (d.check_date = ( SELECT max(d1.check_date) AS max
            FROM public.checkresults d1
-          WHERE ((d1.inventoryid = id.inventoryid) AND (d1.check_column = 'appsessions'::text)))) AND (d.check_column = 'appsessions'::text))))
-     LEFT JOIN public.checkresults e ON (((id.inventoryid = e.inventoryid) AND (e.checkdate = ( SELECT max(e1.checkdate) AS max
+          WHERE ((d1.inventory_id = id.inventory_id) AND (d1.check_column = 'appsessions'::text)))) AND (d.check_column = 'appsessions'::text))))
+     LEFT JOIN public.checkresults e ON (((id.inventory_id = e.inventory_id) AND (e.check_date = ( SELECT max(e1.check_date) AS max
            FROM public.checkresults e1
-          WHERE ((e1.inventoryid = id.inventoryid) AND (e1.check_column = 'openmode'::text)))) AND (e.check_column = 'openmode'::text))))
-     LEFT JOIN public.checkresults f ON (((id.inventoryid = f.inventoryid) AND (f.checkdate = ( SELECT max(f1.checkdate) AS max
+          WHERE ((e1.inventory_id = id.inventory_id) AND (e1.check_column = 'openmode'::text)))) AND (e.check_column = 'openmode'::text))))
+     LEFT JOIN public.checkresults f ON (((id.inventory_id = f.inventory_id) AND (f.check_date = ( SELECT max(f1.check_date) AS max
            FROM public.checkresults f1
-          WHERE ((f1.inventoryid = id.inventoryid) AND (f1.check_column = 'swrelease'::text)))) AND (f.check_column = 'swrelease'::text))))
-     LEFT JOIN public.checkresults g ON (((id.inventoryid = g.inventoryid) AND (g.checkdate = ( SELECT max(g1.checkdate) AS max
+          WHERE ((f1.inventory_id = id.inventory_id) AND (f1.check_column = 'swrelease'::text)))) AND (f.check_column = 'swrelease'::text))))
+     LEFT JOIN public.checkresults g ON (((id.inventory_id = g.inventory_id) AND (g.check_date = ( SELECT max(g1.check_date) AS max
            FROM public.checkresults g1
-          WHERE ((g1.inventoryid = id.inventoryid) AND (g1.check_column = 'systemfree'::text)))) AND (g.check_column = 'systemfree'::text))))
-     LEFT JOIN public.checkresults h ON (((id.inventoryid = h.inventoryid) AND (h.checkdate = ( SELECT max(h1.checkdate) AS max
+          WHERE ((g1.inventory_id = id.inventory_id) AND (g1.check_column = 'systemfree'::text)))) AND (g.check_column = 'systemfree'::text))))
+     LEFT JOIN public.checkresults h ON (((id.inventory_id = h.inventory_id) AND (h.check_date = ( SELECT max(h1.check_date) AS max
            FROM public.checkresults h1
-          WHERE ((h1.inventoryid = id.inventoryid) AND (h1.check_column = 'sysauxfree'::text)))) AND (h.check_column = 'sysauxfree'::text))))
-     LEFT JOIN public.checkresults i ON (((id.inventoryid = i.inventoryid) AND (i.checkdate = ( SELECT max(i1.checkdate) AS max
+          WHERE ((h1.inventory_id = id.inventory_id) AND (h1.check_column = 'sysauxfree'::text)))) AND (h.check_column = 'sysauxfree'::text))))
+     LEFT JOIN public.checkresults i ON (((id.inventory_id = i.inventory_id) AND (i.check_date = ( SELECT max(i1.check_date) AS max
            FROM public.checkresults i1
-          WHERE ((i1.inventoryid = id.inventoryid) AND (i1.check_column = 'dbsizeallocated'::text)))) AND (i.check_column = 'dbsizeallocated'::text))))
-     LEFT JOIN public.checkresults j ON (((id.inventoryid = j.inventoryid) AND (j.checkdate = ( SELECT max(j1.checkdate) AS max
+          WHERE ((i1.inventory_id = id.inventory_id) AND (i1.check_column = 'dbsizeallocated'::text)))) AND (i.check_column = 'dbsizeallocated'::text))))
+     LEFT JOIN public.checkresults j ON (((id.inventory_id = j.inventory_id) AND (j.check_date = ( SELECT max(j1.check_date) AS max
            FROM public.checkresults j1
-          WHERE ((j1.inventoryid = id.inventoryid) AND (j1.check_column = 'dbsizeused'::text)))) AND (j.check_column = 'dbsizeused'::text))))
-     LEFT JOIN public.checkresults k ON (((id.inventoryid = k.inventoryid) AND (k.checkdate = ( SELECT max(k1.checkdate) AS max
+          WHERE ((j1.inventory_id = id.inventory_id) AND (j1.check_column = 'dbsizeused'::text)))) AND (j.check_column = 'dbsizeused'::text))))
+     LEFT JOIN public.checkresults k ON (((id.inventory_id = k.inventory_id) AND (k.check_date = ( SELECT max(k1.check_date) AS max
            FROM public.checkresults k1
-          WHERE ((k1.inventoryid = id.inventoryid) AND (k1.check_column = 'processespct'::text)))) AND (k.check_column = 'processespct'::text))))
-     LEFT JOIN public.checkresults l ON (((id.inventoryid = l.inventoryid) AND (l.checkdate = ( SELECT max(l1.checkdate) AS max
+          WHERE ((k1.inventory_id = id.inventory_id) AND (k1.check_column = 'processespct'::text)))) AND (k.check_column = 'processespct'::text))))
+     LEFT JOIN public.checkresults l ON (((id.inventory_id = l.inventory_id) AND (l.check_date = ( SELECT max(l1.check_date) AS max
            FROM public.checkresults l1
-          WHERE ((l1.inventoryid = id.inventoryid) AND (l1.check_column = 'badfileloc'::text)))) AND (l.check_column = 'badfileloc'::text))))
-     LEFT JOIN public.checkresults m ON (((id.inventoryid = m.inventoryid) AND (m.checkdate = ( SELECT max(m1.checkdate) AS max
+          WHERE ((l1.inventory_id = id.inventory_id) AND (l1.check_column = 'badfileloc'::text)))) AND (l.check_column = 'badfileloc'::text))))
+     LEFT JOIN public.checkresults m ON (((id.inventory_id = m.inventory_id) AND (m.check_date = ( SELECT max(m1.check_date) AS max
            FROM public.checkresults m1
-          WHERE ((m1.inventoryid = id.inventoryid) AND (m1.check_column = 'dbstatus'::text)))) AND (m.check_column = 'dbstatus'::text))))
-     LEFT JOIN public.checkresults n ON (((id.inventoryid = n.inventoryid) AND (n.checkdate = ( SELECT max(n1.checkdate) AS max
+          WHERE ((m1.inventory_id = id.inventory_id) AND (m1.check_column = 'dbstatus'::text)))) AND (m.check_column = 'dbstatus'::text))))
+     LEFT JOIN public.checkresults n ON (((id.inventory_id = n.inventory_id) AND (n.check_date = ( SELECT max(n1.check_date) AS max
            FROM public.checkresults n1
-          WHERE ((n1.inventoryid = id.inventoryid) AND (n1.check_column = 'inoms'::text)))) AND (n.check_column = 'inoms'::text))))
-  WHERE ((id.decommissioned IS NULL) AND (id.targettype = 'Database'::text))
-  ORDER BY id.inventoryid;
+          WHERE ((n1.inventory_id = id.inventory_id) AND (n1.check_column = 'inoms'::text)))) AND (n.check_column = 'inoms'::text))))
+  WHERE ((id.decommissioned IS NULL) AND (id.target_type = 'Database'::text))
+  ORDER BY id.inventory_id;
 
 
 ALTER TABLE public.lastcheck OWNER TO codify;
@@ -240,7 +240,7 @@ ALTER TABLE public.lastcheck OWNER TO codify;
 --
 
 CREATE VIEW public.servers AS
- SELECT id.inventoryid,
+ SELECT id.inventory_id,
     id.hostname,
     id.vendor,
     id.os,
@@ -251,14 +251,14 @@ CREATE VIEW public.servers AS
     a.check_result AS started,
     b.check_result AS osaccess
    FROM ((public.target id
-     LEFT JOIN public.checkresults a ON (((id.inventoryid = a.inventoryid) AND (a.checkdate = ( SELECT max(a1.checkdate) AS max
+     LEFT JOIN public.checkresults a ON (((id.inventory_id = a.inventory_id) AND (a.check_date = ( SELECT max(a1.check_date) AS max
            FROM public.checkresults a1
-          WHERE ((a1.inventoryid = id.inventoryid) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
-     LEFT JOIN public.checkresults b ON (((id.inventoryid = b.inventoryid) AND (b.checkdate = ( SELECT max(b1.checkdate) AS max
+          WHERE ((a1.inventory_id = id.inventory_id) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
+     LEFT JOIN public.checkresults b ON (((id.inventory_id = b.inventory_id) AND (b.check_date = ( SELECT max(b1.check_date) AS max
            FROM public.checkresults b1
-          WHERE ((b1.inventoryid = id.inventoryid) AND (b1.check_column = 'osaccess'::text)))) AND (b.check_column = 'osaccess'::text))))
-  WHERE ((id.decommissioned IS NULL) AND (id.targettype = 'Server'::text))
-  ORDER BY id.inventoryid;
+          WHERE ((b1.inventory_id = id.inventory_id) AND (b1.check_column = 'osaccess'::text)))) AND (b.check_column = 'osaccess'::text))))
+  WHERE ((id.decommissioned IS NULL) AND (id.target_type = 'Server'::text))
+  ORDER BY id.inventory_id;
 
 
 ALTER TABLE public.servers OWNER TO codify;
@@ -276,7 +276,7 @@ ALTER TABLE ONLY public.checklist
 --
 
 ALTER TABLE ONLY public.target
-    ADD CONSTRAINT target_pkey PRIMARY KEY (inventoryid);
+    ADD CONSTRAINT target_pkey PRIMARY KEY (inventory_id);
 
 
 --
@@ -290,28 +290,28 @@ CREATE INDEX "CR_Column" ON public.checkresults USING hash (check_column);
 -- Name: RESULTS; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX "RESULTS" ON public.checkresults USING btree (inventoryid, checkdate, check_column) INCLUDE (inventoryid, checkdate, check_column);
+CREATE INDEX "RESULTS" ON public.checkresults USING btree (inventory_id, check_date, check_column) INCLUDE (inventory_id, check_date, check_column);
 
 
 --
 -- Name: check_date; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX check_date ON public.checkresults USING btree (checkdate);
+CREATE INDEX check_date ON public.checkresults USING btree (check_date);
 
 
 --
 -- Name: check_inv; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX check_inv ON public.checkresults USING btree (inventoryid);
+CREATE INDEX check_inv ON public.checkresults USING btree (inventory_id);
 
 
 --
 -- Name: inv_inst; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX inv_inst ON public.target USING btree (inventoryid, instancename, hostname);
+CREATE INDEX inv_inst ON public.target USING btree (inventory_id, instance_name, hostname);
 
 
 --
