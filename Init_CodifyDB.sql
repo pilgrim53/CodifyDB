@@ -245,9 +245,9 @@ CREATE VIEW public.servers AS
     id.vendor,
     id.os,
     id.db_created_date AS created,
-    id.serialnumber,
+    id.serial_number,
     id.owner,
-    id.hosttype,
+    id.host_type,
     a.check_result AS started,
     b.check_result AS osaccess
    FROM ((public.target id
