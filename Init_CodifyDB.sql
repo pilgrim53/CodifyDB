@@ -244,7 +244,7 @@ CREATE VIEW public.servers AS
     id.hostname,
     id.vendor,
     id.os,
-    id.dbcreateddate AS created,
+    id.db_created_date AS created,
     id.serialnumber,
     id.owner,
     id.hosttype,
