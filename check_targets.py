@@ -216,7 +216,7 @@ def main(argv):
 
             if connected == 'TRUE':
                 if handler == 'OMS' :
-                    check = f"{check.format(HostName, InstanceName)}"
+                    check = f"{check.format(hostname, instance_name)}"
 
                 
                 info_rc, result = targets.get_info(check, handler, curr_connection, target_logger)
