@@ -1,13 +1,3 @@
-#    -*- coding: utf-8
-# ============================================================================
-# Copyright (c) 2020 Bell Canada
-#
-# All rights reserved. No part of this script may be copied or translated
-# in any form or by any means without prior written permission from BELL.
-#
-# DO NOT MODIFY THIS SCRIPT LOCALLY
-# This script is part of the DBC DBTools.    Do not make
-# modifications to local copies.
 # ============================================================================
 # Description
 # ============================================================================
