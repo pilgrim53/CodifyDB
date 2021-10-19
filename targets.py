@@ -52,7 +52,18 @@ def connect(hostname, instance_name, owner, handler, target_logger):
     curr_connection = ''
 
     if handler == 'OMS':
-        target_logger.info("Unhandled OMS check for database: %s", instance_name)
+        try:
+            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
+            curr_connection.callTimeout=35000    # Oracle Connection timeout is milliseconds  - allow 35 seconds
+            RC = 1
+            TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
+        except cx_Oracle.DatabaseError as exc:
+            error, = exc.args
+            TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+            RC=error.code
+            if curr_connection :
+                curr_connection.close()
+                curr_connection = ''
 
     elif handler == 'ASM':
         if instance_name == '+ASM':
@@ -220,7 +231,7 @@ def get_info(check, handler, connection, target_logger):
     result = ''
 
     if connection != '':
-        if handler == 'Oracle' or handler == 'ASM':
+        if handler == 'Oracle' or handler == 'ASM' or handler == 'OMS' :
             rc, result = get_oracle_info(check, connection, target_logger)
         elif handler == 'ssh':
             rc, result = get_OS_info(check, connection, target_logger)
@@ -287,56 +298,6 @@ def get_oracle_info(check, connection, target_logger):
 # END get_oracle_info
 # ============================================================================
 
-# ============================================================================
-# Function:    get_ASM_info
-# Description: Checks the target database for a single specific key attribute
-# Returns:     The result of the check query
-#              RC=-1 means could not connect
-#              RC=0 means the command failed
-#              RC=1 success
-# Future:   Make the check timeout a parameter and setting for each check
-# ============================================================================
-def get_ASM_info(check, connection, target_logger):
-    rc = -1
-    value = ''
-
-    try:
-        timer = threading.Timer(145, connection.cancel())
-        db_info_cursor = connection.cursor()
-        timer.start()  # start counting right before connecting to the database
-        db_info_cursor.execute(check)
-        value = db_info_cursor.fetchone()
-        if value:
-            value = str(value[0]).strip()
-            rc = 1
-        else:
-            value = ''
-
-    except cx_Oracle.DatabaseError as exc:
-        # Now Handle all the things that could go wrong with this request
-        # If there was a database error, return it as the value
-        error, = exc.args
-        oracle_err = str(error.code)
-        target_logger.error('GetOracleInfo Error: ORA-%s  Message: %s', oracle_err, str(error))
-        rc = 0
-        value = error.code
-
-    except cx_Oracle.OperationalError as exc:
-        error, = exc.args
-        oracle_err = str(error.code)
-        target_logger.error('GetOracleInfo Error: ORA-%s  Message: %s', oracle_err, str(error))
-        rc = 0
-        value = error.code
-
-    timer.cancel()  # cancel the timer before leaving this function
-    target_logger.info('GetOracleInfo returning Result: %s', str(value))
-
-    return rc, value
-
-
-# ============================================================================
-# END get_ASM_info
-# ============================================================================
 
 # ============================================================================
 # Function:    get_PLSQL_info
