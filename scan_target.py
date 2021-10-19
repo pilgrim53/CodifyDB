@@ -131,7 +131,7 @@ def main(argv):
 
 
             if curr_connection:  # connection still works
-                rc, result=targets.GetInfo(check, handler, curr_connection, target_logger)
+                rc, result=targets.get_info(check, handler, curr_connection, target_logger)
                 print ('Result: %s', result)
                 if result :
                   targets.update_column(inventory_id, result_column, result, target_logger)
@@ -141,8 +141,8 @@ def main(argv):
 
             target_logger.info("Inventory ID: %s Attribute: %s Value: %s" , inventory_id, result_column, result)
 
-        # targets.Disconnect(curr_connection)
-        curr_connection.close()
+        if curr_connection :
+            curr_connection.close()
 
   # ============================================================================
   # Look for and add NEW Targets to the inventory
@@ -231,7 +231,6 @@ def main(argv):
                     if curr_connection:  # connection still works
                         targets.update_column(inventory_id, 'status', handler + ' Connected', target_logger)
                         rc, result = targets.get_info(check, handler, curr_connection, target_logger)
-                        print('Result: %s', result)
                         if result:
                             targets.update_column(inventory_id, result_column, result, target_logger)
 
