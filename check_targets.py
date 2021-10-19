@@ -215,6 +215,10 @@ def main(argv):
                     connected = 'TRUE'
 
             if connected == 'TRUE':
+                if handler == 'OMS' :
+                    check = f"{check.format(HostName, InstanceName)}"
+
+                
                 info_rc, result = targets.get_info(check, handler, curr_connection, target_logger)
                 target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
                                     result, info_rc)
@@ -222,6 +226,8 @@ def main(argv):
                     results.add(inventory_id, result, result_column, target_logger)
                 else:  # connection no longer works
                     target_logger.debug("Check %s RC: %s returned: %s ", check, info_rc, result)
+                    connected = 'FALSE'
+                    curr_connection.close()
 
         # Targets.Disconnect(curr_connection)
         if curr_connection != '':
