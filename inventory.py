@@ -38,19 +38,19 @@ TARGET_FILE = "./discovery.txt"
 # Input:       Takes target in the format of host, instance, container, port
 # Ouptut:      Returns the InventoryID of the target or 0 if not found
 # ============================================================================
-def get_id(host, instance, target_logger):
+def get_id(host, instance_name, target_logger):
     inventory_id = 0
 
     postgres_conn = psycopg2.connect(INVENTORYDB)
 
     select_cursor = postgres_conn.cursor()
     select_stmt = 'select coalesce(inventory_id,0) from public.target where hostname=\'' \
-                  + host + '\' and instance_name=\'' + instance + '\' order by inventory_id '
+                  + host + '\' and instance_name=\'' + instance_name + '\' order by inventory_id '
 
     try:
         select_cursor.execute(select_stmt)
         result = select_cursor.fetchone()
-        target_logger.info('Check %s %s returned: ''%s''', host, instance, result)
+        target_logger.info('Check %s %s returned: ''%s''', host, instance_name, result)
         if result is None:
             inventory_id = 0
         else:
@@ -60,7 +60,7 @@ def get_id(host, instance, target_logger):
 
     except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError) as exc:
         error, = exc.args
-        target_logger.error('Error checking existence of target: %s %s %s ', str(host), str(instance), str(error))
+        target_logger.error('Error checking existence of target: %s %s %s ', str(host), str(instance_name), str(error))
 
     postgres_conn.close()
 
