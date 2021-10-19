@@ -514,6 +514,7 @@ def update_column(inventory_id, column_name, value, target_logger):
         target_logger.info('QUERY: %s', target_query)
 
         try:
+            curr_value = ''
             # Get just the info about the target for comparison
             select_cursor.execute(target_query)
             curr_value = select_cursor.fetchone()
@@ -570,4 +571,95 @@ def update_column(inventory_id, column_name, value, target_logger):
 
 # ============================================================================
 # END update_column
+# ============================================================================
+
+
+
+# ============================================================================
+# Function:    Reject
+# Description: Creates the initial Target entry in the DBC_Target table
+# Input:       Takes target in the format of host, instance, container, port
+# Ouptut:      Returns a boolean if its new and the target info
+#              [host, vendor, instance, status, owner, homedir]
+# ============================================================================
+def reject(host, vendor, instance, status, owner, homedir, importantnotes, target_type, TargetLogger):
+
+    result=0
+    postgres_conn = psycopg2.connect(INVENTORYDB)
+    insert_cursor = postgres_conn.cursor()
+    insert_stmt = """INSERT INTO public.target_rejects
+                       (InventoryCreate, HostName, InstanceName, vendor, status, owner, home_dir, importantnotes)
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s); """
+
+    try:
+          insert_cursor.execute(insert_stmt, ( date.today(),host,instance,vendor,status,owner,homedir,importantnotes ))
+          # Make the changes to the database persistent
+          postgres_conn.commit()
+
+    except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
+          error, = exc.args
+          TargetLogger.error('Error inserting reject record: %s %s %s ', str(host),str(instance),str(error))
+          result=-1
+
+    else:
+          result=1
+          TargetLogger.info('Rejected new target: %s %s  ', str(host),str(instance))
+
+    TargetLogger.debug('Target Reject Result: %s', result)
+
+    postgres_conn.close()
+
+    return result
+# ============================================================================
+# END Reject
+# ============================================================================
+
+
+# ============================================================================
+# Function:    Add
+# Description: Creates the initial Target entry in the DBC_Target table
+# Input:       Takes target in the format of host, instance, container, port
+# Ouptut:      Returns a boolean if its new and the target info
+#              [instance,host,DBCreateDate,DBID,status, port]
+# ============================================================================
+def add(host, instance, container, DBID, owner, homedir, status, port, target_type, TargetLogger):
+
+    result=0
+    count=0
+
+    postgres_conn = psycopg2.connect(INVENTORYDB)
+    result=inventory.get_id(host, instance, TargetLogger)
+    if result < 1:
+
+      insert_cursor = postgres_conn.cursor()
+      insert_stmt = """INSERT INTO public.target
+                       (Inventory_Create, Target_Type, HostName, Instance_Name, Container, Serial_Number, owner, home_dir, Vendor, Status, Port)
+                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
+
+      try:
+          insert_cursor.execute(insert_stmt, ( date.today(),target_type, host,instance,container,DBID,owner,homedir,'ORACLE',status,port) )
+          # Make the changes to the database persistent
+          postgres_conn.commit()
+
+      except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
+          error, = exc.args
+          TargetLogger.error('Error inserting new target: %s %s %s ', str(host),str(instance), str(error))
+          result=-1
+
+      except Exception as exc:
+          error, = exc.args
+          TargetLogger.error('Exception occurred inserting target: %s %s Container: %s %s', \
+                              str(host), str(instance), str(container), str(error))
+          result=-1
+
+      else:
+          result=inventory.get_id(host, instance, TargetLogger)
+
+      TargetLogger.info('Add target Result InventoryID: %s', result)
+
+      postgres_conn.close()
+
+    return result
+# ============================================================================
+# END Add
 # ============================================================================
