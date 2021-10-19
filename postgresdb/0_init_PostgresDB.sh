@@ -98,4 +98,9 @@ CREATE INDEX check_inv
     TABLESPACE pg_default;
 
   COMMIT;
+  
+CREATE VIEW public.checklist AS SELECT * FROM codify.checklist;
+CREATE VIEW public.checkresults AS SELECT * FROM codify.checkresults;
+CREATE VIEW public.dbc_target AS SELECT * FROM codify.target;
+CREATE VIEW public.lastcheck AS SELECT * FROM codify.lastcheck;
 EOSQL

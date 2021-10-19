@@ -11,11 +11,10 @@ import threading  # Allows us to time and kill hung db connections
 # from numpy import asarray # convert sql result tuples to python arrays
 from datetime import date, datetime  # for some reason this is not included by default
 from decouple import config  # Allows us to read .env
-# from update_targets import check_os # Allows us to reuse the os check function
 import socket
 import os
-from Inv_Logging import start_logging
-import Results
+from inv_logging import start_logging
+import results
 
 # ============================================================================
 # Set DBTools Environment and Global Variables
@@ -35,23 +34,23 @@ TARGET_FILE = "./discovery.txt"
 
 # ============================================================================
 # Function:    GetInventoryID
-# Description: Creates the initial Target entry in the DBC_Target table
+# Description: Creates the initial Target entry in the Target table
 # Input:       Takes target in the format of host, instance, container, port
 # Ouptut:      Returns the InventoryID of the target or 0 if not found
 # ============================================================================
-def get_id(host, instance, target_logger):
+def get_id(host, instance_name, target_logger):
     inventory_id = 0
 
     postgres_conn = psycopg2.connect(INVENTORYDB)
 
     select_cursor = postgres_conn.cursor()
-    select_stmt = 'select coalesce(inventory_id,0) from public.dbc_target where hostname=\'' \
-                  + host + '\' and instance_name=\'' + instance + '\' order by inventory_id '
+    select_stmt = 'select coalesce(inventory_id,0) from public.target where hostname=\'' \
+                  + host + '\' and instance_name=\'' + instance_name + '\' order by inventory_id '
 
     try:
         select_cursor.execute(select_stmt)
         result = select_cursor.fetchone()
-        target_logger.info('Check %s %s returned: ''%s''', host, instance, result)
+        target_logger.info('Check %s %s returned: ''%s''', host, instance_name, result)
         if result is None:
             inventory_id = 0
         else:
@@ -61,7 +60,7 @@ def get_id(host, instance, target_logger):
 
     except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError) as exc:
         error, = exc.args
-        target_logger.error('Error checking existence of target: %s %s %s ', str(host), str(instance), str(error))
+        target_logger.error('Error checking existence of target: %s %s %s ', str(host), str(instance_name), str(error))
 
     postgres_conn.close()
 
@@ -81,7 +80,7 @@ def get_id(host, instance, target_logger):
 # ============================================================================
 def get_attribute(inventory_id, target, column, target_logger):
     value = ''
-    query = 'select ' + column + ' from dbc_target where inventory_id=' + str(inventory_id) + ''
+    query = 'select ' + column + ' from target where inventory_id=' + str(inventory_id) + ''
 
     try:
         postgres_conn = psycopg2.connect(INVENTORYDB)
