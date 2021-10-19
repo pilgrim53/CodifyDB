@@ -27,7 +27,7 @@
 # Output:             Entries into the CheckResults table
 #                     Log files to $LOG_DIR/check_results_$date.log
 #
-# Syntax:             check_targets.py -t targettype -v vendor -f frequency -c checktype
+# Syntax:             check_targets.py -t target_type -v vendor -f frequency -c check_type
 #
 # Called Routines:    cx_Oracle - for Oracle database calls
 #                     psycopg2 - for PostgreSQL database calls
@@ -114,8 +114,8 @@ def main(argv):
     target_type = 'Database'  # Default to Database right now for development
 
     check_query = 'select check_command, check_type, result_column, handler from public.checklist where 1=1 '
-    target_query = 'select inventoryid, instancename, owner, homedirectory, hostname,' \
-                   ' targettype from target where decommissioned is null '
+    target_query = 'select inventory_id, instance_name, owner, home_dir, hostname,' \
+                   ' target_type from target where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv,":t:c:v:f:h")
@@ -159,7 +159,7 @@ def main(argv):
             FREQUENCY = arg
 
     check_query += ' and frequency = \'' + frequency + '\'  order by handler, priority'
-    target_query += ' and targettype = \'' + target_type + '\' order by inventoryid'
+    target_query += ' and target_type = \'' + target_type + '\' order by inventory_id'
 
     target_logger.info("Running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", target_type,
                        vendor, frequency, check_type)

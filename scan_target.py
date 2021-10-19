@@ -76,7 +76,7 @@ def main(argv):
       vendor = arg
       target_query += ' and vendor = \'' + vendor + '\''
 
-  target_query += ' order by inventoryid'
+  target_query += ' order by inventory_id'
 
   check_query="select check_command, check_type, result_column, handler from public.checklist \
                where frequency='"+target_type+"' order by handler, priority"
@@ -110,10 +110,10 @@ def main(argv):
     ######################################################
     # * * * *  Main Loop of all in-scope Targets * * * * #
     ######################################################
-    for inventoryid, instance, owner, homedir, host, TargetType in all_targets:
+    for inventory_id, instance, owner, homedir, host, TargetType in all_targets:
         result=0
-        target_logger.debug("inventoryid: %s instance: %s owner: %s homedir: %s HostName: %s TargetType: %s", \
-                        inventoryid, instance, owner, homedir, host, TargetType)
+        target_logger.debug("inventory_id: %s instance: %s owner: %s homedir: %s HostName: %s TargetType: %s", \
+                        inventory_id, instance, owner, homedir, host, TargetType)
 
         oldHandler = ''
         ###############################################################################
@@ -134,12 +134,12 @@ def main(argv):
                 rc, result=targets.GetInfo(check, handler, curr_connection, target_logger)
                 print ('Result: %s', result)
                 if result :
-                  targets.UpdateColumn(inventoryid, result_column, result, target_logger)
+                  targets.UpdateColumn(inventory_id, result_column, result, target_logger)
 
             else:   # connection no longer works
-                targets.UpdateColumn(inventoryid, 'status', 'No '+handler+' Connection', target_logger)
+                targets.UpdateColumn(inventory_id, 'status', 'No '+handler+' Connection', target_logger)
 
-            target_logger.info("Inventory ID: %s Attribute: %s Value: %s" , inventoryid, result_column, result)
+            target_logger.info("Inventory ID: %s Attribute: %s Value: %s" , inventory_id, result_column, result)
 
         # targets.Disconnect(curr_connection)
         curr_connection.close()
@@ -160,7 +160,7 @@ def main(argv):
         target_logger.info('Parsing new line: %s', entry)
         target="NONE"
         result="NONE"
-        inventoryid=0
+        inventory_id=0
         entry=entry.strip()
         scan_list=entry.split(",")
 
