@@ -132,7 +132,6 @@ def main(argv):
 
             if curr_connection:  # connection still works
                 rc, result=targets.get_info(check, handler, curr_connection, target_logger)
-                print ('Result: %s', result)
                 if result :
                   targets.update_column(inventory_id, result_column, result, target_logger)
 
