@@ -21,8 +21,8 @@ INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PW
 # Output:       Single entry into CheckResults table
 # ============================================================================
 
-def add(id, check_result, column_name, target_logger):
-    target_logger.debug("Insert check result: %s into %s for ID: %s", check_result, column_name, id)
+def add(inventory_id, check_result, column_name, target_logger):
+    target_logger.debug("Insert check result: %s into %s for ID: %s", check_result, column_name, inventory_id)
     postgres_insert_connection = psycopg2.connect(INVENTORYDB)
     insert_cursor = postgres_insert_connection.cursor()
     insert_statement = "INSERT INTO check_results (inventory_id, check_date, check_result, check_column) \
@@ -32,14 +32,14 @@ def add(id, check_result, column_name, target_logger):
     # Pass data to fill a query placeholders and let Psycopg perform
     # the correct conversion (no more SQL injections!)
     try:
-        insert_cursor.execute(insert_statement, (id, check_date, check_result, column_name))
+        insert_cursor.execute(insert_statement, (inventory_id, check_date, check_result, column_name))
 
     except psycopg2.Error as exc:
         error, = exc.args
         target_logger.error("Data Exception: %s ", error)
 
     else:
-        target_logger.info("Result added: %s  %s  %s  %s", id, column_name, check_result, check_date)
+        target_logger.info("Result added: %s  %s  %s  %s", inventory_id, column_name, check_result, check_date)
 
         # Make the changes to the database persistent
         postgres_insert_connection.commit()
