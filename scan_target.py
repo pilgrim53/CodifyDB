@@ -127,17 +127,17 @@ def main(argv):
                     # Targets.Disconnect(curr_connection)
                     curr_connection.close()
                 oldHandler = handler
-                rc, curr_connection=targets.Connect(host, instance, owner, handler, target_logger)
+                rc, curr_connection=targets.connect(host, instance, owner, handler, target_logger)
 
 
             if curr_connection:  # connection still works
                 rc, result=targets.GetInfo(check, handler, curr_connection, target_logger)
                 print ('Result: %s', result)
                 if result :
-                  targets.UpdateColumn(inventory_id, result_column, result, target_logger)
+                  targets.update_column(inventory_id, result_column, result, target_logger)
 
             else:   # connection no longer works
-                targets.UpdateColumn(inventory_id, 'status', 'No '+handler+' Connection', target_logger)
+                targets.update_column(inventory_id, 'status', 'No '+handler+' Connection', target_logger)
 
             target_logger.info("Inventory ID: %s Attribute: %s Value: %s" , inventory_id, result_column, result)
 
