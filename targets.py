@@ -56,10 +56,10 @@ def connect(hostname, instance_name, owner, handler, target_logger):
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
             curr_connection.callTimeout=35000    # Oracle Connection timeout is milliseconds  - allow 35 seconds
             RC = 1
-            TargetLogger.debug("Connected to: %s with %s ", HostName, Handler)
+            target_logger.debug("Connected to: %s with %s ", hostname, handler)
         except cx_Oracle.DatabaseError as exc:
             error, = exc.args
-            TargetLogger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
             RC=error.code
             if curr_connection :
                 curr_connection.close()
@@ -414,7 +414,7 @@ def get_OS_info(check, connection, target_logger):
         result = ''.join(str(stdout_chunks[len(stdout_chunks) - 1].decode("utf-8")).strip())
 
         # result_list=[ str(v) for lst in stdout_chunks for key, value in lst.decode('utf-8').items() ]
-        # TargetLogger.info("OS result length: %s result: %s", str(len(result_list)), str(result_list) )
+        # target_logger.info("OS result length: %s result: %s", str(len(result_list)), str(result_list) )
 
         if stderr:
             target_logger.info("OS Check Errors: %s ", stderr)
@@ -543,7 +543,7 @@ def update_column(inventory_id, column_name, value, target_logger):
 # Ouptut:      Returns a boolean if its new and the target info
 #              [host, vendor, instance, status, owner, homedir]
 # ============================================================================
-def reject(host, vendor, instance, status, owner, homedir, importantnotes, target_type, TargetLogger):
+def reject(host, vendor, instance, status, owner, homedir, importantnotes, target_type, target_logger):
 
     result=0
     postgres_conn = psycopg2.connect(INVENTORYDB)
@@ -559,14 +559,14 @@ def reject(host, vendor, instance, status, owner, homedir, importantnotes, targe
 
     except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
           error, = exc.args
-          TargetLogger.error('Error inserting reject record: %s %s %s ', str(host),str(instance),str(error))
+          target_logger.error('Error inserting reject record: %s %s %s ', str(host),str(instance),str(error))
           result=-1
 
     else:
           result=1
-          TargetLogger.info('Rejected new target: %s %s  ', str(host),str(instance))
+          target_logger.info('Rejected new target: %s %s  ', str(host),str(instance))
 
-    TargetLogger.debug('Target Reject Result: %s', result)
+    target_logger.debug('Target Reject Result: %s', result)
 
     postgres_conn.close()
 
@@ -583,13 +583,13 @@ def reject(host, vendor, instance, status, owner, homedir, importantnotes, targe
 # Ouptut:      Returns a boolean if its new and the target info
 #              [instance,host,DBCreateDate,DBID,status, port]
 # ============================================================================
-def add(host, instance, container, DBID, owner, homedir, status, port, target_type, TargetLogger):
+def add(host, instance, container, DBID, owner, homedir, status, port, target_type, target_logger):
 
     result=0
     count=0
 
     postgres_conn = psycopg2.connect(INVENTORYDB)
-    result=inventory.get_id(host, instance, TargetLogger)
+    result=inventory.get_id(host, instance, target_logger)
     if result < 1:
 
       insert_cursor = postgres_conn.cursor()
@@ -604,19 +604,19 @@ def add(host, instance, container, DBID, owner, homedir, status, port, target_ty
 
       except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
           error, = exc.args
-          TargetLogger.error('Error inserting new target: %s %s %s ', str(host),str(instance), str(error))
+          target_logger.error('Error inserting new target: %s %s %s ', str(host),str(instance), str(error))
           result=-1
 
       except Exception as exc:
           error, = exc.args
-          TargetLogger.error('Exception occurred inserting target: %s %s Container: %s %s', \
+          target_logger.error('Exception occurred inserting target: %s %s Container: %s %s', \
                               str(host), str(instance), str(container), str(error))
           result=-1
 
       else:
-          result=inventory.get_id(host, instance, TargetLogger)
+          result=inventory.get_id(host, instance, target_logger)
 
-      TargetLogger.info('Add target Result InventoryID: %s', result)
+      target_logger.info('Add target Result InventoryID: %s', result)
 
       postgres_conn.close()
 

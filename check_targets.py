@@ -81,12 +81,8 @@ INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PW
 
 GLOBAL_LOG_NAME = "Check_Targets"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
-GLOBAL_LOG_LEVEL = 'INFO'
+GLOBAL_LOG_LEVEL = 'DEBUG'
 
-
-GlobalLogName = "Check_Targets"
-GlobalLogFile = LOG_DIR+GlobalLogName+"_"+str(date.today())+".log"
-GlobalLogLevel = 'INFO'
 
 # ============================================================================
 # ============================================================================
@@ -146,7 +142,7 @@ def main(argv):
             check_query += ' and check_type = \'' + check_type + '\''
 
         elif opt =="-f":
-            FREQUENCY = arg
+            frequency = arg
 
     check_query += ' and frequency = \'' + frequency + '\'  order by handler, priority'
     target_query += ' and target_type = \'' + target_type + '\' order by inventory_id'
@@ -218,7 +214,6 @@ def main(argv):
                 if handler == 'OMS' :
                     check = f"{check.format(hostname, instance_name)}"
 
-                
                 info_rc, result = targets.get_info(check, handler, curr_connection, target_logger)
                 target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
                                     result, info_rc)
@@ -242,5 +237,5 @@ def main(argv):
 # ============================================================================
 
 if __name__ == "__main__":
-    target_logger=start_logging(GlobalLogLevel, GlobalLogFile, GlobalLogName)    # Log to File
+    target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)    # Log to File
     main(sys.argv[1:])
