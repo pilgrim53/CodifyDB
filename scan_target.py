@@ -6,6 +6,7 @@
 from datetime import date, datetime  # not included by default
 from decouple import config  # Allows us to read .env
 from inv_logging import start_logging  # Allows us to log to a file
+import cx_Oracle
 import targets  # All target functions
 import sys, getopt  # Allows us to interact with the o/s
 import psycopg2  # for PostgreSQL database calls
@@ -125,7 +126,12 @@ def main(argv):
             if handler != oldHandler :
                 if oldHandler != '' and curr_connection != '':
                     # Targets.Disconnect(curr_connection)
-                    curr_connection.close()
+                    try:
+                      curr_connection.close()
+                    except cx_Oracle.DatabaseError as exc:
+                      error, = exc.args
+                      target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+
                 oldHandler = handler
                 rc, curr_connection=targets.connect(host, instance, owner, handler, target_logger)
 
