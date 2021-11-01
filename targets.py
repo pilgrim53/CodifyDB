@@ -1,6 +1,3 @@
-# ============================================================================
-# Import all the external Python modules that we need
-# ============================================================================
 import paramiko  # Allows us to ssh to the target hosts
 import cx_Oracle  # https://oracle.github.io/python-cx_Oracle/
 import psycopg2  # https://pypi.org/project/psycopg2/
@@ -18,9 +15,7 @@ import os
 import results
 import inventory
 
-# ============================================================================
 # Set DBTools Environment and Global Variables
-# ============================================================================
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 OLD_DBC_PWD = config('OLD_DBC_PWD')
@@ -38,42 +33,43 @@ NOT_EXIST = [12154, 12521, 12545, 12541, 12543, 12514, 12505, 12547, 28860]
 NO_ACCESS = [1017, 1045, 1033, 15000, 28000, 28001]
 
 
-# ============================================================================
-# Function:     connect
-# Description:  Connects to a target using the specified handler
-# Input:        hostname, instance_name, owner, handler, target_logger
-# Output:       None
-# Returns:      Return Code and the connection if successful   1=Success
-# ============================================================================
-
-def connect(hostname, instance_name, owner, handler, target_logger):
-    target_logger.debug("Connecting to: %s with %s as %s", hostname, handler, owner)
+def connect(host_name, instance_name, owner, handler, target_logger):
+    """
+    Connects to a target using the specified handler.
+    :param host_name:
+    :param instance_name:
+    :param owner:
+    :param handler:
+    :param target_logger:
+    :returns rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
+    """
+    target_logger.debug("Connecting to: %s with %s as %s", host_name, handler, owner)
     rc = 0
     curr_connection = ''
 
     if handler == 'OMS':
         try:
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
-            curr_connection.callTimeout=35000    # Oracle Connection timeout is milliseconds  - allow 35 seconds
-            RC = 1
-            target_logger.debug("Connected to: %s with %s ", hostname, handler)
+            curr_connection.callTimeout = 35000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+            rc = 1
+            target_logger.debug("Connected to: %s with %s ", host_name, handler)
         except cx_Oracle.DatabaseError as exc:
             error, = exc.args
             target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-            RC=error.code
-            if curr_connection :
+            rc = error.code
+            if curr_connection:
                 curr_connection.close()
                 curr_connection = ''
 
     elif handler == 'ASM':
         if instance_name == '+ASM':
             try:
-                curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + hostname,
+                curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + host_name,
                                                     encoding="UTF-8",
                                                     mode=cx_Oracle.SYSASM)
                 curr_connection.callTimeout = 35000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
                 rc = 1
-                target_logger.debug("Connected to: %s with %s ", hostname, handler)
+                target_logger.debug("Connected to: %s with %s ", host_name, handler)
             except cx_Oracle.DatabaseError as exc:
                 error, = exc.args
                 target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
@@ -83,10 +79,10 @@ def connect(hostname, instance_name, owner, handler, target_logger):
                     curr_connection = ''
     elif handler == 'Oracle' or handler == 'PLSQL':
         try:
-            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + hostname, encoding="UTF-8")
+            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + host_name, encoding="UTF-8")
             curr_connection.callTimeout = 35000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
             rc = 1
-            target_logger.debug("Connected to: %s with %s ", hostname, handler)
+            target_logger.debug("Connected to: %s with %s ", host_name, handler)
         except cx_Oracle.DatabaseError as exc:
             error, = exc.args
             target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
@@ -102,7 +98,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
         private_key = paramiko.RSAKey.from_private_key_file(PKEY)
 
         try:
-            curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
+            curr_connection.connect(host_name=host_name, port=22, username=owner, timeout=15, \
                                     banner_timeout=10, auth_timeout=10, pkey=private_key)
 
             target_logger.debug('Connection Established at: %s', str(datetime.now()))
@@ -111,7 +107,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
             timer.start()  # start counting right before connecting - wait longer than the longest ssh timeout value
 
         except paramiko.ssh_exception.AuthenticationException:
-            target_logger.error("Authentication failed, Host: %s    Owner: %s", hostname, owner)
+            target_logger.error("Authentication failed, Host: %s    Owner: %s", host_name, owner)
             rc = "AuthenticationException"
             if curr_connection != '':
                 curr_connection.close()
@@ -147,18 +143,17 @@ def connect(hostname, instance_name, owner, handler, target_logger):
     return rc, curr_connection
 
 
-# ============================================================================
 # END connect
-# ============================================================================
-
-# ============================================================================
-# Function:    create_DBC
-# Description: Force the creation or recreation of the CLOUD_DBC database user
-# Returns:     status of command 1=success, 0=fail, -1=could not run
-# ============================================================================
 
 
 def create_DBC(target, owner, target_logger):
+    """
+    Force the creation or recreation of the CLOUD_DBC database user
+    :param target:
+    :param owner:
+    :param target_logger:
+    :return: result: Status of command. 1 = success, 0 = fail, -1 = could not run
+    """
     instance, host = target.split('_')
     result = -1
     target_logger.debug('Fix CLOUD_DBC on: %s', str(target))
@@ -211,27 +206,27 @@ sqlOUT"""
     return result
 
 
-# ============================================================================
 # END create_DBC
-# ============================================================================
 
-# ============================================================================
-# Function:    get_info
-# Description: Checks the target database for a single specific key attribute
-# Returns:     The result of the check query
-#              RC=-1 means could not connect
-#              RC=0 means the command failed
-#              RC=1 success
-# Future:   Make the check timeout a parameter and setting for each check
-# ============================================================================
+
+# TODO:   Make the check timeout a parameter and setting for each check
 
 
 def get_info(check, handler, connection, target_logger):
+    """
+    Checks the target database for a single specific key attribute
+    :param check:
+    :param handler:
+    :param connection:
+    :param target_logger:
+    :return: result: The result of the check query
+    :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
+    """
     rc = 0
     result = ''
 
     if connection != '':
-        if handler == 'Oracle' or handler == 'ASM' or handler == 'OMS' :
+        if handler == 'Oracle' or handler == 'ASM' or handler == 'OMS':
             rc, result = get_oracle_info(check, connection, target_logger)
         elif handler == 'ssh':
             rc, result = get_OS_info(check, connection, target_logger)
@@ -241,22 +236,18 @@ def get_info(check, handler, connection, target_logger):
     return rc, result
 
 
-# ============================================================================
 # END get_info
-# ============================================================================
-
-# ============================================================================
-# Function:    get_oracle_info
-# Description: Checks the target database for a single specific key attribute
-# Returns:     The result of the check query
-#              RC=-1 means could not connect
-#              RC=0 means the command failed
-#              RC=1 success
-# Future:   Make the check timeout a parameter and setting for each check
-# ============================================================================
 
 
 def get_oracle_info(check, connection, target_logger):
+    """
+    Checks the target database for a single specific key attribute
+    :param check:
+    :param connection:
+    :param target_logger:
+    :return: result: The result of the check query
+    :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
+    """
     rc = -1
     value = ''
 
@@ -294,23 +285,20 @@ def get_oracle_info(check, connection, target_logger):
     return rc, value
 
 
-# ============================================================================
 # END get_oracle_info
-# ============================================================================
 
-
-# ============================================================================
-# Function:    get_PLSQL_info
-# Description: Checks the target database for a single specific key attribute
-# Returns:     The result of the check query
-#              RC=-1 means could not connect
-#              RC=0 means the command failed
-#              RC=1 success
-# Future:   Make the check timeout a parameter and setting for each check
-# ============================================================================
+# TODO:   Make the check timeout a parameter and setting for each check
 
 
 def get_PLSQL_info(check, connection, target_logger):
+    """
+    Checks the target database for a single specific key attribute
+    :param check:
+    :param connection:
+    :param target_logger:
+    :return: result: The result of the check query
+    :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
+    """
     target_logger.info('GetPLSQLInfo:  %s', check)
     rc = 1
     db_info_cursor = connection.cursor()
@@ -341,19 +329,18 @@ def get_PLSQL_info(check, connection, target_logger):
     return rc, value
 
 
-# ============================================================================
 # END get_PLSQL_info
-# ============================================================================
-
-# ============================================================================
-# Function:    get_OS_info
-# Description: Takes a target and an OS check and first obtains the FID and
-#              home_dir for the call to the check_os_target routine
-# Returns:     The result of the OS check query
-# ============================================================================
 
 
 def get_OS_info(check, connection, target_logger):
+    """
+    Takes a target and an OS check and first obtains the FID and home_dir for the call to the check_os_target routine
+    :param check:
+    :param connection:
+    :param target_logger:
+    :return: result: The result of the OS check query
+    :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
+    """
     result = ''
     rc = 0
     timer = threading.Timer(15, connection.close)
@@ -440,20 +427,19 @@ def get_OS_info(check, connection, target_logger):
     return rc, result
 
 
-# ============================================================================
 # END get_OS_info
-# ============================================================================
 
-# ============================================================================
-# Function:    update_column
-# Description: Checks the Inventory database for 1 target and 1 attribute / column
-# Input:       InventoryID, column_name, value
-# Output:      Updates target attribute if it has changed
-# rc=-1   Target no longer exists
-# rc=0    No change
-# rc=1    Target updated
-# ============================================================================
+
 def update_column(inventory_id, column_name, value, target_logger):
+    """
+    Checks the Inventory database for 1 target and 1 attribute / column
+    :param inventory_id:
+    :param column_name:
+    :param value:
+    :param target_logger:
+    :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
+    """
+
     result = 0
 
     if column_name == 'hostname' or column_name == 'instance_name':
@@ -530,22 +516,24 @@ def update_column(inventory_id, column_name, value, target_logger):
     return result
 
 
-# ============================================================================
 # END update_column
-# ============================================================================
 
 
-
-# ============================================================================
-# Function:    Reject
-# Description: Creates the initial Target entry in the DBC_Target table
-# Input:       Takes target in the format of host, instance, container, port
-# Ouptut:      Returns a boolean if its new and the target info
-#              [host, vendor, instance, status, owner, homedir]
-# ============================================================================
-def reject(host, vendor, instance, status, owner, homedir, importantnotes, target_type, target_logger):
-
-    result=0
+def reject(host, vendor, instance, status, owner, home_dir, important_notes, target_type, target_logger):
+    """
+    Creates the initial Target entry in the DBC_Target table
+    :param host:
+    :param vendor:
+    :param instance:
+    :param status:
+    :param owner:
+    :param home_dir:
+    :param important_notes:
+    :param target_type:
+    :param target_logger:
+    :return: result: the target info [host, vendor, instance, status, owner, home_dir]
+    """
+    result = 0
     postgres_conn = psycopg2.connect(INVENTORYDB)
     insert_cursor = postgres_conn.cursor()
     insert_stmt = """INSERT INTO public.target_rejects
@@ -553,74 +541,81 @@ def reject(host, vendor, instance, status, owner, homedir, importantnotes, targe
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s); """
 
     try:
-          insert_cursor.execute(insert_stmt, ( date.today(),host,instance,vendor,status,owner,homedir,importantnotes ))
-          # Make the changes to the database persistent
-          postgres_conn.commit()
+        insert_cursor.execute(insert_stmt,
+                              (date.today(), host, instance, vendor, status, owner, home_dir, important_notes))
+        # Make the changes to the database persistent
+        postgres_conn.commit()
 
-    except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
-          error, = exc.args
-          target_logger.error('Error inserting reject record: %s %s %s ', str(host),str(instance),str(error))
-          result=-1
+    except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError) as exc:
+        error, = exc.args
+        target_logger.error('Error inserting reject record: %s %s %s ', str(host), str(instance), str(error))
+        result = -1
 
     else:
-          result=1
-          target_logger.info('Rejected new target: %s %s  ', str(host),str(instance))
+        result = 1
+        target_logger.info('Rejected new target: %s %s  ', str(host), str(instance))
 
     target_logger.debug('Target Reject Result: %s', result)
 
     postgres_conn.close()
 
     return result
-# ============================================================================
+
+
 # END Reject
-# ============================================================================
 
 
-# ============================================================================
-# Function:    Add
-# Description: Creates the initial Target entry in the DBC_Target table
-# Input:       Takes target in the format of host, instance, container, port
-# Ouptut:      Returns a boolean if its new and the target info
-#              [instance,host,DBCreateDate,DBID,status, port]
-# ============================================================================
-def add(host, instance, container, DBID, owner, homedir, status, port, target_type, target_logger):
-
-    result=0
-    count=0
+def add(host, instance, container, DBID, owner, home_dir, status, port, target_type, target_logger):
+    """
+    Creates the initial Target entry in the DBC_Target table
+    :param host:
+    :param instance:
+    :param container:
+    :param DBID:
+    :param owner:
+    :param home_dir:
+    :param status:
+    :param port:
+    :param target_type:
+    :param target_logger:
+    :return: the target info [instance, host, DBCreateDate, DBID, status, port]
+    """
+    result = 0
+    count = 0
 
     postgres_conn = psycopg2.connect(INVENTORYDB)
-    result=inventory.get_id(host, instance, target_logger)
+    result = inventory.get_id(host, instance, target_logger)
     if result < 1:
 
-      insert_cursor = postgres_conn.cursor()
-      insert_stmt = """INSERT INTO public.target
+        insert_cursor = postgres_conn.cursor()
+        insert_stmt = """INSERT INTO public.target
                        (Inventory_Create, Target_Type, HostName, Instance_Name, Container, Serial_Number, owner, home_dir, Vendor, Status, Port)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
 
-      try:
-          insert_cursor.execute(insert_stmt, ( date.today(),target_type, host,instance,container,DBID,owner,homedir,'ORACLE',status,port) )
-          # Make the changes to the database persistent
-          postgres_conn.commit()
+        try:
+            insert_cursor.execute(insert_stmt, (
+                date.today(), target_type, host, instance, container, DBID, owner, home_dir, 'ORACLE', status, port))
+            # Make the changes to the database persistent
+            postgres_conn.commit()
 
-      except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError)   as exc:
-          error, = exc.args
-          target_logger.error('Error inserting new target: %s %s %s ', str(host),str(instance), str(error))
-          result=-1
+        except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError) as exc:
+            error, = exc.args
+            target_logger.error('Error inserting new target: %s %s %s ', str(host), str(instance), str(error))
+            result = -1
 
-      except Exception as exc:
-          error, = exc.args
-          target_logger.error('Exception occurred inserting target: %s %s Container: %s %s', \
-                              str(host), str(instance), str(container), str(error))
-          result=-1
+        except Exception as exc:
+            error, = exc.args
+            target_logger.error('Exception occurred inserting target: %s %s Container: %s %s', \
+                                str(host), str(instance), str(container), str(error))
+            result = -1
 
-      else:
-          result=inventory.get_id(host, instance, target_logger)
+        else:
+            result = inventory.get_id(host, instance, target_logger)
 
-      target_logger.info('Add target Result InventoryID: %s', result)
+        target_logger.info('Add target Result InventoryID: %s', result)
 
-      postgres_conn.close()
+        postgres_conn.close()
 
     return result
-# ============================================================================
+
 # END Add
-# ============================================================================

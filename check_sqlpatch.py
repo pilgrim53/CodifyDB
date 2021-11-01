@@ -10,45 +10,12 @@
 # This script is part of the DBC DBTools.  Do not make
 # modifications to local copies.
 # ============================================================================
-# Description
-# ============================================================================
-#
-# Script name:          check_sqlpatch.py
-#
-# Version:              1.00
-#
-# Purpose:              This script checks to see if a particular target
-#                       is registered in the non-prod Patch repository
-#
-# Input files:          DBC_TARGET  Table
-#
-# Output:               DBC_TARGET.in_sqlpatch 
-#                       Log files to ./logs directory
-#
-# Syntax:               check_sqlpatch.py
-#
-# Called Routines:      cx_Oracle - for Oracle database calls
-#                       psycopg2 - for PostgreSQL database calls
-#                       date, grep, awk, cat, uname - misc UNIX commands
-#
-# Return Codes:
-#
-# Restrictions:         You must first run "source ~/Inventory/bin/activate
-#                       to enter the necessary Python virtual environment
-#
-# Abend instructions:   Resolve and rerun
-#
-# ============================================================================
 # History of Changes
 # ============================================================================
 # Date         Person            Version  Comments
 # 2021/02/15   M.Pankratz        1.00     Created
 # ============================================================================
 
-
-# ============================================================================
-# Import all the external Python modules that we need
-# ============================================================================
 import paramiko  # Allows us to ssh to the target hosts
 import cx_Oracle  # https://oracle.github.io/python-cx_Oracle/
 import psycopg2  # https://pypi.org/project/psycopg2/
@@ -59,25 +26,33 @@ import threading  # Allows us to time and kill hung db connections
 # from numpy import asarray # convert sql result tuples to python arrays
 from datetime import date  # for some reason this is not included by default
 
-# ============================================================================
 
-# ============================================================================
 # Set DBTools Environment and Global Variables
-# ============================================================================
 ORACLE_HOME = "/u01/app/oracle/product/12.2.0.1"
 TNS_ADMIN = "/u01/app/oracle/DBTools/"
 LOG_FILE = "/home/orac4i/Inventory/src/logs/check_sqlpatch_" + str(date.today()) + ".log"
 LOG_LEVEL = "DEBUG"
 
 
-# ============================================================================
-
-# ============================================================================
-# Define Functions
-# ============================================================================
-
-
 def start_logging(log_level, log_file):
+    """
+    Checks to see if a particular target is registered in the non-prod Patch repository
+    Input Files:  DBC_TARGET  Table
+
+    Output:       DBC_TARGET.in_sqlpatch
+                  Log files to ./logs directory
+
+    Syntax:       check_sqlpatch.py
+
+    Called Routines:  cx_Oracle - for Oracle database calls
+                      psycopg2 - for PostgreSQL database calls
+                      date, grep, awk, cat, uname - misc UNIX commands
+
+
+    Restrictions: You must first run "source ~/Inventory/bin/activate
+                  to enter the necessary Python virtual environment
+    """
+
     logging.basicConfig(filename=log_file, level=logging.DEBUG)
     logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     target_logger = logging.getLogger('Check_Patch')
@@ -94,23 +69,12 @@ def start_logging(log_level, log_file):
     # End StartLogging
 
 
-# ============================================================================
-# Logging examples
-# ============================================================================
-# logging.debug('This should go to the log file.')
-# logging.info('So should this')
-# logging.warning('And this, too')
-# logging.error('And non-ASCII stuff, too, like Øresund and Malmö')
-# ============================================================================
-
-# ============================================================================
-# Function:    CheckPatch
-# Description: Checks the DBC NonProd Patch Repository to see if it contains
-#              The requested target.
-# Input:       Takes target in the format of host_instance
-# Ouptut:      Returns a "Y/N" result 
-# ============================================================================
 def check_patch(target):
+    """
+    Checks the DBC NonProd Patch Repository to see if it contains the requested target.
+    :param target: in the format of host_instance
+    :return: patch: a "Y/N" result
+    """
     # Set some initial values each time we do a check
     patch = 'Unknown'  # Set to Unknown until it is known
 
@@ -205,26 +169,16 @@ end;"""
 
     return patch[0]
 
-
-# ============================================================================
 # END CheckPatch
-# ============================================================================
 
-# ============================================================================
-# ============================================================================
+
 # ---------------------------   MAIN PROGRAM   -------------------------------
-# ============================================================================
-# ============================================================================
-
 if __name__ == '__main__':
-
     TargetLogger = start_logging(LOG_LEVEL, LOG_FILE)  # Log to File
 
-    # ============================================================================
     # Fetch all the valid database targets from the InventoryDB and
     # check each one database by database
     # Attempt to query that target and record the results
-    # ============================================================================
 
     # Connect to the Inventory DB
 
