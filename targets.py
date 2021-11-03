@@ -33,17 +33,17 @@ NOT_EXIST = [12154, 12521, 12545, 12541, 12543, 12514, 12505, 12547, 28860]
 NO_ACCESS = [1017, 1045, 1033, 15000, 28000, 28001]
 
 
-def connect(host_name, instance_name, owner, handler, target_logger):
+def connect(hostname, instance_name, owner, handler, target_logger):
     """
     Connects to a target using the specified handler.
-    :param host_name:
+    :param hostname:
     :param instance_name:
     :param owner:
     :param handler:
     :param target_logger:
     :returns rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
     """
-    target_logger.debug("Connecting to: %s with %s as %s", host_name, handler, owner)
+    target_logger.debug("Connecting to: %s with %s as %s", hostname, handler, owner)
     rc = 0
     curr_connection = ''
 
@@ -52,7 +52,7 @@ def connect(host_name, instance_name, owner, handler, target_logger):
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
             curr_connection.callTimeout = 35000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
             rc = 1
-            target_logger.debug("Connected to: %s with %s ", host_name, handler)
+            target_logger.debug("Connected to: %s with %s ", hostname, handler)
         except cx_Oracle.DatabaseError as exc:
             error, = exc.args
             target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
@@ -64,12 +64,12 @@ def connect(host_name, instance_name, owner, handler, target_logger):
     elif handler == 'ASM':
         if instance_name == '+ASM':
             try:
-                curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + host_name,
+                curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + hostname,
                                                     encoding="UTF-8",
                                                     mode=cx_Oracle.SYSASM)
                 curr_connection.callTimeout = 35000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
                 rc = 1
-                target_logger.debug("Connected to: %s with %s ", host_name, handler)
+                target_logger.debug("Connected to: %s with %s ", hostname, handler)
             except cx_Oracle.DatabaseError as exc:
                 error, = exc.args
                 target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
@@ -79,10 +79,10 @@ def connect(host_name, instance_name, owner, handler, target_logger):
                     curr_connection = ''
     elif handler == 'Oracle' or handler == 'PLSQL':
         try:
-            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + host_name, encoding="UTF-8")
+            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + hostname, encoding="UTF-8")
             curr_connection.callTimeout = 35000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
             rc = 1
-            target_logger.debug("Connected to: %s with %s ", host_name, handler)
+            target_logger.debug("Connected to: %s with %s ", hostname, handler)
         except cx_Oracle.DatabaseError as exc:
             error, = exc.args
             target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
@@ -98,7 +98,7 @@ def connect(host_name, instance_name, owner, handler, target_logger):
         private_key = paramiko.RSAKey.from_private_key_file(PKEY)
 
         try:
-            curr_connection.connect(host_name=host_name, port=22, username=owner, timeout=15, \
+            curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
                                     banner_timeout=10, auth_timeout=10, pkey=private_key)
 
             target_logger.debug('Connection Established at: %s', str(datetime.now()))
@@ -107,7 +107,7 @@ def connect(host_name, instance_name, owner, handler, target_logger):
             timer.start()  # start counting right before connecting - wait longer than the longest ssh timeout value
 
         except paramiko.ssh_exception.AuthenticationException:
-            target_logger.error("Authentication failed, Host: %s    Owner: %s", host_name, owner)
+            target_logger.error("Authentication failed, Host: %s    Owner: %s", hostname, owner)
             rc = "AuthenticationException"
             if curr_connection != '':
                 curr_connection.close()
