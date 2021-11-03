@@ -73,7 +73,7 @@ def get_attribute(inventory_id, target, column, target_logger):
     :param target:
     :param column:
     :param target_logger:
-    :return: value: The result of the OS check query
+    :return: value: the current value of the attribute "column" for the target
     """
 
     value = ''
