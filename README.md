@@ -76,7 +76,7 @@ git clone https://github.com/pilgrim53/CodifyDB.git
 - [ ] install from GitHub (above) 
 
 ```
-Docker-compose up -d --build
+docker-compose up -d --build
 ```
 
 ## Configure your instance
