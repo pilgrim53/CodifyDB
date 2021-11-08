@@ -1,12 +1,10 @@
-# ============================================================================
-# Import all the external Python modules that we need
-# ============================================================================
 import psycopg2  # https://pypi.org/project/psycopg2/
 import psycopg2.extras  # This gives access to the psycopg2 error messages
 # from numpy import asarray # convert sql result tuples to python arrays
 from datetime import date, datetime  # for some reason this is not included by default
 from decouple import config  # Allows us to read .env
 
+# Set DBTools Environment and Global Variables
 INV_USER = config('INV_USER')
 INV_PWD = config('INV_PWD')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
@@ -14,14 +12,14 @@ CODIFYDB = config('CODIFYDB')
 INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
 
 
-# ============================================================================
-# Function:     add
-# Description:  Insert the check results into the inventory database
-# Input:        Check results and column_name for the results to be stored
-# Output:       Single entry into CheckResults table
-# ============================================================================
-
 def add(inventory_id, check_result, column_name, target_logger):
+    """
+    Insert the check results into the inventory database. Outputs single entry into CheckResults table
+    :param inventory_id:
+    :param check_result:
+    :param column_name: Column name for Check results to be stored
+    :param target_logger:
+    """
     target_logger.debug("Insert check result: %s into %s for ID: %s", check_result, column_name, inventory_id)
     postgres_insert_connection = psycopg2.connect(INVENTORYDB)
     insert_cursor = postgres_insert_connection.cursor()
@@ -49,6 +47,5 @@ def add(inventory_id, check_result, column_name, target_logger):
 
     return 0
 
-# ============================================================================
 # END add
-# ============================================================================
+

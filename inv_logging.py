@@ -1,12 +1,5 @@
-# ============================================================================
-# Import all the external Python modules that we need
-# ============================================================================
 import logging  # https://docs.python.org/3/library/logging.html
 
-
-# ============================================================================
-# Define Functions
-# ============================================================================
 
 def start_logging(log_level, log_file, log_name):
     logging.basicConfig(filename=log_file, level=log_level)
@@ -21,6 +14,7 @@ def start_logging(log_level, log_file, log_name):
     target_logger.addHandler(ch)
 
     return target_logger
+
     # End StartLogging
 
 # ============================================================================

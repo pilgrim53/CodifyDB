@@ -1,6 +1,3 @@
-# ============================================================================
-# Import all the external Python modules that we need
-# ============================================================================
 import paramiko  # Allows us to ssh to the target hosts
 import cx_Oracle  # https://oracle.github.io/python-cx_Oracle/
 import psycopg2  # https://pypi.org/project/psycopg2/
@@ -16,9 +13,7 @@ import os
 from inv_logging import start_logging
 import results
 
-# ============================================================================
 # Set DBTools Environment and Global Variables
-# ============================================================================
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 INV_USER = config('INV_USER')
@@ -32,13 +27,15 @@ TNS_ADMIN = "/u01/app/oracle/DBTools/"
 TARGET_FILE = "./discovery.txt"
 
 
-# ============================================================================
-# Function:    GetInventoryID
-# Description: Creates the initial Target entry in the Target table
-# Input:       Takes target in the format of host, instance, container, port
-# Ouptut:      Returns the InventoryID of the target or 0 if not found
-# ============================================================================
 def get_id(host, instance_name, target_logger):
+    """
+    Creates the initial Target entry in the Target table
+    :param host:
+    :param instance_name:
+    :param target_logger:
+    :return: inventory_id: Returns the inventory_id of the target or 0 if not found
+    """
+
     inventory_id = 0
 
     postgres_conn = psycopg2.connect(INVENTORYDB)
@@ -66,19 +63,19 @@ def get_id(host, instance_name, target_logger):
 
     return inventory_id
 
-
-# ============================================================================
-# END GetID
-# ============================================================================
+# END get_id
 
 
-# ============================================================================
-# Function:    GetAttribute
-# Description: Takes a target and an OS check and first obtains the FID and
-#              home_dir for the call to the check_os_target routine
-# Returns:     The result of the OS check query
-# ============================================================================
 def get_attribute(inventory_id, target, column, target_logger):
+    """
+    Takes a target and an OS check and first obtains the FID and home_dir for the call to the check_os_target routine
+    :param inventory_id:
+    :param target:
+    :param column:
+    :param target_logger:
+    :return: value: the current value of the attribute "column" for the target
+    """
+
     value = ''
     query = 'select ' + column + ' from target where inventory_id=' + str(inventory_id) + ''
 
@@ -98,6 +95,4 @@ def get_attribute(inventory_id, target, column, target_logger):
 
     return value
 
-# ============================================================================
-# END GetTargetOSInfo
-# ============================================================================
+# END get_attribute

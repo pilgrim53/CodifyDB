@@ -1,37 +1,4 @@
 # ============================================================================
-# Description
-# ============================================================================
-#
-# Script name:        check_targets.py
-#
-# Version:            1.04
-#
-# Purpose:            This script monitors database targets from the
-#                     DBC Inventory Database. If the target exists and
-#                     something has changed, then it updates the entry.
-#
-# Input files:        TARGETS Table
-#                     checklist table
-#                     $TNS_ADMIN/tnsnames.ora
-#
-# Output:             Entries into the CheckResults table
-#                     Log files to $LOG_DIR/check_results_$date.log
-#
-# Syntax:             check_targets.py -t target_type -v vendor -f frequency -c check_type
-#
-# Called Routines:    cx_Oracle - for Oracle database calls
-#                     psycopg2 - for PostgreSQL database calls
-#                     date, grep, awk, cat, uname - misc UNIX commands
-#
-# Return Codes:       none
-#
-# Restrictions:       Enter the correct python environment prior to running.
-#                     ex)  "source ~/<venv>/bin/activate"
-#                           to enter the necessary virtual environment
-#
-# Abend instructions: Resolve and rerun
-#
-# ============================================================================
 # History of Changes
 # ============================================================================
 # Date           Person          Version    Comments
@@ -45,9 +12,6 @@
 # 2021/09/05     M.Pankratz       1.04      Add TargetType for OS Targets, etc.
 # ============================================================================
 
-# ============================================================================
-# Import all the external Python modules that we need
-# ============================================================================
 from inv_logging import start_logging
 import cx_Oracle
 import psycopg2
@@ -62,19 +26,15 @@ from decouple import config  # Allows us to read .env
 import targets
 import results
 
-# ============================================================================
-
-# ============================================================================
 # Set DBTools Environment and Global Variables
-# ============================================================================
-DBC_USER      = config('DBC_USER')
-DBC_PWD       = config('DBC_PWD')
-INV_USER      = config('INV_USER')
-INV_PWD       = config('INV_PWD')
-ORACLE_BASE   = config('ORACLE_BASE')
-ORACLE_HOME   = config('ORACLE_HOME')
-TNS_ADMIN     = config('TNS_ADMIN')
-LOG_DIR       = config('LOG_DIR')
+DBC_USER = config('DBC_USER')
+DBC_PWD = config('DBC_PWD')
+INV_USER = config('INV_USER')
+INV_PWD = config('INV_PWD')
+ORACLE_BASE = config('ORACLE_BASE')
+ORACLE_HOME = config('ORACLE_HOME')
+TNS_ADMIN = config('TNS_ADMIN')
+LOG_DIR = config('LOG_DIR')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
 CODIFYDB = config('CODIFYDB')
 INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
@@ -83,12 +43,29 @@ GLOBAL_LOG_NAME = "Check_Targets"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
 
+# ---------------------------     MAIN PROGRAM     ---------------------------
+# Description:  Monitors database targets from the DBC Inventory Database.
+#               If the target exists and something has changed, then it updates
+#               the entry.
+#
+# Input Files:  TARGETS Table
+#               checklist table
+#               $TNS_ADMIN/tnsnames.ora
+#
+# Output:       Entries into the CheckResults table
+#               Log files to $LOG_DIR/check_results_$date.log
+# Syntax:       check_targets.py -t target_type -v vendor -f frequency -c check_type
+#
+# Called Routines:    cx_Oracle - for Oracle database calls
+#                     psycopg2 - for PostgreSQL database calls
+#                     date, grep, awk, cat, uname - misc UNIX commands
+#
+# Restrictions: Enter the correct python environment prior to running.
+#               ex)  "source ~/<venv>/bin/activate"
+#                           to enter the necessary virtual environment
+# ============================================================================
 
-# ============================================================================
-# ============================================================================
-# ---------------------------     MAIN PROGRAM     -------------------------------
-# ============================================================================
-# ============================================================================
+
 def main(argv):
     global vendor
     global frequency
@@ -107,18 +84,18 @@ def main(argv):
         opts, args = getopt.getopt(argv,":t:c:v:f:h")
 
     except getopt.GetoptError:
-        print ('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
+        print('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
         sys.exit(2)
 
     target_logger.debug('Command Options: %s  Arguments: %s', opts, args)
 
     for opt, arg in opts:
-        print("Option: {} Argument: {}".format(opt,arg))
+        print("Option: {} Argument: {}".format(opt, arg))
         if opt == '-h':
-            print ('check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] ')
+            print('check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] ')
             sys.exit()
 
-        elif opt == "-t" :
+        elif opt == "-t":
             target_type = arg
             if target_type == 'Server' :
               check_type='OS'
@@ -127,7 +104,7 @@ def main(argv):
               check_type = arg
               check_query += ' and check_type = \'' + check_type + '\''
 
-        elif opt== "-v":
+        elif opt == "-v":
             vendor = arg
             check_query += ' and vendor = \'' + vendor + '\''
             target_query += ' and vendor =  \'' + vendor + '\''
@@ -141,7 +118,7 @@ def main(argv):
             check_type = arg
             check_query += ' and check_type = \'' + check_type + '\''
 
-        elif opt =="-f":
+        elif opt == "-f":
             frequency = arg
 
     check_query += ' and frequency = \'' + frequency + '\'  order by handler, priority'
@@ -152,11 +129,9 @@ def main(argv):
     target_logger.debug("Check Query: %s", check_query)
     target_logger.debug("Target Query: %s", target_query)
 
-    # ============================================================================
-    # Fetch all the valid database targets from the InventoryDB and
+    # Fetch all the valid database targets from the Inventory DB and
     # check each one database by database
     # Attempt to query that target and record the results
-    # ============================================================================
 
     # Connect to the Inventory DB
     inventory_conn = psycopg2.connect(INVENTORYDB)
@@ -165,25 +140,22 @@ def main(argv):
     # Get ALL the active targets
     target_cursor.execute(target_query)
     all_targets = target_cursor.fetchall()
-    target_logger.debug("# of Targets: %s" , len(all_targets))
+    target_logger.debug("# of Targets: %s", len(all_targets))
 
     # Get ALL the checks to perform on these targets
     target_cursor.execute(check_query)
     all_checks = target_cursor.fetchall()
-    target_logger.debug("All Checks: %s" , all_checks)
+    target_logger.debug("All Checks: %s", all_checks)
     inventory_conn.close()
 
-    ######################################################
-    # * * * *  Main Loop of all in-scope Targets * * * * #
-    ######################################################
+
+    # Main Loop of all in-scope Targets
     for inventory_id, instance_name, owner, home_dir, host_name, target_type in all_targets:
         target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s host_name: %s target_type: %s ",
                             inventory_id, instance_name, owner, home_dir, host_name, target_type)
 
-        ###############################################################################
         # Sub Loop of All Checks for the Target
         # Reuse the connection to the target for all similar checks with same handler
-        ###############################################################################
         old_handler = ''
         rc = 1
         connected = 'FALSE'
@@ -211,8 +183,8 @@ def main(argv):
                     connected = 'TRUE'
 
             if connected == 'TRUE':
-                if handler == 'OMS' :
-                    check = f"{check.format(hostname, instance_name)}"
+                if handler == 'OMS':
+                    check = f"{check.format(host_name, instance_name)}"
 
                 info_rc, result = targets.get_info(check, handler, curr_connection, target_logger)
                 target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
@@ -232,10 +204,9 @@ def main(argv):
                        target_type, vendor, frequency, check_type)
     target_logger.info("====================================================================================")
 
-# ============================================================================
 # END main program
-# ============================================================================
+
 
 if __name__ == "__main__":
-    target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)    # Log to File
+    target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)    # Log to File
     main(sys.argv[1:])

@@ -67,7 +67,7 @@ Targets.py                |  Module containing all Target methods (add, update, 
 
 ```
 cd <your application directory>
-git clone https://github.com/pilgrim53/DBInventory.git  
+git clone https://github.com/pilgrim53/CodifyDB.git  
 ```	
 
 ## Install as a Docker Container
@@ -76,7 +76,7 @@ git clone https://github.com/pilgrim53/DBInventory.git
 - [ ] install from GitHub (above) 
 
 ```
-Docker-compose up -d --build
+docker-compose up -d --build
 ```
 
 ## Configure your instance
