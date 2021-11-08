@@ -79,8 +79,9 @@ def connect(hostname, instance_name, owner, handler, target_logger):
                     curr_connection = ''
     elif handler == 'Oracle' or handler == 'PLSQL':
         try:
-            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + hostname, encoding="UTF-8")
-            curr_connection.callTimeout = 35000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+            my_dsn=instance_name + '_' + hostname
+            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
+            curr_connection.callTimeout = 500  # Oracle Connection timeout is milliseconds  - allow 30 seconds
             rc = 1
             target_logger.debug("Connected to: %s with %s ", hostname, handler)
         except cx_Oracle.DatabaseError as exc:
@@ -279,7 +280,9 @@ def get_oracle_info(check, connection, target_logger):
         rc = 0
         value = error.code
 
-    timer.cancel()  # cancel the timer before leaving this function
+    finally:
+        timer.cancel()  # cancel the timer before leaving this function
+
     target_logger.info('GetOracleInfo returning Result: %s', str(value))
 
     return rc, value

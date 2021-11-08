@@ -90,10 +90,10 @@ def main(argv):
 
         # Main Loop of all in-scope Targets
 
-        for inventory_id, instance, owner, home_dir, host_name, TargetType in all_targets:
+        for inventory_id, instance, owner, home_dir, hostname, TargetType in all_targets:
             result = 0
-            target_logger.debug("inventory_id: %s instance: %s owner: %s home_dir: %s host_name: %s TargetType: %s",
-                                inventory_id, instance, owner, home_dir, host_name, TargetType)
+            target_logger.debug("inventory_id: %s instance: %s owner: %s home_dir: %s hostname: %s TargetType: %s",
+                                inventory_id, instance, owner, home_dir, hostname, TargetType)
 
             old_handler = ''
 
@@ -106,7 +106,7 @@ def main(argv):
                         # Targets.Disconnect(curr_connection)
                         curr_connection.close()
                     old_handler = handler
-                    rc, curr_connection = targets.connect(host_name, instance, owner, handler, target_logger)
+                    rc, curr_connection = targets.connect(hostname, instance, owner, handler, target_logger)
 
                 if curr_connection:  # connection still works
                     rc, result = targets.get_info(check, handler, curr_connection, target_logger)
@@ -138,14 +138,14 @@ def main(argv):
 
                 if target_type == "Server":
                     if len(scan_list) == 2:
-                        host_name, owner = entry.split(",")
+                        hostname, owner = entry.split(",")
                     else:
                         owner = "fidBIN"
 
-                    host_name = entry.upper().strip()
+                    hostname = entry.upper().strip()
                     owner = owner.strip()
-                    target = host_name + "_" + host_name
-                    instance_name = host_name
+                    target = hostname + "_" + hostname
+                    instance_name = hostname
                     ports = '22'
                     home_dir, exists = '', ''
                 else:
@@ -170,20 +170,20 @@ def main(argv):
                     target = target.upper().strip()
                     owner = owner.strip()
                     # host, instance=target.split("_")     # Needed for oracle_discovery.ksh output
-                    instance_name, host_name = target.split("_")
+                    instance_name, hostname = target.split("_")
 
-                if host_name > '' and instance_name > '':
+                if hostname > '' and instance_name > '':
                     target_logger.info('Checking target: %s', str(target))
                     # Try connecting to the database and get info if possible exists=targets.CreateDBC(target, owner,
                     # target_logger) if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC
                     # exist  2=Target exists Why add if already there?
-                    inventory_id = targets.add(host_name, instance_name, 'TBD', '0', owner, home_dir, exists, 0,
+                    inventory_id = targets.add(hostname, instance_name, 'TBD', '0', owner, home_dir, exists, 0,
                                                target_type, target_logger)
                     if inventory_id > 0:
                         result = 0
                         target_logger.debug(
                             "inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s",
-                            inventory_id, instance_name, owner, home_dir, host_name, target_type)
+                            inventory_id, instance_name, owner, home_dir, hostname, target_type)
 
                         old_handler = ''
 
@@ -196,7 +196,7 @@ def main(argv):
                                     # targets.Disconnect(curr_connection)
                                     curr_connection.close()
                                 old_handler = handler
-                                rc, curr_connection = targets.connect(host_name, instance_name,
+                                rc, curr_connection = targets.connect(hostname, instance_name,
                                                                       owner, handler, target_logger)
 
                             if curr_connection:  # connection still works
@@ -218,14 +218,13 @@ def main(argv):
                             curr_connection.close()
 
                     else:
-                        result = targets.reject(host_name, '', instance_name, exists, owner, home_dir, entry,
+                        result = targets.reject(hostname, '', instance_name, exists, owner, home_dir, entry,
                                                 target_type, target_logger)
 
                 target_logger.info('hostname: %s instance_name: %s inventory_id: %s results: %s ',
-                                   host_name, instance_name, inventory_id, result)
+                                   hostname, instance_name, inventory_id, result)
 
 # END main program
-
 
 if __name__ == "__main__":
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME)  # Log to File

@@ -87,7 +87,7 @@ def main(argv):
         print('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
         sys.exit(2)
 
-    target_logger.debug('Command Options: %s  Arguments: ', opts, args)
+    target_logger.debug('Command Options: %s  Arguments: %s', opts, args)
 
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt, arg))
