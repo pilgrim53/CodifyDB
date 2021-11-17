@@ -21,7 +21,7 @@ TABLESPACE pg_default;
 ALTER TABLE public.checklist
     OWNER to codify;
     
-INSERT INTO public.checklist(
+copy public.checklist(
 	id, vendor, frequency, check_type, description, check_command, result_column, priority, handler)  FROM stdin;
 2	ORACLE	WEEKLY	DB	in OMS?	select case when exists ( select 1 from oms_targets where upper(host) = '{}' and upper(target) = '{}' )  then 'Y' else 'N' end as rec_exists from dual	in_oms	1	OMS
 3	ORACLE	DAILY	DB	Description	select open_mode from v$database	open_mode	5	Oracle
