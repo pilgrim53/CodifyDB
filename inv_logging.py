@@ -22,19 +22,6 @@ def start_logging(log_level, log_file, log_name, log_to_console):
         ch.setLevel(console_log_level)
         target_logger.addHandler(ch)
 
-
-
-    # logging.basicConfig(filename=log_file, level=log_level)
-    # logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-    # target_logger = logging.getLogger(log_name)
-    # target_logger.setLevel(log_level)
-    #
-    # # Create a console handler
-    # ch = logging.StreamHandler()
-    # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    # ch.setFormatter(formatter)
-    # target_logger.addHandler(ch)
-
     return target_logger
 
     # End StartLogging
