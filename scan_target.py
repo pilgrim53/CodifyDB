@@ -11,7 +11,8 @@ TARGET_FILE = "./discovery.txt"
 LOG_DIR = config('LOG_DIR')
 LOG_NAME = "Scan_Targets"
 LOG_FILE = LOG_DIR + LOG_NAME + "_" + str(date.today()) + ".log"
-LOG_LEVEL = "WARNING"
+LOG_LEVEL = "DEBUG"
+LOG_TO_CONSOLE = "ON"
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 INV_USER = config('INV_USER')
@@ -32,7 +33,6 @@ def main(argv):
     global target_type
     check_type = 'UPDATE'  # Default to scan / update existing known Targets
     target_type = 'Database'  # Default to database targets
-    target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME)  # Log to File
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname, target_type \
                 from public.target where decommissioned is null '
 
@@ -222,10 +222,10 @@ def main(argv):
                                                 target_type, target_logger)
 
                 target_logger.info('hostname: %s instance_name: %s inventory_id: %s results: %s ',
-                                   hostname, instance_name, inventory_id, result)
+                                   hostname, insgirtance_name, inventory_id, result)
 
 # END main program
 
 if __name__ == "__main__":
-    target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME)  # Log to File
+    target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
     main(sys.argv[1:])

@@ -42,6 +42,7 @@ INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PW
 GLOBAL_LOG_NAME = "Check_Targets"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
+GLOBAL_LOG_TO_CONSOLE = "ON"
 
 # ---------------------------     MAIN PROGRAM     ---------------------------
 # Description:  Monitors database targets from the DBC Inventory Database.
@@ -67,10 +68,6 @@ GLOBAL_LOG_LEVEL = 'DEBUG'
 
 
 def main(argv):
-    global vendor
-    global frequency
-    global check_type
-    global target_type
     vendor = '%'
     frequency = 'HOURLY'  # Default to the hourly checks if not specified
     check_type = '%'
@@ -84,6 +81,7 @@ def main(argv):
         opts, args = getopt.getopt(argv,":t:c:v:f:h")
 
     except getopt.GetoptError:
+        #TODO log error
         print('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
         sys.exit(2)
 
@@ -97,7 +95,7 @@ def main(argv):
 
         elif opt == "-t":
             target_type = arg
-            if target_type == 'Server' :
+            if target_type == 'Server':
               check_type='OS'
               check_query += ' and vendor != \'ORACLE\' and check_type = \'' + check_type + '\''
             elif opt == "-c":
@@ -208,5 +206,5 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)    # Log to File
+    target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
     main(sys.argv[1:])
