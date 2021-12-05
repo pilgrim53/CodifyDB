@@ -222,7 +222,7 @@ def main(argv):
                                                 target_type, target_logger)
 
                 target_logger.info('hostname: %s instance_name: %s inventory_id: %s results: %s ',
-                                   hostname, insgirtance_name, inventory_id, result)
+                                   hostname, instance_name, inventory_id, result)
 
 # END main program
 
