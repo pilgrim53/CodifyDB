@@ -5,13 +5,14 @@ from inv_logging import start_logging  # Allows us to log to a file
 import targets  # All target functions
 import sys, getopt  # Allows us to interact with the o/s
 import psycopg2  # for PostgreSQL database calls
+import cx_Oracle
 
-# Set DBTools Environment and Global Variables
+# Set Environment and Global Variables
 TARGET_FILE = "./discovery.txt"
 LOG_DIR = config('LOG_DIR')
 LOG_NAME = "Scan_Targets"
 LOG_FILE = LOG_DIR + LOG_NAME + "_" + str(date.today()) + ".log"
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "INFO"
 LOG_TO_CONSOLE = "ON"
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
@@ -103,8 +104,13 @@ def main(argv):
                 result = ''
                 if handler != old_handler:
                     if old_handler != '' and curr_connection != '':
-                        # Targets.Disconnect(curr_connection)
-                        curr_connection.close()
+                        try:
+                           curr_connection.close()
+                        except cx_Oracle.DatabaseError as exc:
+                           error, = exc.args
+                           target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+
+
                     old_handler = handler
                     rc, curr_connection = targets.connect(hostname, instance, owner, handler, target_logger)
 
@@ -119,7 +125,11 @@ def main(argv):
                 target_logger.info("Inventory ID: %s Attribute: %s Value: %s", inventory_id, result_column, result)
 
             if curr_connection:
-                curr_connection.close()
+                try:
+                   curr_connection.close()
+                except cx_Oracle.DatabaseError as exc:
+                   error, = exc.args
+                   target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
 
     # Look for and add NEW Targets to the inventory
     elif check_type == 'ADD':
@@ -135,6 +145,7 @@ def main(argv):
                 inventory_id = 0
                 entry = entry.strip()
                 scan_list = entry.split(",")
+                home_dir, exists = '', ''
 
                 if target_type == "Server":
                     if len(scan_list) == 2:
@@ -147,20 +158,18 @@ def main(argv):
                     target = hostname + "_" + hostname
                     instance_name = hostname
                     ports = '22'
-                    home_dir, exists = '', ''
                 else:
                     if len(scan_list) > 4:
                         target, owner, home_dir, listener, *ports = entry.split(",")
                     elif len(scan_list) == 4:
                         target, owner, home_dir, listener = entry.split(",")
+                        exists = ''
                         ports = 1521, 2349
                     elif len(scan_list) == 3:
                         target, owner, home_dir = entry.split(",")
-                        exists = ''
                         ports = 1521, 2349
                     elif len(scan_list) == 2:
                         target, owner = entry.split(",")
-                        home_dir, exists = '', ''
                         ports = 1521, 2349
                     elif len(scan_list) == 1:
                         target = entry
@@ -193,8 +202,12 @@ def main(argv):
                             result = ''
                             if handler != old_handler:
                                 if old_handler != '' and curr_connection != '':
-                                    # targets.Disconnect(curr_connection)
-                                    curr_connection.close()
+                                    try:
+                                       curr_connection.close()
+                                    except cx_Oracle.DatabaseError as exc:
+                                       error, = exc.args
+                                       target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+                
                                 old_handler = handler
                                 rc, curr_connection = targets.connect(hostname, instance_name,
                                                                       owner, handler, target_logger)
@@ -215,7 +228,12 @@ def main(argv):
                         # targets.Disconnect(curr_connection)
                         targets.update_column(inventory_id, "last_check_date", str(datetime.now()), target_logger)
                         if curr_connection != '':
-                            curr_connection.close()
+                            try:
+                               curr_connection.close()
+                            except cx_Oracle.DatabaseError as exc:
+                               error, = exc.args
+                               target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+
 
                     else:
                         result = targets.reject(hostname, '', instance_name, exists, owner, home_dir, entry,
@@ -225,6 +243,7 @@ def main(argv):
                                    hostname, instance_name, inventory_id, result)
 
 # END main program
+
 
 if __name__ == "__main__":
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
