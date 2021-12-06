@@ -1,0 +1,35 @@
+{% block title %}
+<h1>DBC Inventory Options Menu</h3>
+<h3>Select an option</h3>
+{% endblock %}
+ 
+{% block content %}
+	<br>
+    <form method="post" action="add_target">
+        {% csrf_token %}
+    <input type="submit" value="ADD">
+    </form>
+
+    <br>
+    <form method="GET" action="scan_target">
+        {{ form.as_p }}
+    {% csrf_token %}
+    <input type="submit" value="SCAN">
+    </form>
+
+    <br>
+    <form method="post" action="check_target">
+        {% csrf_token %}
+    <input type="submit" value="CHECK">
+    </form>
+
+    <br>
+    <form method="GET" action="export_target">
+        {{ form.as_p }}
+    {% csrf_token %}
+    <input type="submit" value="GENERATE LIST">
+    </form>
+
+
+{% endblock %}
+
