@@ -1,0 +1,13 @@
+{% block title %}
+<h1>Export Mighty List</h1>
+{% endblock %}
+ 
+{% block content %}
+	<br>
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="EXPORT NOW">
+    </form>
+{% endblock %}
+

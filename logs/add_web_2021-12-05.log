@@ -1,0 +1,77 @@
+2021-12-05 20:01:09,224 - add_web - INFO - Check Martin Martin returned: None
+2021-12-05 20:01:09,224 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:01:09,231 - add_web - ERROR - Error inserting new target: Martin Martin invalid input syntax for type integer: ""
+LINE 3: ... '', 'Martin', 'Martin', '', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-05 20:01:09,231 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-05 20:01:42,516 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:01:43,809 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:01:44,063 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:01:44,078 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:01:44,209 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:01:44,531 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:01:44,683 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:01:44,894 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:02:18,755 - add_web - INFO - Check Martin Martin returned: None
+2021-12-05 20:02:20,318 - add_web - INFO - Check Martin Martin returned: None
+2021-12-05 20:02:20,457 - add_web - INFO - Check Martin Martin returned: None
+2021-12-05 20:02:20,594 - add_web - INFO - Check Martin Martin returned: None
+2021-12-05 20:12:08,880 - add_web - INFO - Check Martin MArtin returned: None
+2021-12-05 20:12:08,884 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,890 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,905 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,914 - add_web - INFO - Check Martin Martin returned: None
+2021-12-05 20:12:08,919 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,929 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,932 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,942 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,947 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,960 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,965 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,967 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,973 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:08,975 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:09,006 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-05 20:12:09,019 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,019 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,037 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,063 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,084 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,124 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,124 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,139 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,144 - add_web - INFO - Check Martin Martin returned: (15,)
+2021-12-05 20:12:09,159 - add_web - INFO - Check Martin Martin returned: (15,)
+2021-12-05 20:12:09,165 - add_web - INFO - Check Martin Martin returned: (15,)
+2021-12-05 20:12:09,172 - add_web - INFO - Check Martin Martin returned: (15,)
+2021-12-05 20:12:09,178 - add_web - INFO - Check Martin MArtin returned: (7,)
+2021-12-05 20:12:09,188 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,192 - add_web - INFO - Check Martin Martin returned: (15,)
+2021-12-05 20:12:09,209 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,225 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,245 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,257 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,270 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,273 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,285 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,290 - add_web - DEBUG - Check for existing target returned: 15
+2021-12-05 20:12:09,301 - add_web - DEBUG - Check for existing target returned: 15
+2021-12-05 20:12:09,306 - add_web - DEBUG - Check for existing target returned: 15
+2021-12-05 20:12:09,316 - add_web - DEBUG - Check for existing target returned: 15
+2021-12-05 20:12:09,327 - add_web - DEBUG - Check for existing target returned: 7
+2021-12-05 20:12:09,347 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,367 - add_web - DEBUG - Check for existing target returned: 15
+2021-12-05 20:12:09,368 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,379 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,382 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,383 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,385 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,389 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,390 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,391 - add_web - INFO - Add target Result InventoryID: 15
+2021-12-05 20:12:09,391 - add_web - INFO - Add target Result InventoryID: 15
+2021-12-05 20:12:09,393 - add_web - INFO - Add target Result InventoryID: 15
+2021-12-05 20:12:09,394 - add_web - INFO - Add target Result InventoryID: 15
+2021-12-05 20:12:09,395 - add_web - INFO - Add target Result InventoryID: 7
+2021-12-05 20:12:09,397 - add_web - INFO - Add target Result InventoryID: 15
