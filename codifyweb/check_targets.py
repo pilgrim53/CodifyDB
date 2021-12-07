@@ -63,9 +63,9 @@ def main(argv):
     check_type = '%'
     target_type = 'Database'  # Default to Database right now for development
 
-    check_query = 'select check_command, check_type, result_column, handler, database_type from public.checklist where 1=1 '
+    check_query = 'select check_command, check_type, result_column, handler, sub_type from public.checklist where 1=1 '
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname,' \
-                   ' target_type, database_type from target where decommissioned is null '
+                   ' target_type, sub_type from target where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv,":t:c:v:f:h")
@@ -137,9 +137,9 @@ def main(argv):
 
 
     # Main Loop of all in-scope Targets
-    for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_database_type in all_targets:
-        target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_database_type: %s",
-                            inventory_id, instance_name, owner, home_dir, hostname, target_type, target_database_type)
+    for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type in all_targets:
+        target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
+                            inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
 
         # Sub Loop of All Checks for the Target
         # Reuse the connection to the target for all similar checks with same handler
@@ -147,7 +147,7 @@ def main(argv):
         rc = 1
         connected = 'FALSE'
 
-        for check, check_type, result_column, handler, check_database_type in all_checks:
+        for check, check_type, result_column, handler, check_sub_type in all_checks:
             result = ''
             if handler != old_handler:
                 old_handler = handler
@@ -172,7 +172,7 @@ def main(argv):
             target_logger.debug("Check %s Handler: %s Connected: %s ", check, handler, connected)
 
             if connected == 'TRUE':
-                if check_database_type == "" or ( check_database_type == target_database_type) :
+                if check_sub_type == "" or ( check_sub_type == target_sub_type) :
                     if handler == 'OMS':
                         check = f"{check.format(hostname, instance_name)}"
 
