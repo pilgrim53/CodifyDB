@@ -1,4 +1,3 @@
-#!/home/orac4i/Inventory/bin/python
 from datetime import date, datetime  # not included by default
 from decouple import config  # Allows us to read .env
 from inv_logging import start_logging  # Allows us to log to a file
@@ -7,7 +6,7 @@ import sys, getopt  # Allows us to interact with the o/s
 import psycopg2  # for PostgreSQL database calls
 import cx_Oracle
 
-# Set Environment and Global Variables
+# Set DBTools Environment and Global Variables
 TARGET_FILE = "./discovery.txt"
 LOG_DIR = config('LOG_DIR')
 LOG_NAME = "Scan_Targets"
@@ -63,7 +62,7 @@ def main(argv):
             vendor = arg
             target_query += ' and vendor = \'' + vendor + '\''
 
-    target_query += ' order by inventory_id'
+    target_query += ' order by inventory_id '
 
     check_query = "select check_command, check_type, result_column, handler from public.checklist \
                where frequency='" + target_type + "' order by handler, priority"
@@ -207,7 +206,7 @@ def main(argv):
                                     except cx_Oracle.DatabaseError as exc:
                                        error, = exc.args
                                        target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-                
+
                                 old_handler = handler
                                 rc, curr_connection = targets.connect(hostname, instance_name,
                                                                       owner, handler, target_logger)
@@ -243,7 +242,6 @@ def main(argv):
                                    hostname, instance_name, inventory_id, result)
 
 # END main program
-
 
 if __name__ == "__main__":
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
