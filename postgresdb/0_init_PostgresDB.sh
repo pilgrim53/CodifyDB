@@ -53,8 +53,15 @@ ALTER SEQUENCE codify.inventory_seq
 	
 COMMIT;
 
--- Table: codify.target
-\i /code/crt_Target.sql
+-- Table: codify.target   Now Managed by Django Models
+--  \i /code/crt_Target.sql
+
+-- Index: Target.inv_inst
+-- CREATE INDEX inv_inst ON codify.target USING btree
+--    (inventoryid ASC NULLS LAST, instancename ASC NULLS LAST,  hostname ASC NULLS LAST) ;
+
+-- Table: codify.checklist  Now Managed by Django Models
+--  \i /code/crt_CheckList.sql
 
 -- Table: codify.checkresults
 \i /code/crt_CheckResults.sql
@@ -65,19 +72,8 @@ COMMIT;
 -- Table: codify.target_rejects
 \i /code/crt_TargetRejects.sql
 
--- Table: codify.checklist
-\i /code/crt_CheckList.sql
-
 ---------------------------------------------
 ---------------------------------------------
-
--- Index: Target.inv_inst
-CREATE INDEX inv_inst
-    ON codify.target USING btree
-    (inventoryid ASC NULLS LAST, 
-	 instancename ASC NULLS LAST, 
-	 hostname ASC NULLS LAST)
-    TABLESPACE pg_default;
 	
 -- Index: CR_Column
 CREATE INDEX "CR_Column"
@@ -99,8 +95,9 @@ CREATE INDEX check_inv
 
   COMMIT;
   
-CREATE VIEW public.checklist AS SELECT * FROM codify.checklist;
-CREATE VIEW public.checkresults AS SELECT * FROM codify.checkresults;
-CREATE VIEW public.dbc_target AS SELECT * FROM codify.target;
-CREATE VIEW public.lastcheck AS SELECT * FROM codify.lastcheck;
+-- CREATE VIEW public.checklist AS SELECT * FROM codify.checklist;
+-- CREATE VIEW public.checkresults AS SELECT * FROM codify.checkresults;
+-- CREATE VIEW public.target AS SELECT * FROM codify.target;
+-- CREATE VIEW public.lastcheck AS SELECT * FROM codify.lastcheck;
+
 EOSQL
