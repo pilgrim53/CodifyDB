@@ -34,6 +34,7 @@ class CheckList(models.Model):
     vendor = models.TextField(blank=True)
     frequency = models.TextField(blank=True)
     check_type = models.TextField(blank=True)
+    target_sub_type = models.TextField(blank=True)
     description = models.TextField(blank=True)
     check_command = models.TextField(blank=True)
     result_column = models.TextField(blank=True)
@@ -63,7 +64,7 @@ class Target(models.Model):
     archivelog_mode = models.TextField(blank=True)
     blocksize = models.IntegerField(blank=True)
     highlysensitiveinfo = models.BinaryField(blank=True)
-    database_type = models.TextField(blank=True)
+    sub_type = models.TextField(blank=True)
     important_notes = models.TextField(blank=True)
     role = models.TextField(blank=True)
     container = models.TextField(blank=True)
@@ -79,7 +80,7 @@ class Target(models.Model):
     class Meta:
       db_table = 'target'
 
-    @set_sql_for_field('inventory_id', 'select nextval(\'inventoryid\')')
+    @set_sql_for_field('inventory_id', 'select nextval(\'inventory_id\')')
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
