@@ -1,33 +1,3 @@
-# ============================================================================
-# History of Changes
-# ============================================================================
-# Date           Person          Version    Comments
-# 2021/01/13     M.Pankratz       1.00      Created
-# 2021/01/21     M.Pankratz       1.01      add logging and restructure
-# 2021/04/16     M.Pankratz       1.02      Refactoring / Consolidate Functions
-#                                         1) Move checks into checklist table
-#                                         2) Update results for each check
-#                                         3) Move environment variables to file
-# 2021/07/06     M.Pankratz       1.03      Extract common routines
-# 2021/09/05     M.Pankratz       1.04      Add TargetType for OS Targets, etc.
-# ============================================================================
-
-from inv_logging import start_logging
-import cx_Oracle
-# ============================================================================
-# History of Changes
-# ============================================================================
-# Date           Person          Version    Comments
-# 2021/01/13     M.Pankratz       1.00      Created
-# 2021/01/21     M.Pankratz       1.01      add logging and restructure
-# 2021/04/16     M.Pankratz       1.02      Refactoring / Consolidate Functions
-#                                         1) Move checks into checklist table
-#                                         2) Update results for each check
-#                                         3) Move environment variables to file
-# 2021/07/06     M.Pankratz       1.03      Extract common routines
-# 2021/09/05     M.Pankratz       1.04      Add TargetType for OS Targets, etc.
-# ============================================================================
-
 from inv_logging import start_logging
 import cx_Oracle
 import psycopg2
@@ -58,6 +28,7 @@ INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PW
 GLOBAL_LOG_NAME = "Check_Targets"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
+GLOBAL_LOG_TO_CONSOLE = "ON"
 
 # ---------------------------     MAIN PROGRAM     ---------------------------
 # Description:  Monitors database targets from the DBC Inventory Database.
@@ -236,5 +207,5 @@ def main(argv):
 # END main program
 
 if __name__ == "__main__":
-    target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)    # Log to File
+    target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
     main(sys.argv[1:])
