@@ -78,7 +78,7 @@ class Target(models.Model):
     clustered = models.TextField(blank=True)
 
     class Meta:
-      db_table = 'target'
+      db_table = 'targets'
 
     @set_sql_for_field('inventory_id', 'select nextval(\'inventory_id\')')
 
