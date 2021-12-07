@@ -12,12 +12,14 @@ from decouple import config  # Allows us to read .env
 
 import socket
 import os
-from . import results
-from . import inventory
+import results
+import inventory
 
 # Set DBTools Environment and Global Variables
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
+SYS_USER = config('SYS_USER')
+SYS_PWD = config('SYS_PWD')
 OLD_DBC_PWD = config('OLD_DBC_PWD')
 INV_USER = config('INV_USER')
 INV_PWD = config('INV_PWD')
@@ -46,6 +48,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
     target_logger.debug("Connecting to: %s with %s as %s", hostname, handler, owner)
     rc = 0
     curr_connection = ''
+    my_dsn=instance_name + '_' + hostname
 
     if handler == 'OMS':
         try:
@@ -64,9 +67,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
     elif handler == 'ASM':
         if instance_name == '+ASM':
             try:
-                curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, instance_name + '_' + hostname,
-                                                    encoding="UTF-8",
-                                                    mode=cx_Oracle.SYSASM)
+                curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn, mode=cx_Oracle.SYSASM)
                 curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
                 rc = 1
                 target_logger.debug("Connected to: %s with %s ", hostname, handler)
@@ -77,9 +78,22 @@ def connect(hostname, instance_name, owner, handler, target_logger):
                 if curr_connection:
                     curr_connection.close()
                     curr_connection = ''
-    elif handler == 'Oracle' or handler == 'PLSQL':
+    elif handler == 'Oracle' :
         try:
-            my_dsn=instance_name + '_' + hostname
+            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
+            curr_connection.callTimeout = 20000  # Oracle Connection timeout is milliseconds  - allow 10 seconds for all checks
+            rc = 1
+            target_logger.debug("Connected to: %s with %s ", hostname, handler)
+        except cx_Oracle.DatabaseError as exc:
+            error, = exc.args
+            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+            rc = error.code
+            if curr_connection:
+                curr_connection.close()
+                curr_connection = ''
+    elif handler == 'PLSQL':
+        try:
+            # curr_connection = cx_Oracle.connect(SYS_USER, SYS_PWD, my_dsn, mode=cx_Oracle.SYSDBA)
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
             curr_connection.callTimeout = 20000  # Oracle Connection timeout is milliseconds  - allow 10 seconds for all checks
             rc = 1
@@ -249,7 +263,7 @@ def get_oracle_info(check, connection, target_logger):
     :return: result: The result of the check query
     :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
     """
-    rc = 0 
+    rc = 0
     value = ''
 
     try:
@@ -281,7 +295,7 @@ def get_oracle_info(check, connection, target_logger):
         rc = 0
         value = error.code
 
-    finally : 
+    finally :
         timer.cancel()  # cancel the timer before leaving this function
 
     target_logger.info('GetOracleInfo returning Result: %s', str(value))
@@ -306,19 +320,19 @@ def get_PLSQL_info(check, connection, target_logger):
     target_logger.info('GetPLSQLInfo:  %s', check)
     rc = 1
 
-    try: 
+    try:
         db_info_cursor = connection.cursor()
         db_info_cursor.callproc("dbms_output.enable")
         db_info_cursor.execute(check)
-    
+
         # tune this size for your application
         chunk_size = 100
-    
+
         # create variables to hold the output
         lines_var = db_info_cursor.arrayvar(str, chunk_size)
         num_lines_var = db_info_cursor.var(int)
         num_lines_var.setvalue(0, chunk_size)
-    
+
         # fetch the text that was added by PL/SQL
         while True:
             db_info_cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
@@ -329,8 +343,8 @@ def get_PLSQL_info(check, connection, target_logger):
                 print(line or "")
             if num_lines < chunk_size:
                 break
-    
-        value = lines
+
+        value = str(lines[0])
 
 
     except cx_Oracle.DatabaseError as exc:
@@ -420,14 +434,15 @@ def get_OS_info(check, connection, target_logger):
         rc = stdout.channel.recv_exit_status()
         if rc == 0:
             rc = 1
-        target_logger.info("OS result length : %s ", str(len(stdout_chunks)))
+        target_logger.debug("OS result length : %s ", str(len(stdout_chunks)))
         result = ''.join(str(stdout_chunks[len(stdout_chunks) - 1].decode("utf-8")).strip())
+        result = result.replace('\n', ' ').replace('\r', '').replace('logout', '')
 
         # result_list=[ str(v) for lst in stdout_chunks for key, value in lst.decode('utf-8').items() ]
         # target_logger.info("OS result length: %s result: %s", str(len(result_list)), str(result_list) )
 
         if stderr:
-            target_logger.info("OS Check Errors: %s ", stderr)
+            target_logger.error("OS Check Errors: %s ", stderr)
 
         # if result != '' :
         # result=str(result[2].strip())
