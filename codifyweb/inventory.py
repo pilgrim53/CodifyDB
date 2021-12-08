@@ -3,17 +3,15 @@ import cx_Oracle  # https://oracle.github.io/python-cx_Oracle/
 import psycopg2  # https://pypi.org/project/psycopg2/
 import psycopg2.extras  # This gives access to the psycopg2 error messages
 import sys  # for some reason this is not included by default
-import logging  # https://docs.python.org/3/library/logging.html
-import threading  # Allows us to time and kill hung db connections
 # from numpy import asarray # convert sql result tuples to python arrays
 from datetime import date, datetime  # for some reason this is not included by default
 from decouple import config  # Allows us to read .env
-import socket
-import os
-from .inv_logging import start_logging
-from . import results
+# ===============================================================================
+CODIFYWEB_DIR = config('CODIFYWEB_DIR')
+sys.path.append(CODIFYWEB_DIR)
+from inv_logging import start_logging
 
-# Set DBTools Environment and Global Variables
+# Set Environment and Global Variables
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 INV_USER = config('INV_USER')
@@ -29,7 +27,7 @@ TARGET_FILE = "./discovery.txt"
 
 def get_id(host, instance_name, target_logger):
     """
-    Creates the initial Target entry in the Target table
+    Creates the initial Target entry in the Targets table
     :param host:
     :param instance_name:
     :param target_logger:
@@ -41,7 +39,7 @@ def get_id(host, instance_name, target_logger):
     postgres_conn = psycopg2.connect(INVENTORYDB)
 
     select_cursor = postgres_conn.cursor()
-    select_stmt = 'select coalesce(inventory_id,0) from public.target where hostname=\'' \
+    select_stmt = 'select coalesce(inventory_id,0) from targets where hostname=\'' \
                   + host + '\' and instance_name=\'' + instance_name + '\' order by inventory_id '
 
     try:
@@ -77,7 +75,7 @@ def get_attribute(inventory_id, target, column, target_logger):
     """
 
     value = ''
-    query = 'select ' + column + ' from target where inventory_id=' + str(inventory_id) + ''
+    query = 'select ' + column + ' from targets where inventory_id=' + str(inventory_id) + ''
 
     try:
         postgres_conn = psycopg2.connect(INVENTORYDB)

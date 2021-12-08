@@ -2,17 +2,16 @@ from inv_logging import start_logging
 import cx_Oracle
 import psycopg2
 import sys, getopt  # Allows us to interact with the o/s
-import paramiko  # Allows us to ssh to the Database Servers
-import threading  # Allows us to time and kill hung db connections
 from datetime import datetime
 from datetime import date
-
 from decouple import config  # Allows us to read .env
 # ============================================================================
+CODIFYWEB_DIR = config('CODIFYWEB_DIR')
+sys.path.append(CODIFYWEB_DIR)
 import targets
 import results
 
-# Set DBTools Environment and Global Variables
+# Set  Environment and Global Variables
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 INV_USER = config('INV_USER')
@@ -63,9 +62,9 @@ def main(argv):
     check_type = '%'
     target_type = 'Database'  # Default to Database right now for development
 
-    check_query = 'select check_command, check_type, result_column, handler, sub_type from public.checklist where 1=1 '
+    check_query = 'select check_command, check_type, result_column, handler, sub_type from checklist where 1=1 '
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname,' \
-                   ' target_type, sub_type from target where decommissioned is null '
+                   ' target_type, sub_type from targets where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv,":t:c:v:f:h")
@@ -144,6 +143,7 @@ def main(argv):
         # Sub Loop of All Checks for the Target
         # Reuse the connection to the target for all similar checks with same handler
         old_handler = ''
+        curr_connection = ''
         rc = 1
         connected = 'FALSE'
 

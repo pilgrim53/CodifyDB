@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'codify.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'NAME': 'codifydb',
+        'USER': 'codify',
+        'PASSWORD': 'codify_2021',
         'HOST': 'localhost',
         'PORT': '5432',
  

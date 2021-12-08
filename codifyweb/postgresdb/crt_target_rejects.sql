@@ -2,7 +2,7 @@
 
 -- DROP TABLE codify.target_rejects;
 
-CREATE TABLE public.target_rejects
+CREATE TABLE target_rejects
 (
     inventory_id integer,
     inventory_create date,
@@ -20,5 +20,5 @@ CREATE TABLE public.target_rejects
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.target_rejects
+ALTER TABLE target_rejects
     OWNER to codify;

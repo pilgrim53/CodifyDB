@@ -1,22 +1,19 @@
-FROM ubuntu:latest
-RUN apt-get -y update
-RUN apt-get install python3 -y
-
-WORKDIR /python
-COPY requirements.txt /python/
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
-
 FROM db
+# RUN apt-get -y update
+# RUN apt-get install python3 -y
+
+# WORKDIR /python
+# COPY requirements.txt /python/
+# RUN pip install --upgrade pip
+# RUN pip install -r requirements.txt
 
 # Install ``python-software-properties``, ``software-properties-common`` and PostgreSQL 9.3
 #  There are some warnings (in red) that show up during the build. You can hide
 #  them by prefixing each apt-get statement with DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y python-software-properties software-properties-common postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
-RUN apt-get install gnupg
-RUN apt-get install -y apt-transport-https
-RUN apt-get install -y software-properties-common wget
+# RUN apt-get update && apt-get install -y python-software-properties software-properties-common postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3
+# RUN apt-get install gnupg
+# RUN apt-get install -y apt-transport-https
+# RUN apt-get install -y software-properties-common wget
 
 # Add the PostgreSQL PGP key to verify their Debian packages.
 # It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
@@ -28,7 +25,6 @@ RUN wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 RUN echo "deb https://packages.grafana.com/oss/deb stable main" > /etc/apt/sources.list.d/grafana.list
 RUN apt-get install grafana
-
 
 # Note: The official Debian and Ubuntu images automatically ``apt-get clean``
 # after each ``apt-get``
@@ -69,5 +65,3 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 # Set the default command to run when starting the container
 CMD ["/usr/lib/postgresql/9.3/bin/postgres", "-D", "/var/lib/postgresql/9.3/main", "-c", "config_file=/etc/postgresql/9.3/main/postgresql.conf"]
 RUN systemctl start grafana-server
-
-

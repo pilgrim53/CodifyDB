@@ -1,0 +1,128 @@
+2021-12-07 20:59:17,251 - add_web - ERROR - Error checking existence of target: 1 1 relation "target" does not exist
+LINE 1: select coalesce(inventory_id,0) from target where hos...
+                                             ^
+ 
+2021-12-07 20:59:17,254 - add_web - ERROR - Error inserting new target: 1 1 relation "target" does not exist
+LINE 1: INSERT INTO target
+                    ^
+ 
+2021-12-07 20:59:17,255 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 21:48:34,814 - add_web - ERROR - Error checking existence of target: 3 3 relation "target" does not exist
+LINE 1: select coalesce(inventory_id,0) from target where hos...
+                                             ^
+ 
+2021-12-07 21:48:34,817 - add_web - ERROR - Error inserting new target: 3 3 relation "target" does not exist
+LINE 1: INSERT INTO target
+                    ^
+ 
+2021-12-07 21:48:34,817 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 21:51:04,553 - add_web - ERROR - Error checking existence of target: 3 3 relation "target" does not exist
+LINE 1: select coalesce(inventory_id,0) from target where hos...
+                                             ^
+ 
+2021-12-07 21:51:04,555 - add_web - ERROR - Error inserting new target: 3 3 invalid input syntax for type integer: ""
+LINE 3: ..., 'Database', '3', '3', '3', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-07 21:51:04,556 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 21:54:35,901 - add_web - ERROR - Error checking existence of target: 3 3 relation "target" does not exist
+LINE 1: select coalesce(inventory_id,0) from target where hos...
+                                             ^
+ 
+2021-12-07 21:54:35,905 - add_web - ERROR - Error inserting new target: 3 3 invalid input syntax for type integer: ""
+LINE 3: ...7'::date, '', '3', '3', '3', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-07 21:54:35,905 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 21:59:33,124 - add_web - ERROR - Error checking existence of target: 3 3 relation "target" does not exist
+LINE 1: select coalesce(inventory_id,0) from target where hos...
+                                             ^
+ 
+2021-12-07 21:59:33,127 - add_web - ERROR - Error inserting new target: 3 3 invalid input syntax for type integer: ""
+LINE 3: ...07'::date, '', '3', '3', '', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-07 21:59:33,127 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 21:59:48,845 - add_web - ERROR - Error checking existence of target: 3 3 relation "target" does not exist
+LINE 1: select coalesce(inventory_id,0) from target where hos...
+                                             ^
+ 
+2021-12-07 21:59:48,848 - add_web - ERROR - Error inserting new target: 3 3 invalid input syntax for type integer: ""
+LINE 3: ...07'::date, '', '3', '3', '', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-07 21:59:48,849 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 22:02:09,964 - add_web - ERROR - Error checking existence of target: 3 3 permission denied for table targets
+ 
+2021-12-07 22:02:09,971 - add_web - ERROR - Error inserting new target: 3 3 invalid input syntax for type integer: ""
+LINE 3: ...07'::date, '', '3', '3', '', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-07 22:02:09,973 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 22:11:59,092 - add_web - ERROR - Error checking existence of target: 4 4 permission denied for table targets
+ 
+2021-12-07 22:11:59,095 - add_web - ERROR - Error inserting new target: 4 4 permission denied for table targets
+ 
+2021-12-07 22:11:59,096 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 22:14:04,036 - add_web - INFO - Check 4 4 returned: None
+2021-12-07 22:14:04,037 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-07 22:14:04,068 - add_web - INFO - Check 4 4 returned: (3,)
+2021-12-07 22:14:04,069 - add_web - DEBUG - Check for existing target returned: 3
+2021-12-07 22:14:04,070 - add_web - INFO - Add target Result InventoryID: 3
+2021-12-07 22:14:18,096 - add_web - INFO - Check 5 5 returned: None
+2021-12-07 22:14:18,096 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-07 22:14:18,100 - add_web - ERROR - Error inserting new target: 5 5 invalid input syntax for type integer: ""
+LINE 3: ...07'::date, '', '5', '5', '', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-07 22:14:18,102 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 22:14:32,637 - add_web - INFO - Check 5 5 returned: None
+2021-12-07 22:14:32,637 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-07 22:14:32,668 - add_web - INFO - Check 5 5 returned: (4,)
+2021-12-07 22:14:32,668 - add_web - DEBUG - Check for existing target returned: 4
+2021-12-07 22:14:32,669 - add_web - INFO - Add target Result InventoryID: 4
+2021-12-07 23:09:25,953 - add_web - ERROR - Error checking existence of target: 2 2 relation "targets" does not exist
+LINE 1: select coalesce(inventory_id,0) from targets where ho...
+                                             ^
+ 
+2021-12-07 23:09:25,958 - add_web - ERROR - Error inserting new target: 2 2 relation "targets" does not exist
+LINE 1: INSERT INTO targets
+                    ^
+ 
+2021-12-07 23:09:25,959 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 23:10:40,938 - add_web - ERROR - Error checking existence of target: 2 2 permission denied for view targets
+ 
+2021-12-07 23:10:40,943 - add_web - ERROR - Error inserting new target: 2 2 permission denied for view targets
+ 
+2021-12-07 23:10:40,944 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 23:13:18,912 - add_web - INFO - Check 2 2 returned: None
+2021-12-07 23:13:18,912 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-07 23:13:18,944 - add_web - INFO - Check 2 2 returned: (2,)
+2021-12-07 23:13:18,944 - add_web - DEBUG - Check for existing target returned: 2
+2021-12-07 23:13:18,945 - add_web - INFO - Add target Result InventoryID: 2
+2021-12-07 23:29:24,566 - add_web - ERROR - Error checking existence of target: 1 1 relation "public.targets" does not exist
+LINE 1: select coalesce(inventory_id,0) from public.targets where ho...
+                                             ^
+ 
+2021-12-07 23:29:24,569 - add_web - ERROR - Error inserting new target: 1 1 relation "public.targets" does not exist
+LINE 1: INSERT INTO public.targets
+                    ^
+ 
+2021-12-07 23:29:24,570 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 23:30:58,818 - add_web - INFO - Check 1 1 returned: None
+2021-12-07 23:30:58,818 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-07 23:30:58,848 - add_web - INFO - Check 1 1 returned: (1,)
+2021-12-07 23:30:58,848 - add_web - DEBUG - Check for existing target returned: 1
+2021-12-07 23:30:58,849 - add_web - INFO - Add target Result InventoryID: 1
+2021-12-07 23:31:38,559 - add_web - INFO - Check 2 2 returned: None
+2021-12-07 23:31:38,559 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-07 23:31:38,565 - add_web - ERROR - Error inserting new target: 2 2 invalid input syntax for type integer: ""
+LINE 3: ...07'::date, '', '2', '2', '', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-07 23:31:38,565 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-07 23:31:54,834 - add_web - INFO - Check 2 2 returned: None
+2021-12-07 23:31:54,835 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-07 23:31:54,866 - add_web - INFO - Check 2 2 returned: (2,)
+2021-12-07 23:31:54,866 - add_web - DEBUG - Check for existing target returned: 2
+2021-12-07 23:31:54,867 - add_web - INFO - Add target Result InventoryID: 2

@@ -1,8 +1,8 @@
--- View: public.lastcheck
+-- View: lastcheck
 
--- DROP VIEW public.lastcheck;
+-- DROP VIEW lastcheck;
 
-CREATE OR REPLACE VIEW public.lastcheck
+CREATE OR REPLACE VIEW lastcheck
  AS
  SELECT id.inventory_id AS inventoryid,
     id.hostname,
@@ -21,7 +21,7 @@ CREATE OR REPLACE VIEW public.lastcheck
     l.check_result AS badfileloc,
     m.check_result AS dbstatus,
     n.check_result AS inoms
-   FROM ((((((((((((((target id
+   FROM ((((((((((((((targets id
      LEFT JOIN check_results a ON (((id.inventory_id = a.inventory_id) AND (a.check_date = ( SELECT max(a1.check_date) AS max
            FROM check_results a1
           WHERE ((a1.inventory_id = id.inventory_id) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
@@ -67,5 +67,5 @@ CREATE OR REPLACE VIEW public.lastcheck
   WHERE ((id.decommissioned IS NULL) AND (id.target_type = 'Database'::text))
   ORDER BY id.inventory_id;
 
-ALTER TABLE public.lastcheck
+ALTER TABLE lastcheck
     OWNER TO codify;

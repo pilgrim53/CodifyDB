@@ -20,7 +20,7 @@ class TargetForm(forms.Form):
     DBID = forms.CharField(max_length=15, required=False)
     home_dir = forms.CharField(max_length=15, required=False)
     status = forms.CharField(max_length=15, required=False)
-    port = forms.CharField(max_length=15, required=False)
+    port = forms.CharField(max_length=15, required=False, initial=1521)
     target_type = forms.CharField(max_length=15, required=False)
 
 
