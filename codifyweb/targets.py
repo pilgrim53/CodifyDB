@@ -520,10 +520,10 @@ def update_column(inventory_id, column_name, value, target_logger):
         else:
             insert_cursor = postgres_conn.cursor()
             if column_name == 'blocksize' or column_name == 'port':
-                insert_stmt = 'update targetsset ' + column_name + '=' + str(
+                insert_stmt = 'update targets set ' + column_name + '=' + str(
                     value) + ' where inventory_id=' + str(inventory_id)
             else:
-                insert_stmt = 'update targetsset ' + column_name + '=\'' + str(
+                insert_stmt = 'update targets set ' + column_name + '=\'' + str(
                     value) + '\' where inventory_id=' + str(inventory_id)
 
             try:

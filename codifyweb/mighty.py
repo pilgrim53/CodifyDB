@@ -48,12 +48,8 @@ def main(argv):
 
 
     query_stmt = """
-              select a.inventory_id, hostname, a.instance_name, owner, version, home_dir, clustered as "RAC",
-                 case when (select container from targetsb where a.inventory_id = b.inventory_id ) = 'CDB$ROOT' then 'CDB'
-                      when (select container from targetsc where a.inventory_id = c.inventory_id ) = 'STANDALONE' then 'STANDALONE'
-                      when (select container from targetsc where a.inventory_id = c.inventory_id ) = a.instance_name then 'STANDALONE'
-                         else 'PDB'
-                  end as "CDB/PDB"
+              select a.inventory_id, hostname, a.instance_name, owner, version, home_dir, 
+                     clustered as "RAC", sub_type as "CDB/PDB"
                 from targets a
                where target_type='Database' and decommissioned is null
             order by hostname, instance_name; """

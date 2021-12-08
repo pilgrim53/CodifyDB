@@ -37,7 +37,7 @@ def main(argv):
     check_type = 'UPDATE'  # Default to scan / update existing known Targets
     target_type = 'Database'  # Default to database targets
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname, target_type \
-                from targetswhere decommissioned is null '
+                from targets where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv, ":t:v:ah")
