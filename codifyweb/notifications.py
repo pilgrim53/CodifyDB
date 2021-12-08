@@ -1,19 +1,18 @@
-from inv_logging import start_logging
 import smtplib
 import psycopg2
 import sys, getopt  # Allows us to interact with the o/s
-import paramiko  # Allows us to ssh to the Database Servers
-import threading  # Allows us to time and kill hung db connections
 from datetime import datetime
 from datetime import date
 from decouple import config  # Allows us to read .env
 # ============================================================================
-import results
+CODIFYWEB_DIR = config('CODIFYWEB_DIR')
+sys.path.append(CODIFYWEB_DIR)
+from inv_logging import start_logging
 
 # ============================================================================
 
 # ============================================================================
-# Set DBTools Environment and Global Variables
+# Set  Environment and Global Variables
 # ============================================================================
 DBC_USER      = config('DBC_USER')
 DBC_PWD       = config('DBC_PWD')
@@ -45,7 +44,7 @@ def main(argv):
 
     check_query = 'select threshold, result_column from notifications where 1=1 '
     target_prefix = '''select hostname, instance_name, cast(check_date as text), check_result "ALERT"
-                       from target a, check_results b
+                       from targets a, check_results b
                       where a.inventory_id = b.inventory_id and check_column = '''
     target_suffix = ''
 

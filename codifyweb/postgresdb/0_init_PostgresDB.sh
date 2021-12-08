@@ -1,5 +1,4 @@
-#!/bin/bash
-set -e
+# set -e
 export PGPASSWORD=$POSTGRES_PASSWORD;
 psql -v ON_ERROR_STOP=0 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
   CREATE USER $APP_DB_USER WITH PASSWORD '$APP_DB_PASS';
@@ -50,54 +49,50 @@ CREATE SEQUENCE codify.inventory_seq
 
 ALTER SEQUENCE codify.inventory_seq
     OWNER TO codify;
-	
-COMMIT;
 
--- Table: codify.target   Now Managed by Django Models
---  \i /code/crt_Target.sql
+-- Table: codify.targets   Now Managed by Django Models
+--  \i /code/crt_targets.sql
 
 -- Index: Target.inv_inst
--- CREATE INDEX inv_inst ON codify.target USING btree
+-- CREATE INDEX inv_inst ON codify.targets USING btree
 --    (inventoryid ASC NULLS LAST, instancename ASC NULLS LAST,  hostname ASC NULLS LAST) ;
 
 -- Table: codify.checklist  Now Managed by Django Models
---  \i /code/crt_CheckList.sql
+--  \i /code/crt_checklist.sql
 
--- Table: codify.checkresults
-\i /code/crt_CheckResults.sql
-
---- View: codify.lastcheck
-\i /code/crt_LastCheck.sql
-
--- Table: codify.target_rejects
-\i /code/crt_TargetRejects.sql
-
+-- Application Tables and Views
+\i /code/postgresdb/crt_check_results.sql
+\i /code/postgresdb/crt_lastcheck.sql
+\i /code/postgresdb/crt_target_rejects.sql
+\i /code/postgresdb/crt_notifications.sql
+\i /code/postgresdb/crt_servers.sql
+\i /code/postgresdb/crt_lastcheck.sql
 ---------------------------------------------
 ---------------------------------------------
 	
 -- Index: CR_Column
 CREATE INDEX "CR_Column"
-    ON codify.checkresults USING hash
+    ON check_results USING hash
     (check_column COLLATE pg_catalog."default")
     TABLESPACE pg_default;
 
 -- Index: check_date
-CREATE INDEX check_date
-    ON codify.checkresults USING btree
+CREATE INDEX checkdate
+    ON check_results USING btree
     (checkdate ASC NULLS LAST)
     TABLESPACE pg_default;
 
 -- Index: check_inv
 CREATE INDEX check_inv
-    ON codify.checkresults USING btree
+    ON check_results USING btree
     (inventoryid ASC NULLS LAST)
     TABLESPACE pg_default;
 
-  COMMIT;
   
--- CREATE VIEW public.checklist AS SELECT * FROM codify.checklist;
--- CREATE VIEW public.checkresults AS SELECT * FROM codify.checkresults;
--- CREATE VIEW public.target AS SELECT * FROM codify.target;
--- CREATE VIEW public.lastcheck AS SELECT * FROM codify.lastcheck;
+-- CREATE VIEW checklist AS SELECT * FROM codify.checklist;
+-- CREATE VIEW checkresults AS SELECT * FROM codify.checkresults;
+-- CREATE VIEW targets AS SELECT * FROM codify.targets;
+-- CREATE VIEW lastcheck AS SELECT * FROM codify.lastcheck;
+-- alter view targets owner to codify;
 
 EOSQL

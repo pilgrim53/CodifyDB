@@ -4,7 +4,7 @@ import psycopg2.extras  # This gives access to the psycopg2 error messages
 from datetime import date, datetime  # for some reason this is not included by default
 from decouple import config  # Allows us to read .env
 
-# Set DBTools Environment and Global Variables
+# Set  Environment and Global Variables
 INV_USER = config('INV_USER')
 INV_PWD = config('INV_PWD')
 CODIFYDB_HOST = config('CODIFYDB_HOST')

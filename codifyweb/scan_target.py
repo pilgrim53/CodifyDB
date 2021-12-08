@@ -1,12 +1,15 @@
 from datetime import date, datetime  # not included by default
 from decouple import config  # Allows us to read .env
-from inv_logging import start_logging  # Allows us to log to a file
-import targets  # All target functions
 import sys, getopt  # Allows us to interact with the o/s
 import psycopg2  # for PostgreSQL database calls
 import cx_Oracle
 
-# Set DBTools Environment and Global Variables
+CODIFYWEB_DIR = config('CODIFYWEB_DIR')
+sys.path.append(CODIFYWEB_DIR)
+from inv_logging import start_logging  # Allows us to log to a file
+import targets  # All target functions
+
+# Set  Environment and Global Variables
 TARGET_FILE = "./discovery.txt"
 LOG_DIR = config('LOG_DIR')
 LOG_NAME = "Scan_Targets"
@@ -19,7 +22,7 @@ INV_USER = config('INV_USER')
 INV_PWD = config('INV_PWD')
 ORACLE_BASE = config('ORACLE_BASE')
 ORACLE_HOME = config('ORACLE_HOME')
-TNS_ADMIN = "/u01/app/oracle/DBTools/"
+TNS_ADMIN = "/u01/app/oracle//"
 CODIFYDB_HOST = config('CODIFYDB_HOST')
 CODIFYDB = config('CODIFYDB')
 INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
@@ -34,7 +37,7 @@ def main(argv):
     check_type = 'UPDATE'  # Default to scan / update existing known Targets
     target_type = 'Database'  # Default to database targets
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname, target_type \
-                from public.target where decommissioned is null '
+                from targets where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv, ":t:v:ah")
@@ -64,7 +67,7 @@ def main(argv):
 
     target_query += ' order by inventory_id '
 
-    check_query = "select check_command, check_type, result_column, handler from public.checklist \
+    check_query = "select check_command, check_type, result_column, handler from checklist \
                where frequency='" + target_type + "' order by handler, priority"
 
     # Connect to the Inventory DB

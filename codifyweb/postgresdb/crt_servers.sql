@@ -1,8 +1,8 @@
--- View: public.servers
+-- View: servers
 
--- DROP VIEW public.servers;
+-- DROP VIEW servers;
 
-CREATE OR REPLACE VIEW public.servers
+CREATE OR REPLACE VIEW servers
  AS
  SELECT id.inventory_id AS inventoryid,
     id.hostname,
@@ -14,7 +14,7 @@ CREATE OR REPLACE VIEW public.servers
     id.host_type AS hosttype,
     a.check_result AS started,
     b.check_result AS osaccess
-   FROM ((target id
+   FROM ((targets id
      LEFT JOIN check_results a ON (((id.inventory_id = a.inventory_id) AND (a.check_date = ( SELECT max(a1.check_date) AS max
            FROM check_results a1
           WHERE ((a1.inventory_id = id.inventory_id) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
@@ -24,6 +24,6 @@ CREATE OR REPLACE VIEW public.servers
   WHERE ((id.decommissioned IS NULL) AND (id.target_type = 'Server'::text))
   ORDER BY id.inventory_id;
 
-ALTER TABLE public.servers
+ALTER TABLE servers
     OWNER TO codify;
 

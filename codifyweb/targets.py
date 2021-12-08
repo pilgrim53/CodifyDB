@@ -3,19 +3,13 @@ import cx_Oracle  # https://oracle.github.io/python-cx_Oracle/
 import psycopg2  # https://pypi.org/project/psycopg2/
 import psycopg2.extras  # This gives access to the psycopg2 error messages
 import sys  # for some reason this is not included by default
-import logging  # https://docs.python.org/3/library/logging.html
 import threading  # Allows us to time and kill hung db connections
 import select
 # from numpy import asarray # convert sql result tuples to python arrays
 from datetime import date, datetime  # for some reason this is not included by default
 from decouple import config  # Allows us to read .env
 
-import socket
-import os
-import results
-import inventory
-
-# Set DBTools Environment and Global Variables
+# Set Environment and Global Variables
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 SYS_USER = config('SYS_USER')
@@ -34,6 +28,9 @@ INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PW
 NOT_EXIST = [12154, 12521, 12545, 12541, 12543, 12514, 12505, 12547, 28860]
 NO_ACCESS = [1017, 1045, 1033, 15000, 28000, 28001]
 
+CODIFYWEB_DIR = config('CODIFYWEB_DIR')
+sys.path.append(CODIFYWEB_DIR)
+import inventory
 
 def connect(hostname, instance_name, owner, handler, target_logger):
     """
@@ -494,7 +491,7 @@ def update_column(inventory_id, column_name, value, target_logger):
 
         postgres_conn = psycopg2.connect(INVENTORYDB)
         select_cursor = postgres_conn.cursor()
-        target_query = 'select ' + column_name + ' from public.target where inventory_id = \'' + str(
+        target_query = 'select ' + column_name + ' from targets where inventory_id = \'' + str(
             inventory_id) + '\''
         target_logger.info('QUERY: %s', target_query)
 
@@ -523,10 +520,10 @@ def update_column(inventory_id, column_name, value, target_logger):
         else:
             insert_cursor = postgres_conn.cursor()
             if column_name == 'blocksize' or column_name == 'port':
-                insert_stmt = 'UPDATE public.target set ' + column_name + '=' + str(
+                insert_stmt = 'update targets set ' + column_name + '=' + str(
                     value) + ' where inventory_id=' + str(inventory_id)
             else:
-                insert_stmt = 'UPDATE public.target set ' + column_name + '=\'' + str(
+                insert_stmt = 'update targets set ' + column_name + '=\'' + str(
                     value) + '\' where inventory_id=' + str(inventory_id)
 
             try:
@@ -574,7 +571,7 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
     result = 0
     postgres_conn = psycopg2.connect(INVENTORYDB)
     insert_cursor = postgres_conn.cursor()
-    insert_stmt = """INSERT INTO public.target_rejects
+    insert_stmt = """INSERT INTO target_rejects
                        (InventoryCreate, HostName, InstanceName, vendor, status, owner, home_dir, importantnotes)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s); """
 
@@ -626,7 +623,7 @@ def add(host, instance, container, DBID, owner, home_dir, status, port, target_t
     if result < 1:
 
         insert_cursor = postgres_conn.cursor()
-        insert_stmt = """INSERT INTO public.target
+        insert_stmt = """INSERT INTO targets
                        (Inventory_Create, Target_Type, HostName, Instance_Name, Container, Serial_Number, owner, home_dir, Vendor, Status, Port)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
 

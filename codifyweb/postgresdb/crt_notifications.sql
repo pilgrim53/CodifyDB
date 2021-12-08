@@ -1,8 +1,8 @@
--- Table: public.notifications
+-- Table: notifications
 
--- DROP TABLE public.notifications;
+-- DROP TABLE notifications;
 
-CREATE TABLE public.notifications
+CREATE TABLE notifications
 (
     id integer NOT NULL,
     threshold text COLLATE pg_catalog."default",
@@ -13,7 +13,7 @@ CREATE TABLE public.notifications
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.notifications
+ALTER TABLE notifications
     OWNER to codify;
     
     
@@ -32,7 +32,7 @@ SET row_security = off;
 -- Data for Name: notifications; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.notifications (id, threshold, result_column, frequency) FROM stdin;
+COPY notifications (id, threshold, result_column, frequency) FROM stdin;
 1        < 1000 system_free     HOURLY
 2        < 1000 sysaux_free     HOURLY
 3       != 0    pdb_violations  HOURLY
