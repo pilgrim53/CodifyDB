@@ -7,5 +7,6 @@ psql -v ON_ERROR_STOP=0 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
   GRANT ALL PRIVILEGES ON DATABASE $APP_DB_NAME TO $APP_DB_USER;
   CREATE SCHEMA codify AUTHORIZATION codify;
   grant postgres to codify;
+  ALTER DATABASE $APP_DB_NAME SET search_path = $APP_DB_USER, public;
 \q
 EOSQL
