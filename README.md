@@ -28,32 +28,6 @@ Grafana is recommended to be used for creating the dashboards and user interface
 - You will need a common account and password for each database vendor group.
 
 
-### Description of files
---------------------
-
-Non-Python files:
-
-filename                  |  description
---------------------------|------------------------------------------------------------------------------------
-README.md                 |  Text file (markdown format) description of the project.
-dockerfile                |  Rapid deployment via Docker container
-
-
-Python scripts files:
-
-filename                  |  description
---------------------------|------------------------------------------------------------------------------------
-scan_targets.py           |  This is the program for building, adding, updating targets in your Inventory
-check_targets.py          |  This is the program used to perform monitoring checks on your Inventory
-
-
-Python modules:
-
-filename                  |  description
---------------------------|------------------------------------------------------------------------------------
-Inv_Logging.py            |  Handle all the application logging output to files.
-Targets.py                |  Module containing all Target methods (add, update, get, etc...)
-
 ### Database Schema
 ------------------------
 
@@ -67,7 +41,48 @@ Targets.py                |  Module containing all Target methods (add, update, 
 
 ```
 cd <your application directory>
-git clone https://github.com/pilgrim53/CodifyDB.git  
+cd to working area   
+
+#=================================
+# Use of a virtual environment is helpful for development but not required.
+python3 -m venv .     #  This is only for the FIRST time
+source  bin/activate
+# End of virtual environment steps
+#=================================
+# More FIRST TIME  ONLY commands
+python -m pip install --upgrade pip 
+python -m pip instal cx_Oracle
+python -m pip install psycopg2
+python -m pip install django
+( alternatively get the whl and python setup.py build; python setup.py install
+# End of first time only commands
+NOTE:  If you are trying to RE-CREATE a first time deployment you may need to FORCEFULLY 
+       remove the database docker volumes that were previously used
+docker volume ls     #  ( or use Docker Desktop GUI Volumes tab )
+#=================================
+git clone  https://github.com/pilgrim53/CodifyDB.git 
+cd CodifyDB   #  ie  <CodifyBase>
+cd CodifyWeb 
+vi codifyweb/.env   set the values for your environment
+# make sure docker is running
+docker-compose up -d --build
+# this will create the CodifyDB Postgres database using a Postgres Docker image and initializing it with 0_init_PostgresDB.sh
+Now, check the database with adminer, PGAdmin or SQL Developer - Should have an empty CodifyDB 
+cd ..
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser  # one time only
+cd CodifyWeb 
+docker-compose exec db bash
+su postgres
+cd /code/postgresdb
+psql -d codifydb -U codify
+\i /code/postgresdb/Init_CodifyDB.sql
+\q
+exit # postrges user
+exit # root user
+cd ..
+python manage.py runserver
 ```	
 
 ## Install as a Docker Container
