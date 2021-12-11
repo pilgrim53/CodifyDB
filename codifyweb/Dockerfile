@@ -41,7 +41,7 @@ USER postgres
 # then create a database `docker` owned by the ``docker`` role.
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
-RUN    /etc/init.d/postgresql start 
+# RUN    /etc/init.d/postgresql start 
 #  Move all of these into the init.db 
 # RUN    psql --command "CREATE USER codify WITH SUPERUSER PASSWORD 'codify_2021';"
 # RUN    dropdb -force postgres

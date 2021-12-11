@@ -32,7 +32,7 @@ SET row_security = off;
 -- Data for Name: notifications; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY notifications (id, threshold, result_column, frequency) FROM stdin;
+COPY codify.notifications (id, threshold, result_column, frequency) FROM stdin;
 1        < 1000 system_free     HOURLY
 2        < 1000 sysaux_free     HOURLY
 3       != 0    pdb_violations  HOURLY
