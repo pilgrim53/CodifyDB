@@ -24,6 +24,7 @@ Grafana is recommended to be used for creating the dashboards and user interface
 - psycopg2 https://www.psycopg.org/
 - paramiko for OS monitoring http://www.paramiko.org/
 - cx_Oracle for Oracle DB monitoring https://oracle.github.io/python-cx_Oracle/
+- Django for Application Web Interface  https://www.djangoproject.com/start/overview/ 
 - You will need either a common account and password or passwordless (ssh key) access to linux / un*x servers
 - You will need a common account and password for each database vendor group.
 
