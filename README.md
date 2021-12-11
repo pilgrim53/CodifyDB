@@ -63,7 +63,7 @@ docker volume ls     #  ( or use Docker Desktop GUI Volumes tab )
 git clone  https://github.com/pilgrim53/CodifyDB.git 
 cd CodifyDB   #  ie  <CodifyBase>
 cd CodifyWeb 
-vi codifyweb/.env   set the values for your environment
+use your text editor to edit  ".env"  to set the values for your environment
 # make sure docker is running
 docker-compose up -d --build
 # this will create the CodifyDB Postgres database using a Postgres Docker image and initializing it with 0_init_PostgresDB.sh
