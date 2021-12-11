@@ -10,13 +10,13 @@ services:
   db:
     image: postgres
     healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "codifydb", "-U", "postgres" ]
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
       timeout: 45s
       interval: 10s
       retries: 10
     restart: always
     environment:
-      - POSTGRES_DB=codifydb
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - APP_DB_USER=codify
