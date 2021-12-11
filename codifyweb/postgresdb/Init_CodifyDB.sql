@@ -1,3 +1,5 @@
+\connect
+
 DO
 $do$
 BEGIN
@@ -12,21 +14,12 @@ BEGIN
 END
 $do$;
 
-CREATE SCHEMA codify AUTHORIZATION codify;
-
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 13.1
--- Dumped by pg_dump version 13.1
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
+-- SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
@@ -39,9 +32,14 @@ SET default_table_access_method = heap;
 --
 -- Name: checklist; Type: TABLE; Schema: public; Owner: postgres
 --
+\connect
 
-ALTER TABLE checklist
+ALTER TABLE codify.checklist
     OWNER to codify;
+
+INSERT INTO public.checklist(
+	id, vendor, frequency, check_type, description, check_command, result_column, priority, handler, sub_type)
+	VALUES ('1','ORACLE', 'WEEKLY', 'DB', 'SGA', 'show sga', 'sga', '1', 'oracle', '' );
 
 --
 -- Name: checkresults; Type: TABLE; Schema: public; Owner: postgres

@@ -1,0 +1,5 @@
+2021-12-11 12:14:57,386 - add_web - INFO - Check 1 1 returned: None
+2021-12-11 12:14:57,387 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-11 12:14:57,417 - add_web - INFO - Check 1 1 returned: (1,)
+2021-12-11 12:14:57,417 - add_web - DEBUG - Check for existing target returned: 1
+2021-12-11 12:14:57,417 - add_web - INFO - Add target Result InventoryID: 1
