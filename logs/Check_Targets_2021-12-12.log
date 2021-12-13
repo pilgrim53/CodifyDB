@@ -1,0 +1,191 @@
+2021-12-12 22:37:02,579 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2021-12-12 22:37:02,580 - Check_Targets - INFO - Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2021-12-12 22:37:02,581 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2021-12-12 22:37:02,582 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2021-12-12 22:37:02,628 - Check_Targets - DEBUG - # of Targets: 2
+2021-12-12 22:37:02,632 - Check_Targets - INFO - All Checks: [("select 'connected'", 'DB', 'db_access', 'Postgres', None)]
+2021-12-12 22:37:02,633 - Check_Targets - DEBUG - inventory_id: 1 instance_name: 1 owner: 1 home_dir: 1 hostname: 1 target_type: Database target_sub_type: None
+2021-12-12 22:37:02,634 - Check_Targets - DEBUG - Connecting to: 1 with Postgres as 1
+2021-12-12 22:37:02,635 - Check_Targets - ERROR - General Exception in os command: invalid dsn: missing "=" after "codify" in connection info string
+ 
+2021-12-12 22:37:02,637 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:37:02,638 - Check_Targets - INFO - Connecting to Host: 1 Instance: 1 returned: sshException 
+2021-12-12 22:37:02,639 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 1
+2021-12-12 22:37:02,698 - Check_Targets - INFO - Result added: 1  access  Postgres:sshException  2021-12-12 22:37:02.665581
+2021-12-12 22:37:02,702 - Check_Targets - DEBUG - Postgres connection failed to Host: 1 Instance: 1 Error: sshException
+2021-12-12 22:37:02,703 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:37:02,704 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir:  hostname: localhost target_type: Database target_sub_type: None
+2021-12-12 22:37:02,705 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2021-12-12 22:37:02,706 - Check_Targets - ERROR - General Exception in os command: invalid dsn: missing "=" after "codify" in connection info string
+ 
+2021-12-12 22:37:02,707 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:37:02,708 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: sshException 
+2021-12-12 22:37:02,709 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 2
+2021-12-12 22:37:02,725 - Check_Targets - INFO - Result added: 2  access  Postgres:sshException  2021-12-12 22:37:02.721570
+2021-12-12 22:37:02,730 - Check_Targets - DEBUG - Postgres connection failed to Host: localhost Instance: codifydb Error: sshException
+2021-12-12 22:37:02,731 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:37:02,731 - Check_Targets - INFO - Completed running CheckTargets.py with target_type=Database vendor=% frequency=HOURLY check_type=DB
+2021-12-12 22:37:02,732 - Check_Targets - INFO - ====================================================================================
+2021-12-12 22:37:27,139 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2021-12-12 22:37:27,141 - Check_Targets - INFO - Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2021-12-12 22:37:27,142 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2021-12-12 22:37:27,143 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2021-12-12 22:37:27,165 - Check_Targets - DEBUG - # of Targets: 2
+2021-12-12 22:37:27,168 - Check_Targets - INFO - All Checks: [("select 'connected'", 'DB', 'db_access', 'Postgres', None)]
+2021-12-12 22:37:27,169 - Check_Targets - DEBUG - inventory_id: 1 instance_name: 1 owner: 1 home_dir: 1 hostname: 1 target_type: Database target_sub_type: None
+2021-12-12 22:37:27,170 - Check_Targets - DEBUG - Connecting to: 1 with Postgres as 1
+2021-12-12 22:37:27,171 - Check_Targets - ERROR - General Exception in os command: invalid dsn: missing "=" after "codify" in connection info string
+ 
+2021-12-12 22:37:27,173 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:37:27,174 - Check_Targets - INFO - Connecting to Host: 1 Instance: 1 returned: sshException 
+2021-12-12 22:37:27,174 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 1
+2021-12-12 22:37:27,205 - Check_Targets - INFO - Result added: 1  access  Postgres:sshException  2021-12-12 22:37:27.199926
+2021-12-12 22:37:27,210 - Check_Targets - DEBUG - Postgres connection failed to Host: 1 Instance: 1 Error: sshException
+2021-12-12 22:37:27,211 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:37:27,212 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir:  hostname: localhost target_type: Database target_sub_type: None
+2021-12-12 22:37:27,213 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2021-12-12 22:37:27,214 - Check_Targets - ERROR - General Exception in os command: invalid dsn: missing "=" after "codify" in connection info string
+ 
+2021-12-12 22:37:27,216 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:37:27,217 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: sshException 
+2021-12-12 22:37:27,218 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 2
+2021-12-12 22:37:27,248 - Check_Targets - INFO - Result added: 2  access  Postgres:sshException  2021-12-12 22:37:27.244602
+2021-12-12 22:37:27,253 - Check_Targets - DEBUG - Postgres connection failed to Host: localhost Instance: codifydb Error: sshException
+2021-12-12 22:37:27,254 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:37:27,255 - Check_Targets - INFO - Completed running CheckTargets.py with target_type=Database vendor=% frequency=HOURLY check_type=DB
+2021-12-12 22:37:27,256 - Check_Targets - INFO - ====================================================================================
+2021-12-12 22:38:33,994 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2021-12-12 22:38:33,995 - Check_Targets - INFO - Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2021-12-12 22:38:33,995 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2021-12-12 22:38:33,996 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2021-12-12 22:38:34,014 - Check_Targets - DEBUG - # of Targets: 2
+2021-12-12 22:38:34,016 - Check_Targets - INFO - All Checks: [("select 'connected'", 'DB', 'db_access', 'Postgres', None)]
+2021-12-12 22:38:34,017 - Check_Targets - DEBUG - inventory_id: 1 instance_name: 1 owner: 1 home_dir: 1 hostname: 1 target_type: Database target_sub_type: None
+2021-12-12 22:38:34,018 - Check_Targets - DEBUG - Connecting to: 1 with Postgres as 1
+2021-12-12 22:38:34,018 - Check_Targets - ERROR - General Exception in os command: invalid dsn: missing "=" after "codify" in connection info string
+ 
+2021-12-12 22:38:34,019 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:38:34,020 - Check_Targets - INFO - Connecting to Host: 1 Instance: 1 returned: sshException 
+2021-12-12 22:38:34,020 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 1
+2021-12-12 22:38:34,032 - Check_Targets - INFO - Result added: 1  access  Postgres:sshException  2021-12-12 22:38:34.029045
+2021-12-12 22:38:34,038 - Check_Targets - DEBUG - Postgres connection failed to Host: 1 Instance: 1 Error: sshException
+2021-12-12 22:38:34,039 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:38:34,040 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir:  hostname: localhost target_type: Database target_sub_type: None
+2021-12-12 22:38:34,041 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2021-12-12 22:38:34,041 - Check_Targets - ERROR - General Exception in os command: invalid dsn: missing "=" after "codify" in connection info string
+ 
+2021-12-12 22:38:34,042 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:38:34,043 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: sshException 
+2021-12-12 22:38:34,044 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 2
+2021-12-12 22:38:34,059 - Check_Targets - INFO - Result added: 2  access  Postgres:sshException  2021-12-12 22:38:34.055537
+2021-12-12 22:38:34,063 - Check_Targets - DEBUG - Postgres connection failed to Host: localhost Instance: codifydb Error: sshException
+2021-12-12 22:38:34,064 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:38:34,064 - Check_Targets - INFO - Completed running CheckTargets.py with target_type=Database vendor=% frequency=HOURLY check_type=DB
+2021-12-12 22:38:34,065 - Check_Targets - INFO - ====================================================================================
+2021-12-12 22:44:02,850 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2021-12-12 22:44:02,851 - Check_Targets - INFO - Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2021-12-12 22:44:02,852 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2021-12-12 22:44:02,853 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2021-12-12 22:44:02,899 - Check_Targets - DEBUG - # of Targets: 2
+2021-12-12 22:44:02,903 - Check_Targets - INFO - All Checks: [("select 'connected'", 'DB', 'db_access', 'Postgres', None)]
+2021-12-12 22:44:02,904 - Check_Targets - DEBUG - inventory_id: 1 instance_name: 1 owner: 1 home_dir: 1 hostname: 1 target_type: Database target_sub_type: None
+2021-12-12 22:44:02,905 - Check_Targets - DEBUG - Connecting to: 1 with Postgres as 1
+2021-12-12 22:44:05,238 - Check_Targets - ERROR - General Exception in os command: could not translate host name "1" to address: Unknown host
+ 
+2021-12-12 22:44:05,239 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:44:05,240 - Check_Targets - INFO - Connecting to Host: 1 Instance: 1 returned: sshException 
+2021-12-12 22:44:05,240 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 1
+2021-12-12 22:44:05,254 - Check_Targets - INFO - Result added: 1  access  Postgres:sshException  2021-12-12 22:44:05.251240
+2021-12-12 22:44:05,260 - Check_Targets - DEBUG - Postgres connection failed to Host: 1 Instance: 1 Error: sshException
+2021-12-12 22:44:05,261 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:44:05,261 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir:  hostname: localhost target_type: Database target_sub_type: None
+2021-12-12 22:44:05,262 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2021-12-12 22:44:05,273 - Check_Targets - ERROR - General Exception in os command: 'psycopg2.extensions.connection' object has no attribute 'callTimeout' 
+2021-12-12 22:44:05,275 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:44:05,276 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: sshException 
+2021-12-12 22:44:05,276 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 2
+2021-12-12 22:44:05,309 - Check_Targets - INFO - Result added: 2  access  Postgres:sshException  2021-12-12 22:44:05.305241
+2021-12-12 22:44:05,314 - Check_Targets - DEBUG - Postgres connection failed to Host: localhost Instance: codifydb Error: sshException
+2021-12-12 22:44:05,315 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:44:05,316 - Check_Targets - INFO - Completed running CheckTargets.py with target_type=Database vendor=% frequency=HOURLY check_type=DB
+2021-12-12 22:44:05,317 - Check_Targets - INFO - ====================================================================================
+2021-12-12 22:45:50,180 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2021-12-12 22:45:50,181 - Check_Targets - INFO - Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2021-12-12 22:45:50,182 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2021-12-12 22:45:50,183 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2021-12-12 22:45:50,216 - Check_Targets - DEBUG - # of Targets: 2
+2021-12-12 22:45:50,219 - Check_Targets - INFO - All Checks: [("select 'connected'", 'DB', 'db_access', 'Postgres', None)]
+2021-12-12 22:45:50,220 - Check_Targets - DEBUG - inventory_id: 1 instance_name: 1 owner: 1 home_dir: 1 hostname: 1 target_type: Database target_sub_type: None
+2021-12-12 22:45:50,221 - Check_Targets - DEBUG - Connecting to: 1 with Postgres as 1
+2021-12-12 22:45:52,485 - Check_Targets - ERROR - General Exception in os command: could not translate host name "1" to address: Unknown host
+ 
+2021-12-12 22:45:52,486 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:45:52,486 - Check_Targets - INFO - Connecting to Host: 1 Instance: 1 returned: sshException 
+2021-12-12 22:45:52,487 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 1
+2021-12-12 22:45:52,510 - Check_Targets - INFO - Result added: 1  access  Postgres:sshException  2021-12-12 22:45:52.506763
+2021-12-12 22:45:52,516 - Check_Targets - DEBUG - Postgres connection failed to Host: 1 Instance: 1 Error: sshException
+2021-12-12 22:45:52,516 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: FALSE 
+2021-12-12 22:45:52,517 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir:  hostname: localhost target_type: Database target_sub_type: None
+2021-12-12 22:45:52,518 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2021-12-12 22:45:52,536 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2021-12-12 22:45:52,539 - Check_Targets - DEBUG - Connection rc: 1
+2021-12-12 22:45:52,540 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2021-12-12 22:45:52,541 - Check_Targets - DEBUG - Check select 'connected' Handler: Postgres Connected: TRUE 
+2021-12-12 22:45:52,541 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: db_access Value:  RC: 0
+2021-12-12 22:45:52,542 - Check_Targets - DEBUG - Check select 'connected' RC: 0 returned:  
+2021-12-12 22:45:52,543 - Check_Targets - INFO - Completed running CheckTargets.py with target_type=Database vendor=% frequency=HOURLY check_type=DB
+2021-12-12 22:45:52,544 - Check_Targets - INFO - ====================================================================================
+2021-12-12 22:48:44,108 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2021-12-12 22:48:44,110 - Check_Targets - INFO - Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2021-12-12 22:48:44,110 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2021-12-12 22:48:44,111 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2021-12-12 22:48:44,159 - Check_Targets - DEBUG - # of Targets: 2
+2021-12-12 22:48:44,163 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None)]
+2021-12-12 22:48:44,164 - Check_Targets - DEBUG - inventory_id: 1 instance_name: 1 owner: 1 home_dir: 1 hostname: 1 target_type: Database target_sub_type: None
+2021-12-12 22:48:44,165 - Check_Targets - DEBUG - Connecting to: 1 with Postgres as 1
+2021-12-12 22:48:46,452 - Check_Targets - ERROR - General Exception in os command: could not translate host name "1" to address: Unknown host
+ 
+2021-12-12 22:48:46,453 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:48:46,454 - Check_Targets - INFO - Connecting to Host: 1 Instance: 1 returned: sshException 
+2021-12-12 22:48:46,454 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 1
+2021-12-12 22:48:46,478 - Check_Targets - INFO - Result added: 1  access  Postgres:sshException  2021-12-12 22:48:46.473774
+2021-12-12 22:48:46,483 - Check_Targets - DEBUG - Postgres connection failed to Host: 1 Instance: 1 Error: sshException
+2021-12-12 22:48:46,483 - Check_Targets - DEBUG - Check select count(*) from check_results Handler: Postgres Connected: FALSE 
+2021-12-12 22:48:46,484 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir:  hostname: localhost target_type: Database target_sub_type: None
+2021-12-12 22:48:46,485 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2021-12-12 22:48:46,496 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2021-12-12 22:48:46,499 - Check_Targets - DEBUG - Connection rc: 1
+2021-12-12 22:48:46,500 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2021-12-12 22:48:46,501 - Check_Targets - DEBUG - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2021-12-12 22:48:46,502 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value:  RC: 0
+2021-12-12 22:48:46,503 - Check_Targets - DEBUG - Check select count(*) from check_results RC: 0 returned:  
+2021-12-12 22:48:46,503 - Check_Targets - INFO - Completed running CheckTargets.py with target_type=Database vendor=% frequency=HOURLY check_type=DB
+2021-12-12 22:48:46,504 - Check_Targets - INFO - ====================================================================================
+2021-12-12 22:54:46,962 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2021-12-12 22:54:46,963 - Check_Targets - INFO - Running CheckTargets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2021-12-12 22:54:46,964 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2021-12-12 22:54:46,965 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2021-12-12 22:54:47,000 - Check_Targets - DEBUG - # of Targets: 2
+2021-12-12 22:54:47,003 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None)]
+2021-12-12 22:54:47,004 - Check_Targets - DEBUG - inventory_id: 1 instance_name: 1 owner: 1 home_dir: 1 hostname: 1 target_type: Database target_sub_type: None
+2021-12-12 22:54:47,005 - Check_Targets - DEBUG - Connecting to: 1 with Postgres as 1
+2021-12-12 22:54:49,293 - Check_Targets - ERROR - General Exception in os command: could not translate host name "1" to address: Unknown host
+ 
+2021-12-12 22:54:49,295 - Check_Targets - DEBUG - Connection rc: sshException
+2021-12-12 22:54:49,297 - Check_Targets - INFO - Connecting to Host: 1 Instance: 1 returned: sshException 
+2021-12-12 22:54:49,299 - Check_Targets - DEBUG - Insert check result: Postgres:sshException into access for ID: 1
+2021-12-12 22:54:49,316 - Check_Targets - INFO - Result added: 1  access  Postgres:sshException  2021-12-12 22:54:49.312258
+2021-12-12 22:54:49,323 - Check_Targets - DEBUG - Postgres connection failed to Host: 1 Instance: 1 Error: sshException
+2021-12-12 22:54:49,323 - Check_Targets - DEBUG - Check select count(*) from check_results Handler: Postgres Connected: FALSE 
+2021-12-12 22:54:49,324 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir:  hostname: localhost target_type: Database target_sub_type: None
+2021-12-12 22:54:49,326 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2021-12-12 22:54:49,346 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2021-12-12 22:54:49,349 - Check_Targets - DEBUG - Connection rc: 1
+2021-12-12 22:54:49,350 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2021-12-12 22:54:49,350 - Check_Targets - DEBUG - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2021-12-12 22:54:49,364 - Check_Targets - INFO - GetOracleInfo returning Result: 11
+2021-12-12 22:54:49,365 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 11 RC: 1
+2021-12-12 22:54:49,366 - Check_Targets - DEBUG - Insert check result: 11 into check_results for ID: 2
+2021-12-12 22:54:49,396 - Check_Targets - INFO - Result added: 2  check_results  11  2021-12-12 22:54:49.393133
+2021-12-12 22:54:49,402 - Check_Targets - INFO - Completed running CheckTargets.py with target_type=Database vendor=% frequency=HOURLY check_type=DB
+2021-12-12 22:54:49,403 - Check_Targets - INFO - ====================================================================================
