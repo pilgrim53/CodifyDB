@@ -47,99 +47,69 @@ def connect(hostname, instance_name, owner, handler, target_logger):
     curr_connection = ''
     my_dsn=instance_name + '_' + hostname
 
-    if handler == 'OMS':
-        try:
-            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
+
+    try:
+        if handler == 'Oracle' or handler == 'PLSQL' :
+            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
             curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
-            rc = 1
-            target_logger.debug("Connected to: %s with %s ", hostname, handler)
-        except cx_Oracle.DatabaseError as exc:
-            error, = exc.args
-            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-            rc = error.code
-            if curr_connection:
-                curr_connection.close()
-                curr_connection = ''
-
-    elif handler == 'ASM':
-        if instance_name == '+ASM':
-            try:
-                curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn, mode=cx_Oracle.SYSASM)
-                curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
-                rc = 1
-                target_logger.debug("Connected to: %s with %s ", hostname, handler)
-            except cx_Oracle.DatabaseError as exc:
-                error, = exc.args
-                target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-                rc = error.code
-                if curr_connection:
-                    curr_connection.close()
-                    curr_connection = ''
-    elif handler == 'Oracle' :
-        try:
-            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
-            curr_connection.callTimeout = 20000  # Oracle Connection timeout is milliseconds  - allow 10 seconds for all checks
-            rc = 1
-            target_logger.debug("Connected to: %s with %s ", hostname, handler)
-        except cx_Oracle.DatabaseError as exc:
-            error, = exc.args
-            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-            rc = error.code
-            if curr_connection:
-                curr_connection.close()
-                curr_connection = ''
-    elif handler == 'PLSQL':
-        try:
-            # curr_connection = cx_Oracle.connect(SYS_USER, SYS_PWD, my_dsn, mode=cx_Oracle.SYSDBA)
-            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
-            curr_connection.callTimeout = 20000  # Oracle Connection timeout is milliseconds  - allow 10 seconds for all checks
-            rc = 1
-            target_logger.debug("Connected to: %s with %s ", hostname, handler)
-        except cx_Oracle.DatabaseError as exc:
-            error, = exc.args
-            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-            rc = error.code
-            if curr_connection:
-                curr_connection.close()
-                curr_connection = ''
-
-    elif handler == 'ssh':
-        curr_connection = paramiko.SSHClient()
-
-        curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        private_key = paramiko.RSAKey.from_private_key_file(PKEY)
-
-        try:
+        elif handler == 'ssh' :
+            curr_connection = paramiko.SSHClient()
+            curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            private_key = paramiko.RSAKey.from_private_key_file(PKEY)
             curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
                                     banner_timeout=10, auth_timeout=10, pkey=private_key)
+        elif handler == 'OMS' :
+            curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
+            curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+        elif handler == 'ASM' :
+            if instance_name == '+ASM' :
+                curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn, mode=cx_Oracle.SYSASM)
+                curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+        elif handler == 'SYSDBA' :
+            curr_connection = cx_Oracle.connect(SYS_USER, SYS_PWD, my_dsn, mode=cx_Oracle.SYSDBA)
+            curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+        elif handler == 'Postgres' :
+           my_dsn="dbname=" + instance_name + " user=" + DBC_USER + " password=" + DBC_PWD + " host=" + hostname
+           curr_connection = psycopg2.connect(my_dsn)
 
-            target_logger.debug('Connection Established at: %s', str(datetime.now()))
-            rc = 1
-            timer = threading.Timer(15, curr_connection.close)
-            timer.start()  # start counting right before connecting - wait longer than the longest ssh timeout value
+        # Still here means connected
+        rc = 1
+        target_logger.debug("Connected to: %s with %s ", hostname, handler)
+        timer = threading.Timer(15, curr_connection.close)
+        timer.start()  # start counting right before connecting - wait longer than the longest ssh timeout value
 
-        except paramiko.ssh_exception.AuthenticationException:
+
+#   Deal with possible errors
+    except cx_Oracle.DatabaseError as exc:
+            error, = exc.args
+            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+            rc = error.code
+            if curr_connection:
+                curr_connection.close()
+                curr_connection = ''
+
+    except paramiko.ssh_exception.AuthenticationException:
             target_logger.error("Authentication failed, Host: %s    Owner: %s", hostname, owner)
             rc = "AuthenticationException"
             if curr_connection != '':
                 curr_connection.close()
                 curr_connection = ''
 
-        except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
+    except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
             target_logger.error("Unable to verify server's host key: %s", badHostKeyException)
             rc = "BadHostKeyException"
             if curr_connection != '':
                 curr_connection.close()
                 curr_connection = ''
 
-        except paramiko.ssh_exception.SSHException as sshException:
+    except paramiko.ssh_exception.SSHException as sshException:
             target_logger.error("Unable to establish SSH connection: %s", sshException)
             rc = "SSHException"
             if curr_connection != '':
                 curr_connection.close()
                 curr_connection = ''
 
-        except Exception as sshException:
+    except Exception as sshException:
             target_logger.error("General Exception in os command: %s ", sshException)
             result = 'FAILED: general_ssh_exception'
             rc = "sshException"
@@ -147,7 +117,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
                 curr_connection.close()
                 curr_connection = ''
 
-        else:
+    else:
             timer.cancel()  # cancel the connection thread if it's still alive after 30 seconds
 
     target_logger.debug('Connection rc: %s', str(rc))
@@ -238,12 +208,13 @@ def get_info(check, handler, connection, target_logger):
     result = ''
 
     if connection != '':
-        if handler == 'Oracle' or handler == 'ASM' or handler == 'OMS':
-            rc, result = get_oracle_info(check, connection, target_logger)
-        elif handler == 'ssh':
+        if handler == 'ssh':
             rc, result = get_OS_info(check, connection, target_logger)
         elif handler == 'PLSQL':
             rc, result = get_PLSQL_info(check, connection, target_logger)
+        else :
+            #  handler == 'Oracle' or handler == 'ASM' or handler == 'OMS':
+            rc, result = get_oracle_info(check, connection, target_logger)
 
     return rc, result
 

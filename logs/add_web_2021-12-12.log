@@ -1,0 +1,12 @@
+2021-12-12 22:25:13,958 - add_web - INFO - Check 2 2 returned: None
+2021-12-12 22:25:13,958 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-12 22:25:13,970 - add_web - ERROR - Error inserting new target: 2 2 invalid input syntax for type integer: ""
+LINE 3: ...2'::date, '', '2', '2', '2', '', '', '', 'ORACLE', '', ''); 
+                                                                  ^
+ 
+2021-12-12 22:25:13,970 - add_web - INFO - Add target Result InventoryID: -1
+2021-12-12 22:25:37,503 - add_web - INFO - Check 2 2 returned: None
+2021-12-12 22:25:37,505 - add_web - DEBUG - Check for existing target returned: 0
+2021-12-12 22:25:37,533 - add_web - INFO - Check 2 2 returned: (2,)
+2021-12-12 22:25:37,533 - add_web - DEBUG - Check for existing target returned: 2
+2021-12-12 22:25:37,534 - add_web - INFO - Add target Result InventoryID: 2
