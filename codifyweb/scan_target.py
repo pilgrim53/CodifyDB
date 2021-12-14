@@ -40,7 +40,7 @@ def main(argv):
                 from targets where decommissioned is null '
 
     try:
-        opts, args = getopt.getopt(argv, ":t:v:ah")
+        opts, args = getopt.getopt(argv, ":t:v:adh")
 
     except getopt.GetoptError:
         print('scan_targets.py [ -a (ADD) -t Database|Server -v Vendor  ] | -h (help) ')
@@ -57,7 +57,9 @@ def main(argv):
 
         elif opt == "-a":
             check_type = 'ADD'
-
+         elif opt == "-d":
+             check_type = 'DISCOVER'
+                
         elif opt == "-t":
             target_type = arg
             target_query += ' and target_type = \'' + target_type + '\''
@@ -244,6 +246,82 @@ def main(argv):
                 target_logger.info('hostname: %s instance_name: %s inventory_id: %s results: %s ',
                                    hostname, instance_name, inventory_id, result)
 
+                
+                     # Get newly discovered databases and add them
+     elif check_type == 'DISCOVER':
+         # Read through the monitoring results
+         # Get the delta from what is already known in the inventory
+         # DB Record Format: 1) host_instance 2) instance_1 instance_2 ..... instance_n
+         target_query="""select a.hostname, b.check_result from target a, check_results b
+                          where a.inventory_id=b.inventory_id
+                            and (( b.check_column = 'pmon') or ( b.check_column = 'pdbs'))
+                            and b.check_date > '2021-12-10'
+                  except select hostname, instance_name from target;  """
+
+         target_cursor.execute(target_query)
+         all_targets = target_cursor.fetchall()
+
+         for hostname, instance_list in all_targets :
+             instance_list = instance_list.split(" ")
+             for instance_name in instance_list :
+                 target_logger.info('Checking target Hostname: %s Instance_name: %s ', str(hostname), str(instance_name))
+                 # Try connecting to the database and get info if possible exists=targets.CreateDBC(target, owner,
+                 # target_logger) if exists >= 0 :  # -1 does not exist     0=host exists, 1=database and Cloud_DBC
+                 # exist  2=Target exists Why add if already there?
+                 inventory_id = targets.add(hostname, instance_name, 'TBD', '0', '', '', '', 0,
+                                                    target_type, target_logger)
+                 if inventory_id > 0:
+                         result = 0
+                         target_logger.debug(
+                             "inventory_id: %s instance_name: %s hostname: %s target_type: %s",
+                             inventory_id, instance_name, hostname, target_type)
+
+                         old_handler = ''
+
+                         # Sub Loop of All Checks for the Target
+                         # Reuse the connection to the target for all similar checks with same handler
+                         for check, check_type, result_column, handler in all_checks:
+                             result = ''
+                             if handler != old_handler:
+                                 if old_handler != '' and curr_connection != '':
+                                     try:
+                                        curr_connection.close()
+                                     except cx_Oracle.DatabaseError as exc:
+                                        error, = exc.args
+                                        target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+
+                                 old_handler = handler
+                                 rc, curr_connection = targets.connect(hostname, instance_name,
+                                                                       '', handler, target_logger)
+
+                             if curr_connection:  # connection still works
+                                 targets.update_column(inventory_id, 'status', handler + ' Connected', target_logger)
+                                 rc, result = targets.get_info(check, handler, curr_connection, target_logger)
+                                 if result:
+                                     targets.update_column(inventory_id, result_column, result, target_logger)
+
+                             else:  # connection no longer works
+                                 targets.update_column(inventory_id, 'status', 'No ' + handler + ' Connection',
+                                                       target_logger)
+
+                             target_logger.info("inventory_id: %s Attribute: %s Value: %s", inventory_id, result_column,
+                                                result)
+
+                         # targets.Disconnect(curr_connection)
+                         targets.update_column(inventory_id, "last_check_date", str(datetime.now()), target_logger)
+                         if curr_connection != '':
+                             try:
+                                curr_connection.close()
+                             except cx_Oracle.DatabaseError as exc:
+                                error, = exc.args
+                                target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+
+             else:
+                  result = targets.reject(hostname, '', instance_name, '', '', '', '',target_type, target_logger)
+
+             target_logger.info('hostname: %s instance_name: %s inventory_id: %s results: %s ',
+                                   hostname, instance_name, inventory_id, result)
+                               
 # END main program
 
 if __name__ == "__main__":
