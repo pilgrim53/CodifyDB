@@ -1,0 +1,18 @@
+2021-12-18 11:48:38,923 - Check_Targets - INFO - Command Options: []  Arguments: [] 
+2021-12-18 11:48:38,923 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2021-12-18 11:48:38,924 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2021-12-18 11:48:38,924 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2021-12-18 11:48:38,939 - Check_Targets - DEBUG - # of Targets: 1
+2021-12-18 11:48:38,941 - Check_Targets - INFO - All Checks: []
+2021-12-18 11:48:38,941 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: None hostname: localhost target_type: Database target_sub_type: None
+2021-12-18 11:48:38,941 - Check_Targets - INFO - Completed running check_targets.py with target_type=Database vendor=% frequency=HOURLY check_type=%
+2021-12-18 11:48:38,941 - Check_Targets - INFO - ====================================================================================
+2021-12-18 11:50:17,826 - Check_Targets - INFO - Command Options: [('-h', '')]  Arguments: [] 
+2021-12-18 11:51:23,486 - Check_Targets - INFO - Command Options: [('-t', 'Database'), ('-c', 'DB'), ('-v', 'ORACLE')]  Arguments: [] 
+2021-12-18 11:51:23,487 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=ORACLE FREQUENCY=HOURLY CHECKTYPE=DB
+2021-12-18 11:51:23,487 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type from checklist where 1=1  and check_type = 'DB' and vendor = 'ORACLE' and frequency = 'HOURLY'  order by handler, priority
+2021-12-18 11:51:23,487 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type from targets where decommissioned is null  and vendor =  'ORACLE' and target_type = 'Database' order by inventory_id
+2021-12-18 11:51:23,526 - Check_Targets - DEBUG - # of Targets: 0
+2021-12-18 11:51:23,528 - Check_Targets - INFO - All Checks: []
+2021-12-18 11:51:23,528 - Check_Targets - INFO - Completed running check_targets.py with target_type=Database vendor=ORACLE frequency=HOURLY check_type=DB
+2021-12-18 11:51:23,528 - Check_Targets - INFO - ====================================================================================
