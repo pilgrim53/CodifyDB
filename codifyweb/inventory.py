@@ -6,10 +6,10 @@ import sys  # for some reason this is not included by default
 # from numpy import asarray # convert sql result tuples to python arrays
 from datetime import date, datetime  # for some reason this is not included by default
 from decouple import config  # Allows us to read .env
+from inv_logging import start_logging
 # ===============================================================================
 CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
-from inv_logging import start_logging
 
 # Set Environment and Global Variables
 DBC_USER = config('DBC_USER')
@@ -33,7 +33,7 @@ def get_id(host, instance_name, target_logger):
     :param target_logger:
     :return: inventory_id: Returns the inventory_id of the target or 0 if not found
     """
-
+    target_logger.debug("get_id with host = %s, instance_name = %s", host, instance_name)
     inventory_id = 0
 
     postgres_conn = psycopg2.connect(INVENTORYDB)
@@ -59,6 +59,7 @@ def get_id(host, instance_name, target_logger):
 
     postgres_conn.close()
 
+    target_logger.debug("get_id returning inventory_id = %s", inventory_id)
     return inventory_id
 
 # END get_id
@@ -74,6 +75,7 @@ def get_attribute(inventory_id, target, column, target_logger):
     :return: value: the current value of the attribute "column" for the target
     """
 
+    target_logger.debug("get_attribute with inventory_id=%s, target=%s, column=%s", inventory_id, target, column)
     value = ''
     query = 'select ' + column + ' from targets where inventory_id=' + str(inventory_id) + ''
 
@@ -91,6 +93,7 @@ def get_attribute(inventory_id, target, column, target_logger):
         oracle_error = str(error.code)
         target_logger.error('Target: %s   Status: ORA- %s  Message: %s', str(target), oracle_error, str(error))
 
+    target_logger.debug("get_id returning value = %s", value)
     return value
 
 # END get_attribute

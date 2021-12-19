@@ -1,0 +1,37 @@
+2021-12-18 11:42:59,247 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 11:42:59,248 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler from checklist                where frequency='Database' order by handler, priority
+2021-12-18 11:42:59,248 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type                 from targets where decommissioned is null  order by inventory_id 
+2021-12-18 11:42:59,276 - Scan_Targets - INFO - All Checks: []
+2021-12-18 11:52:49,664 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=ADD
+2021-12-18 11:52:49,665 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler from checklist                where frequency='Database' order by handler, priority
+2021-12-18 11:52:49,665 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type                 from targets where decommissioned is null  and target_type = 'Database' and vendor = 'ORACLE' order by inventory_id 
+2021-12-18 11:52:49,683 - Scan_Targets - INFO - All Checks: []
+2021-12-18 11:53:13,613 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 11:53:13,614 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler from checklist                where frequency='Database' order by handler, priority
+2021-12-18 11:53:13,614 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type                 from targets where decommissioned is null  and target_type = 'Database' and vendor = 'ORACLE' order by inventory_id 
+2021-12-18 11:53:13,632 - Scan_Targets - INFO - All Checks: []
+2021-12-18 11:53:13,633 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 11:53:13,634 - Scan_Targets - INFO - ====================================================================================
+2021-12-18 13:51:49,780 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 13:51:49,780 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler from checklist                where frequency='Database' order by handler, priority
+2021-12-18 13:51:49,781 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type                 from targets where decommissioned is null  and target_type = 'Database' and vendor = 'ORACLE' order by inventory_id 
+2021-12-18 13:51:49,812 - Scan_Targets - INFO - All Checks: []
+2021-12-18 13:51:49,814 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 13:51:49,814 - Scan_Targets - INFO - ====================================================================================
+2021-12-18 13:52:28,921 - Scan_Targets - DEBUG - All Options passed: [('-t', 'Database'), ('-v', 'ORACLE')]
+2021-12-18 13:52:28,921 - Scan_Targets - DEBUG - All arguments passed: []
+2021-12-18 13:52:28,921 - Scan_Targets - DEBUG - Option: -t Argument: Database
+2021-12-18 13:52:28,921 - Scan_Targets - DEBUG - Option: -v Argument: ORACLE
+2021-12-18 13:52:28,922 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 13:52:28,922 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler from checklist                where frequency='Database' order by handler, priority
+2021-12-18 13:52:28,922 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type                 from targets where decommissioned is null  and target_type = 'Database' and vendor = 'ORACLE' order by inventory_id 
+2021-12-18 13:52:28,941 - Scan_Targets - INFO - All Checks: []
+2021-12-18 13:52:28,942 - Scan_Targets - DEBUG - All targets: []
+2021-12-18 13:52:28,942 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 13:52:28,942 - Scan_Targets - INFO - ====================================================================================
+2021-12-18 13:54:11,419 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 13:54:11,420 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler from checklist                where frequency='Database' order by handler, priority
+2021-12-18 13:54:11,420 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type                 from targets where decommissioned is null  and target_type = 'Database' and vendor = 'ORACLE' order by inventory_id 
+2021-12-18 13:54:11,437 - Scan_Targets - INFO - All Checks: []
+2021-12-18 13:54:11,438 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2021-12-18 13:54:11,438 - Scan_Targets - INFO - ====================================================================================

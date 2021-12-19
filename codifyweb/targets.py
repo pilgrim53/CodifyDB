@@ -32,6 +32,7 @@ CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 import inventory
 
+
 def connect(hostname, instance_name, owner, handler, target_logger):
     """
     Connects to a target using the specified handler.
@@ -45,32 +46,31 @@ def connect(hostname, instance_name, owner, handler, target_logger):
     target_logger.debug("Connecting to: %s with %s as %s", hostname, handler, owner)
     rc = 0
     curr_connection = ''
-    my_dsn=instance_name + '_' + hostname
-
+    my_dsn = instance_name + '_' + hostname
 
     try:
-        if handler == 'Oracle' or handler == 'PLSQL' :
+        if handler == 'Oracle' or handler == 'PLSQL':
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
             curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
-        elif handler == 'ssh' :
+        elif handler == 'ssh':
             curr_connection = paramiko.SSHClient()
             curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             private_key = paramiko.RSAKey.from_private_key_file(PKEY)
             curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
                                     banner_timeout=10, auth_timeout=10, pkey=private_key)
-        elif handler == 'OMS' :
+        elif handler == 'OMS':
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
             curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
-        elif handler == 'ASM' :
-            if instance_name == '+ASM' :
+        elif handler == 'ASM':
+            if instance_name == '+ASM':
                 curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn, mode=cx_Oracle.SYSASM)
                 curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
-        elif handler == 'SYSDBA' :
+        elif handler == 'SYSDBA':
             curr_connection = cx_Oracle.connect(SYS_USER, SYS_PWD, my_dsn, mode=cx_Oracle.SYSDBA)
             curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
-        elif handler == 'Postgres' :
-           my_dsn="dbname=" + instance_name + " user=" + DBC_USER + " password=" + DBC_PWD + " host=" + hostname
-           curr_connection = psycopg2.connect(my_dsn)
+        elif handler == 'Postgres':
+            my_dsn = "dbname=" + instance_name + " user=" + DBC_USER + " password=" + DBC_PWD + " host=" + hostname
+            curr_connection = psycopg2.connect(my_dsn)
 
         # Still here means connected
         rc = 1
@@ -81,44 +81,44 @@ def connect(hostname, instance_name, owner, handler, target_logger):
 
 #   Deal with possible errors
     except cx_Oracle.DatabaseError as exc:
-            error, = exc.args
-            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-            rc = error.code
-            if curr_connection:
-                curr_connection.close()
-                curr_connection = ''
+        error, = exc.args
+        target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+        rc = error.code
+        if curr_connection:
+            curr_connection.close()
+            curr_connection = ''
 
     except paramiko.ssh_exception.AuthenticationException:
-            target_logger.error("Authentication failed, Host: %s    Owner: %s", hostname, owner)
-            rc = "AuthenticationException"
-            if curr_connection != '':
-                curr_connection.close()
-                curr_connection = ''
+        target_logger.error("Authentication failed, Host: %s    Owner: %s", hostname, owner)
+        rc = "AuthenticationException"
+        if curr_connection != '':
+            curr_connection.close()
+            curr_connection = ''
 
     except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
-            target_logger.error("Unable to verify server's host key: %s", badHostKeyException)
-            rc = "BadHostKeyException"
-            if curr_connection != '':
-                curr_connection.close()
-                curr_connection = ''
+        target_logger.error("Unable to verify server's host key: %s", badHostKeyException)
+        rc = "BadHostKeyException"
+        if curr_connection != '':
+            curr_connection.close()
+            curr_connection = ''
 
     except paramiko.ssh_exception.SSHException as sshException:
-            target_logger.error("Unable to establish SSH connection: %s", sshException)
-            rc = "SSHException"
-            if curr_connection != '':
-                curr_connection.close()
-                curr_connection = ''
+        target_logger.error("Unable to establish SSH connection: %s", sshException)
+        rc = "SSHException"
+        if curr_connection != '':
+            curr_connection.close()
+            curr_connection = ''
 
     except Exception as sshException:
-            target_logger.error("General Exception in os command: %s ", sshException)
-            result = 'FAILED: general_ssh_exception'
-            rc = "sshException"
-            if curr_connection != '':
-                curr_connection.close()
-                curr_connection = ''
+        target_logger.error("General Exception in os command: %s ", sshException)
+        result = 'FAILED: general_ssh_exception'
+        rc = "sshException"
+        if curr_connection != '':
+            curr_connection.close()
+            curr_connection = ''
 
     else:
-            timer.cancel()  # cancel the connection thread if it's still alive after 30 seconds
+        timer.cancel()  # cancel the connection thread if it's still alive after 30 seconds
 
     target_logger.debug('Connection rc: %s', str(rc))
 
@@ -185,6 +185,7 @@ sqlOUT"""
     finally:
         ssh_connection.close()
 
+    target_logger.debug('CLOUD_DBC database user creation result: %s', str(result))
     return result
 
 
@@ -204,6 +205,7 @@ def get_info(check, handler, connection, target_logger):
     :return: result: The result of the check query
     :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
     """
+    target_logger.debug('get_info with check=%s, handler=%s', check, handler, connection)
     rc = 0
     result = ''
 
@@ -216,6 +218,7 @@ def get_info(check, handler, connection, target_logger):
             #  handler == 'Oracle' or handler == 'ASM' or handler == 'OMS':
             rc, result = get_oracle_info(check, connection, target_logger)
 
+    target_logger.debug('get_info returning Result: %s (rc = %s)', str(result), str(rc))
     return rc, result
 
 
@@ -231,6 +234,7 @@ def get_oracle_info(check, connection, target_logger):
     :return: result: The result of the check query
     :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
     """
+    target_logger.debug('get_oracle_info with check=%s', check)
     rc = 0
     value = ''
 
@@ -241,7 +245,7 @@ def get_oracle_info(check, connection, target_logger):
         db_info_cursor.execute(check)
         row = db_info_cursor.fetchone()
         if row:
-    #        value = str(value[0]).strip()
+            # value = str(value[0]).strip()
             value = ' '.join([str(item) for item in row])
             rc = 1
         else:
@@ -266,8 +270,7 @@ def get_oracle_info(check, connection, target_logger):
     finally :
         timer.cancel()  # cancel the timer before leaving this function
 
-    target_logger.info('GetOracleInfo returning Result: %s', str(value))
-
+    target_logger.debug('get_oracle_info returning Result: %s (rc = %s)', str(value), str(rc))
     return rc, value
 
 
@@ -285,7 +288,7 @@ def get_PLSQL_info(check, connection, target_logger):
     :return: result: The result of the check query
     :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
     """
-    target_logger.info('GetPLSQLInfo:  %s', check)
+    target_logger.debug('get_PLSQL_info with check = %s', check)
     rc = 1
 
     try:
@@ -304,7 +307,7 @@ def get_PLSQL_info(check, connection, target_logger):
         # fetch the text that was added by PL/SQL
         while True:
             db_info_cursor.callproc("dbms_output.get_lines", (lines_var, num_lines_var))
-            target_logger.info('GetPLSQLInfo: Lines:  %s Count %s ', lines_var, num_lines_var)
+            target_logger.info('get_PLSQL_info: Lines: %s Count %s ', lines_var, num_lines_var)
             num_lines = num_lines_var.getvalue()
             lines = lines_var.getvalue()[:num_lines]
             for line in lines:
@@ -313,7 +316,6 @@ def get_PLSQL_info(check, connection, target_logger):
                 break
 
         value = str(lines[0])
-
 
     except cx_Oracle.DatabaseError as exc:
         # Now Handle all the things that could go wrong with this request
@@ -331,6 +333,7 @@ def get_PLSQL_info(check, connection, target_logger):
         rc = 0
         value = error.code
 
+    target_logger.debug('get_PLSQL_info returning Result: %s (rc = %s)', str(value), str(rc))
     return rc, value
 
 
@@ -346,6 +349,7 @@ def get_OS_info(check, connection, target_logger):
     :return: result: The result of the OS check query
     :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
     """
+    target_logger.debug('get_OS_info with check = %s', check)
     result = ''
     rc = 0
     timer = threading.Timer(15, connection.close)
@@ -427,7 +431,7 @@ def get_OS_info(check, connection, target_logger):
         rc = -1
 
     finally:
-        target_logger.info("Returning result from OS command: %s ", result)
+        target_logger.info("Returning result from OS command: %s", result)
         timer.cancel()  # start counting right before connecting to the database
 
     return rc, result
@@ -445,7 +449,8 @@ def update_column(inventory_id, column_name, value, target_logger):
     :param target_logger:
     :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
     """
-
+    target_logger.debug('update_column with InventoryID: %s Column: %s New Value: %s ',
+                        inventory_id, column_name, value)
     result = 0
 
     if column_name == 'hostname' or column_name == 'instance_name':
@@ -519,6 +524,7 @@ def update_column(inventory_id, column_name, value, target_logger):
 
         postgres_conn.close()
 
+    target_logger.debug('update_column returning result = %s', str(result))
     return result
 
 
@@ -527,7 +533,7 @@ def update_column(inventory_id, column_name, value, target_logger):
 
 def reject(host, vendor, instance, status, owner, home_dir, important_notes, target_type, target_logger):
     """
-    Creates the initial Target entry in the DBC_Target table
+
     :param host:
     :param vendor:
     :param instance:
@@ -539,6 +545,9 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
     :param target_logger:
     :return: result: the target info [host, vendor, instance, status, owner, home_dir]
     """
+    target_logger.debug("Creating entry in target_rejects table with host: %s instance name: %s vendor: %s status: %s"
+                        " owner: %s home_dir: %s important_notes: %s",
+                        host, instance, vendor, status, owner, home_dir, important_notes)
     result = 0
     postgres_conn = psycopg2.connect(INVENTORYDB)
     insert_cursor = postgres_conn.cursor()
@@ -586,6 +595,10 @@ def add(host, instance, container, DBID, owner, home_dir, status, port, target_t
     :param target_logger:
     :return: the target info [instance, host, DBCreateDate, DBID, status, port]
     """
+    target_logger.debug("Adding entry in target table with host: %s instance name: %s container: %s DBID: %s"
+                        " owner: %s home_dir: %s status: %s port: %s target_type: %s",
+                        host, instance, container, DBID, owner, home_dir, status, port, target_type)
+
     result = 0
     count = 0
 

@@ -84,11 +84,11 @@ def main(argv):
         elif opt == "-t":
             target_type = arg
             if target_type == 'Server' :
-              check_type='OS'
-              check_query += ' and vendor != \'ORACLE\' and check_type = \'' + check_type + '\''
+                check_type='OS'
+                check_query += ' and vendor != \'ORACLE\' and check_type = \'' + check_type + '\''
             elif opt == "-c":
-              check_type = arg
-              check_query += ' and check_type = \'' + check_type + '\''
+                check_type = arg
+                check_query += ' and check_type = \'' + check_type + '\''
 
         elif opt == "-v":
             vendor = arg
@@ -110,7 +110,7 @@ def main(argv):
     check_query += ' and frequency = \'' + frequency + '\'  order by handler, priority'
     target_query += ' and target_type = \'' + target_type + '\' order by inventory_id'
 
-    target_logger.info("Running CheckTargets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", target_type,
+    target_logger.info("Running check_targets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", target_type,
                        vendor, frequency, check_type)
     target_logger.info("Check Query: %s", check_query)
     target_logger.info("Target Query: %s", target_query)
@@ -134,10 +134,10 @@ def main(argv):
     target_logger.info("All Checks: %s", all_checks)
     inventory_conn.close()
 
-
     # Main Loop of all in-scope Targets
     for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type in all_targets:
-        target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
+        target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: "
+                            "%s target_type: %s target_sub_type: %s",
                             inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
 
         # Sub Loop of All Checks for the Target
@@ -169,7 +169,7 @@ def main(argv):
                 else:
                     connected = 'TRUE'
 
-            target_logger.debug("Check %s Handler: %s Connected: %s ", check, handler, connected)
+            target_logger.info("Check %s Handler: %s Connected: %s ", check, handler, connected)
 
             if connected == 'TRUE':
                 if check_sub_type == "" or ( check_sub_type == target_sub_type) :
@@ -185,13 +185,13 @@ def main(argv):
                         target_logger.debug("Check %s RC: %s returned: %s ", check, info_rc, result)
                         connected = 'FALSE'
                         try:
-                           curr_connection.close()
+                            curr_connection.close()
                         except cx_Oracle.DatabaseError as exc:
-                           error, = exc.args
-                           target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+                            error, = exc.args
+                            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
 
         try:
-            if curr_connection != '' :
+            if curr_connection != '':
                 curr_connection.close()
         except cx_Oracle.DatabaseError as exc:
             error, = exc.args
@@ -200,11 +200,12 @@ def main(argv):
             error, = exc.args
             target_logger.error("InterfaceError-Code: %s %s ", error.code, error.message)
 
-    target_logger.info("Completed running CheckTargets.py with target_type=%s vendor=%s frequency=%s check_type=%s",
+    target_logger.info("Completed running check_targets.py with target_type=%s vendor=%s frequency=%s check_type=%s",
                        target_type, vendor, frequency, check_type)
     target_logger.info("====================================================================================")
 
 # END main program
+
 
 if __name__ == "__main__":
     target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
