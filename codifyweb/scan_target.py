@@ -36,8 +36,8 @@ def main(argv):
     global target_type
     check_type = 'UPDATE'  # Default to scan / update existing known Targets
     target_type = 'Database'  # Default to database targets
-    target_query = 'select inventory_id, instance_name, owner, home_dir, hostname, target_type \
-                from targets where decommissioned is null '
+    target_query = 'select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor \
+                      from targets where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv, ":t:v:adh")
@@ -69,8 +69,8 @@ def main(argv):
 
     target_query += ' order by inventory_id '
 
-    check_query = "select check_command, check_type, result_column, handler from checklist \
-               where frequency='" + target_type + "' order by handler, priority"
+    check_query = "select check_command, check_type, result_column, handler, vendor from checklist \
+                    where frequency='" + target_type + "' order by handler, priority"
 
     target_logger.info("Running scan_target.py with target_type=%s check_type=%s", target_type, check_type)
     target_logger.info("Check Query: %s", check_query)
@@ -99,7 +99,7 @@ def main(argv):
 
         # Main Loop of all in-scope Targets
 
-        for inventory_id, instance, owner, home_dir, hostname, TargetType in all_targets:
+        for inventory_id, instance, owner, home_dir, hostname, TargetType, target_vendor in all_targets:
             result = 0
             target_logger.debug("inventory_id: %s instance: %s owner: %s home_dir: %s hostname: %s TargetType: %s",
                                 inventory_id, instance, owner, home_dir, hostname, TargetType)
@@ -108,7 +108,8 @@ def main(argv):
 
             # Sub Loop of All Checks for the Target
             # Reuse the connection to the target for all similar checks with same handler
-            for check, check_type, result_column, handler in all_checks:
+            for check, check_type, result_column, handler, check_vendor in all_checks:
+              if check_vendor == "ALL" or ( check_vendor == target_vendor ) :
                 result = ''
                 if handler != old_handler:
                     if old_handler != '' and curr_connection != '':
@@ -205,7 +206,7 @@ def main(argv):
 
                         # Sub Loop of All Checks for the Target
                         # Reuse the connection to the target for all similar checks with same handler
-                        for check, check_type, result_column, handler in all_checks:
+                        for check, check_type, result_column, handler, check_vendor in all_checks:
                             result = ''
                             if handler != old_handler:
                                 if old_handler != '' and curr_connection != '':
@@ -253,10 +254,12 @@ def main(argv):
         # Read through the monitoring results
         # Get the delta from what is already known in the inventory
         # DB Record Format: 1) host_instance 2) instance_1 instance_2 ..... instance_n
-        target_query = """select a.hostname, b.check_result from target a, check_results b
-                          where a.inventory_id=b.inventory_id
-                            and (( b.check_column = 'pmon') or ( b.check_column = 'pdbs'))
-                            and b.check_date > '2021-12-10'
+        target_query="""select distinct a.hostname, upper(b.check_result)
+                          from target a, check_results b
+                           and (( check_column = 'pmon') or ( check_column = 'pdbs'))
+                           and check_date > ( SELECT NOW() - INTERVAL '7 DAYS')
+                           and check_result not like '%near line 1%'
+                           and check_result not like ''
                   except select hostname, instance_name from target;  """
 
         target_cursor.execute(target_query)
@@ -282,7 +285,7 @@ def main(argv):
 
                     # Sub Loop of All Checks for the Target
                     # Reuse the connection to the target for all similar checks with same handler
-                    for check, check_type, result_column, handler in all_checks:
+                    for check, check_type, result_column, handler, check_vendor in all_checks:
                         result = ''
                         if handler != old_handler:
                             if old_handler != '' and curr_connection != '':
