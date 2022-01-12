@@ -268,7 +268,11 @@ def get_oracle_info(check, connection, target_logger):
         value = error.code
 
     finally :
-        timer.cancel()  # cancel the timer before leaving this function
+        try :
+            timer.cancel()  # cancel the timer before leaving this function
+        except :
+            target_logger.error('GetOracleInfo Error: Timer not established')
+
 
     target_logger.debug('get_oracle_info returning Result: %s (rc = %s)', str(value), str(rc))
     return rc, value
@@ -552,7 +556,7 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
     postgres_conn = psycopg2.connect(INVENTORYDB)
     insert_cursor = postgres_conn.cursor()
     insert_stmt = """INSERT INTO target_rejects
-                       (InventoryCreate, HostName, InstanceName, vendor, status, owner, home_dir, importantnotes)
+                       (Inventory_Create, HostName, Instance_Name, vendor, status, owner, home_directory, important_notes)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s); """
 
     try:

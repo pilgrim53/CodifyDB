@@ -62,15 +62,15 @@ def main(argv):
     check_type = '%'
     target_type = 'Database'  # Default to Database right now for development
 
-    check_query = 'select check_command, check_type, result_column, handler, sub_type from checklist where 1=1 '
+    check_query = 'select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1 '
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname,' \
-                   ' target_type, sub_type from targets where decommissioned is null '
+                   ' target_type, sub_type, vendor from targets where decommissioned is null '
 
     try:
-        opts, args = getopt.getopt(argv,":t:c:v:f:h")
+        opts, args = getopt.getopt(argv,":t:c:v:f:s:h")
 
     except getopt.GetoptError:
-        print('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> ]')
+        print('check_targets.py [ -t Database|Server -c DB|OS -v <vendor> -f <frequency> -s <sub_type> ]')
         sys.exit(2)
 
     target_logger.info('Command Options: %s  Arguments: %s ', opts, args)
@@ -78,7 +78,7 @@ def main(argv):
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt, arg))
         if opt == '-h':
-            print('check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] ')
+            print('check_targets.py -t [Database|Server] -c [DB|OS] -v [ORACLE|SUNOS|LINUX|AIX] -f [HOURLY|DAILY|WEEKLY] -s [CDB|PDB|STANDALONE]')
             sys.exit()
 
         elif opt == "-t":
@@ -95,10 +95,10 @@ def main(argv):
             check_query += ' and vendor = \'' + vendor + '\''
             target_query += ' and vendor =  \'' + vendor + '\''
 
-        elif opt == "-v":
-            vendor = arg
-            check_query += ' and vendor = \'' + vendor + '\''
-            target_query += ' and vendor =  \'' + vendor + '\''
+        elif opt == "-s":
+            sub_type = arg
+            target_query += ' and sub_type =  \'' + sub_type + '\''
+            check_query += ' and sub_type = \'' + sub_type + '\''
 
         elif opt == "-c":
             check_type = arg
@@ -135,9 +135,8 @@ def main(argv):
     inventory_conn.close()
 
     # Main Loop of all in-scope Targets
-    for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type in all_targets:
-        target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: "
-                            "%s target_type: %s target_sub_type: %s",
+    for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type, vendor in all_targets:
+        target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
                             inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
 
         # Sub Loop of All Checks for the Target
@@ -147,7 +146,8 @@ def main(argv):
         rc = 1
         connected = 'FALSE'
 
-        for check, check_type, result_column, handler, check_sub_type in all_checks:
+        for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
+          if (check_vendor == 'ALL' ) or ( check_vendor == vendor ):
             result = ''
             if handler != old_handler:
                 old_handler = handler
