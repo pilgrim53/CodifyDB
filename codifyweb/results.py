@@ -5,9 +5,6 @@ from datetime import date, datetime  # for some reason this is not included by d
 from decouple import config  # Allows us to read .env
 import inventory
 
-# Set  Environment and Global Variables
-
-
 def add(inventory_id, check_result, column_name, target_logger):
     """
     Insert the check results into the inventory database. Outputs single entry into CheckResults table
@@ -18,12 +15,13 @@ def add(inventory_id, check_result, column_name, target_logger):
     """
  
     insert_statement = "INSERT INTO check_results (inventory_id, check_date, check_result, check_column) \
-                          VALUES ( %s, %s, %s, %s ); "
-    check_date = datetime.now()
+                          VALUES ( {}, \'{}\', \'{}\', \'{}\' ); "
 
-    result=inventory.exec_sql(insert_statement, (inventory_id, check_date, check_result, column_name), 'ONE', target_logger)
+    check_date = datetime.now()
+    insert_statement = f"{insert_statement.format(inventory_id, check_date, check_result, column_name)}"
+
+    result=inventory.exec_sql(insert_statement, 'EXEC', target_logger)
 
     return result
 
 # END add
-

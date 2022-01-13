@@ -105,14 +105,19 @@ def main(argv):
     target_logger.info("Target Query: %s", target_query)
 
     # Get ALL the matching active targets from the inventory
-    all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
+    RC, all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
     target_logger.debug("# of Targets: %s", len(all_targets))
 
     # Get ALL the checks to perform on these targets
-    all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)  
+    RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)  
     target_logger.info("All Checks: %s", all_checks)
 
     # Main Loop of all in-scope Targets
+    for check in all_checks :
+        print(check)
+    for target in all_targets :
+        print(target)
+
     for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type, vendor in all_targets:
         target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
                             inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
@@ -150,7 +155,7 @@ def main(argv):
             target_logger.info("Check %s Handler: %s Connected: %s ", check, handler, connected)
 
             if connected == 'TRUE':
-                if check_sub_type == "" or ( check_sub_type == target_sub_type) :
+                # if check_sub_type == "" or ( check_sub_type == target_sub_type) :
                     if handler == 'OMS':
                         check = f"{check.format(hostname, instance_name)}"
 

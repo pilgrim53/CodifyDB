@@ -90,10 +90,13 @@ def exec_sql(inventory_query, scale, target_logger):
 
         # Get ALL the active targets
         inventory_cursor.execute(inventory_query)
-        if scale == 'ONE' :
+        if scale == 'ALL' :
             query_result = inventory_cursor.fetchall()
-        elif scale == 'ALL' : 
+        elif scale == 'ONE' : 
             query_result = inventory_cursor.fetchone()
+        elif scale == 'EXEC' : 
+            inventory_conn.commit()
+            query_result = 1
 
     except cx_Oracle.DatabaseError as exc:
         error, = exc.args

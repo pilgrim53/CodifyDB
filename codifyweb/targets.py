@@ -187,12 +187,9 @@ sqlOUT"""
     target_logger.debug('CLOUD_DBC database user creation result: %s', str(result))
     return result
 
-
 # END create_DBC
 
-
 # TODO:   Make the check timeout a parameter and setting for each check
-
 
 def get_info(check, handler, connection, target_logger):
     """
