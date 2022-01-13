@@ -24,7 +24,6 @@ LOG_DIR = config('LOG_DIR')
 CODIFYDB_HOST = config('CODIFYDB_HOST')
 CODIFYDB = config('CODIFYDB')
 PKEY = config('PKEY')
-INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
 NOT_EXIST = [12154, 12521, 12545, 12541, 12543, 12514, 12505, 12547, 28860]
 NO_ACCESS = [1017, 1045, 1033, 15000, 28000, 28001]
 
@@ -465,40 +464,26 @@ def update_column(inventory_id, column_name, value, target_logger):
 
     if value != '':
         # ============================================================================
-        # Open a connection to the Inventory Database
-        # Update the results if anything has changed about the target (i.e. version or logmode)
+        # Get the old (current) value of the attribute in the inventory
+        # and update the inventory only if anything has changed about the target 
         # ============================================================================
 
-        postgres_conn = psycopg2.connect(INVENTORYDB)
-        select_cursor = postgres_conn.cursor()
         target_query = 'select ' + column_name + ' from targets where inventory_id = \'' + str(
             inventory_id) + '\''
-        target_logger.info('QUERY: %s', target_query)
 
-        try:
+        curr_value = inventory.exec_sql(target_query, 'ONE', target_logger)
+
+        if isinstance(type(curr_value), type(None)):
             curr_value = ''
-            # Get just the info about the target for comparison
-            select_cursor.execute(target_query)
-            curr_value = select_cursor.fetchone()
+        else:
+            curr_value = str(curr_value[0]).strip()
 
-            if isinstance(type(curr_value), type(None)):
-                curr_value = ''
-            else:
-                curr_value = str(curr_value[0]).strip()
-
-            target_logger.info('InventoryID: %s Column: %s Old Value: %s New Value: %s ',
-                               inventory_id, column_name, curr_value, value)
-
-        except (psycopg2.DataError, psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.InternalError) as exc:
-            error, = exc.args
-            error_msg = psycopg2.errors.lookup(exc.pgcode)
-            target_logger.error('Failed to get %s from InventoryID: %s  DataError: %s',
-                                column_name, str(inventory_id), str(error_msg))
+        target_logger.info('InventoryID: %s Column: %s Old Value: %s New Value: %s ',
+                            inventory_id, column_name, curr_value, value)
 
         if curr_value == value or value == 'UNKNOWN':
             target_logger.info('No change in Target Info')
         else:
-            insert_cursor = postgres_conn.cursor()
             if column_name == 'blocksize' or column_name == 'port':
                 insert_stmt = 'update targets set ' + column_name + '=' + str(
                     value) + ' where inventory_id=' + str(inventory_id)
@@ -506,27 +491,7 @@ def update_column(inventory_id, column_name, value, target_logger):
                 insert_stmt = 'update targets set ' + column_name + '=\'' + str(
                     value) + '\' where inventory_id=' + str(inventory_id)
 
-            try:
-                insert_cursor.execute(insert_stmt)
-                # Make the changes to the database persistent
-                postgres_conn.commit()
-
-            except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError) as exc:
-                error, = exc.args
-                target_logger.error('Error updating target: %s Column_name %s from %s to %s',
-                                    inventory_id, column_name, curr_value, value)
-                result = -1
-
-            except Exception as exc:
-                error, = exc.args
-                target_logger.error('Error updating target: %s Column_name: %s Error:  %s ',
-                                    inventory_id, column_name, str(error))
-                result = -1
-
-            else:
-                result = 1
-
-        postgres_conn.close()
+            result = inventory.exec_sql(insert_stmt, 'ONE', target_logger)
 
     target_logger.debug('update_column returning result = %s', str(result))
     return result
@@ -553,30 +518,15 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
                         " owner: %s home_dir: %s important_notes: %s",
                         host, instance, vendor, status, owner, home_dir, important_notes)
     result = 0
-    postgres_conn = psycopg2.connect(INVENTORYDB)
-    insert_cursor = postgres_conn.cursor()
+
     insert_stmt = """INSERT INTO target_rejects
                        (Inventory_Create, HostName, Instance_Name, vendor, status, owner, home_directory, important_notes)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s); """
 
-    try:
-        insert_cursor.execute(insert_stmt,
-                              (date.today(), host, instance, vendor, status, owner, home_dir, important_notes))
-        # Make the changes to the database persistent
-        postgres_conn.commit()
-
-    except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError) as exc:
-        error, = exc.args
-        target_logger.error('Error inserting reject record: %s %s %s ', str(host), str(instance), str(error))
-        result = -1
-
-    else:
-        result = 1
-        target_logger.info('Rejected new target: %s %s  ', str(host), str(instance))
+    curr_value = inventory.exec_sql((insert_stmt,date.today(), host, instance, vendor, status, 
+                                         owner, home_dir, important_notes) ,'ONE', target_logger)
 
     target_logger.debug('Target Reject Result: %s', result)
-
-    postgres_conn.close()
 
     return result
 
@@ -587,57 +537,25 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
 def add(host, instance, container, DBID, owner, home_dir, status, port, target_type, target_logger):
     """
     Creates the initial Target entry in the DBC_Target table
-    :param host:
-    :param instance:
-    :param container:
-    :param DBID:
-    :param owner:
-    :param home_dir:
-    :param status:
-    :param port:
-    :param target_type:
-    :param target_logger:
-    :return: the target info [instance, host, DBCreateDate, DBID, status, port]
+    :param host, instance, etc...
+    :return: the target ID
     """
     target_logger.debug("Adding entry in target table with host: %s instance name: %s container: %s DBID: %s"
                         " owner: %s home_dir: %s status: %s port: %s target_type: %s",
                         host, instance, container, DBID, owner, home_dir, status, port, target_type)
 
-    result = 0
-    count = 0
-
-    postgres_conn = psycopg2.connect(INVENTORYDB)
     result = inventory.get_id(host, instance, target_logger)
     if result < 1:
-
-        insert_cursor = postgres_conn.cursor()
         insert_stmt = """INSERT INTO targets
                        (Inventory_Create, Target_Type, HostName, Instance_Name, Container, Serial_Number, owner, home_dir, Vendor, Status, Port)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
 
-        try:
-            insert_cursor.execute(insert_stmt, (
-                date.today(), target_type, host, instance, container, DBID, owner, home_dir, 'ORACLE', status, port))
-            # Make the changes to the database persistent
-            postgres_conn.commit()
+        RC = inventory.exec_sql((insert_stmt, (date.today(), target_type, host, instance, container, 
+                                             DBID, owner, home_dir, 'ORACLE', status, port)), 'ONE', target_logger)
 
-        except (psycopg2.DatabaseError, psycopg2.IntegrityError, psycopg2.DataError, psycopg2.InternalError) as exc:
-            error, = exc.args
-            target_logger.error('Error inserting new target: %s %s %s ', str(host), str(instance), str(error))
-            result = -1
-
-        except Exception as exc:
-            error, = exc.args
-            target_logger.error('Exception occurred inserting target: %s %s Container: %s %s', \
-                                str(host), str(instance), str(container), str(error))
-            result = -1
-
-        else:
-            result = inventory.get_id(host, instance, target_logger)
+        result = inventory.get_id(host, instance, target_logger)
 
         target_logger.info('Add target Result InventoryID: %s', result)
-
-        postgres_conn.close()
 
     return result
 

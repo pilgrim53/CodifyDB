@@ -10,49 +10,42 @@ CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 import targets
 import results
+import inventory
 
 # Set  Environment and Global Variables
-DBC_USER = config('DBC_USER')
-DBC_PWD = config('DBC_PWD')
-INV_USER = config('INV_USER')
-INV_PWD = config('INV_PWD')
 ORACLE_BASE = config('ORACLE_BASE')
 ORACLE_HOME = config('ORACLE_HOME')
 TNS_ADMIN = config('TNS_ADMIN')
 LOG_DIR = config('LOG_DIR')
-CODIFYDB_HOST = config('CODIFYDB_HOST')
-CODIFYDB = config('CODIFYDB')
-INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
-
 GLOBAL_LOG_NAME = "Check_Targets"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
 GLOBAL_LOG_TO_CONSOLE = "ON"
 
-# ---------------------------     MAIN PROGRAM     ---------------------------
-# Description:  Monitors database targets from the DBC Inventory Database.
-#               If the target exists and something has changed, then it updates
-#               the entry.
+def main(argv):    
+    """
+# ============================================================================
+# Name:         check_targets.py
+# Description:  Monitors IT targets currently stored in the Codify "TARGETS" 
+#               check results are stored and viewable in "CHECK_RESULTS"
 #
 # Input Files:  TARGETS Table
 #               checklist table
 #               $TNS_ADMIN/tnsnames.ora
 #
-# Output:       Entries into the CheckResults table
+# Output:       Monitoring Entries saved to the Check_Results table
 #               Log files to $LOG_DIR/check_results_$date.log
 # Syntax:       check_targets.py -t target_type -v vendor -f frequency -c check_type
 #
-# Called Routines:    cx_Oracle - for Oracle database calls
-#                     psycopg2 - for PostgreSQL database calls
-#                     date, grep, awk, cat, uname - misc UNIX commands
+# Calls:        cx_Oracle - for Oracle database calls
+#               psycopg2 - for PostgreSQL database calls
+#               date, grep, awk, cat, uname - misc UNIX commands
 #
 # Restrictions: Enter the correct python environment prior to running.
 #               ex)  "source ~/<venv>/bin/activate"
 #                           to enter the necessary virtual environment
 # ============================================================================
-
-
-def main(argv):
+#     """
     global vendor
     global frequency
     global check_type
@@ -100,10 +93,6 @@ def main(argv):
             target_query += ' and sub_type =  \'' + sub_type + '\''
             check_query += ' and sub_type = \'' + sub_type + '\''
 
-        elif opt == "-c":
-            check_type = arg
-            check_query += ' and check_type = \'' + check_type + '\''
-
         elif opt == "-f":
             frequency = arg
 
@@ -115,24 +104,13 @@ def main(argv):
     target_logger.info("Check Query: %s", check_query)
     target_logger.info("Target Query: %s", target_query)
 
-    # Fetch all the valid database targets from the Inventory DB and
-    # check each one database by database
-    # Attempt to query that target and record the results
-
-    # Connect to the Inventory DB
-    inventory_conn = psycopg2.connect(INVENTORYDB)
-    target_cursor = inventory_conn.cursor()
-
-    # Get ALL the active targets
-    target_cursor.execute(target_query)
-    all_targets = target_cursor.fetchall()
+    # Get ALL the matching active targets from the inventory
+    all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
     target_logger.debug("# of Targets: %s", len(all_targets))
 
     # Get ALL the checks to perform on these targets
-    target_cursor.execute(check_query)
-    all_checks = target_cursor.fetchall()
+    all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)  
     target_logger.info("All Checks: %s", all_checks)
-    inventory_conn.close()
 
     # Main Loop of all in-scope Targets
     for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type, vendor in all_targets:
@@ -193,12 +171,9 @@ def main(argv):
         try:
             if curr_connection != '':
                 curr_connection.close()
-        except cx_Oracle.DatabaseError as exc:
+        except cx_Oracle.Error as exc:
             error, = exc.args
             target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-        except cx_Oracle.InterfaceError as exc:
-            error, = exc.args
-            target_logger.error("InterfaceError-Code: %s %s ", error.code, error.message)
 
     target_logger.info("Completed running check_targets.py with target_type=%s vendor=%s frequency=%s check_type=%s",
                        target_type, vendor, frequency, check_type)
