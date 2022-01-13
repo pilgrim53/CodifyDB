@@ -488,7 +488,7 @@ def update_column(inventory_id, column_name, value, target_logger):
                 insert_stmt = 'update targets set ' + column_name + '=\'' + str(
                     value) + '\' where inventory_id=' + str(inventory_id)
 
-            result = inventory.exec_sql(insert_stmt, 'ONE', target_logger)
+            result = inventory.exec_sql(insert_stmt, 'EXEC', target_logger)
 
     target_logger.debug('update_column returning result = %s', str(result))
     return result
@@ -518,7 +518,9 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
 
     insert_stmt = """INSERT INTO target_rejects
                        (Inventory_Create, HostName, Instance_Name, vendor, status, owner, home_directory, important_notes)
-                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s); """
+                       VALUES (\'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\'); """
+
+    insert_stmt = f"{insert_stmt.format(date.today(), host, instance, vendor, status, owner, home_dir, important_notes)}"
 
     curr_value = inventory.exec_sql((insert_stmt,date.today(), host, instance, vendor, status, 
                                          owner, home_dir, important_notes) ,'ONE', target_logger)
