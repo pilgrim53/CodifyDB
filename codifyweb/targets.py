@@ -15,14 +15,10 @@ DBC_PWD = config('DBC_PWD')
 SYS_USER = config('SYS_USER')
 SYS_PWD = config('SYS_PWD')
 OLD_DBC_PWD = config('OLD_DBC_PWD')
-INV_USER = config('INV_USER')
-INV_PWD = config('INV_PWD')
 ORACLE_BASE = config('ORACLE_BASE')
 ORACLE_HOME = config('ORACLE_HOME')
 TNS_ADMIN = config('TNS_ADMIN')
 LOG_DIR = config('LOG_DIR')
-CODIFYDB_HOST = config('CODIFYDB_HOST')
-CODIFYDB = config('CODIFYDB')
 PKEY = config('PKEY')
 NOT_EXIST = [12154, 12521, 12545, 12541, 12543, 12514, 12505, 12547, 28860]
 NO_ACCESS = [1017, 1045, 1033, 15000, 28000, 28001]
@@ -30,7 +26,6 @@ NO_ACCESS = [1017, 1045, 1033, 15000, 28000, 28001]
 CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 import inventory
-
 
 def connect(hostname, instance_name, owner, handler, target_logger):
     """
@@ -79,7 +74,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
 
 
 #   Deal with possible errors
-    except cx_Oracle.DatabaseError as exc:
+    except cx_Oracle.Error as exc:
         error, = exc.args
         target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
         rc = error.code
@@ -90,20 +85,6 @@ def connect(hostname, instance_name, owner, handler, target_logger):
     except paramiko.ssh_exception.AuthenticationException:
         target_logger.error("Authentication failed, Host: %s    Owner: %s", hostname, owner)
         rc = "AuthenticationException"
-        if curr_connection != '':
-            curr_connection.close()
-            curr_connection = ''
-
-    except paramiko.ssh_exception.BadHostKeyException as badHostKeyException:
-        target_logger.error("Unable to verify server's host key: %s", badHostKeyException)
-        rc = "BadHostKeyException"
-        if curr_connection != '':
-            curr_connection.close()
-            curr_connection = ''
-
-    except paramiko.ssh_exception.SSHException as sshException:
-        target_logger.error("Unable to establish SSH connection: %s", sshException)
-        rc = "SSHException"
         if curr_connection != '':
             curr_connection.close()
             curr_connection = ''
@@ -123,73 +104,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
 
     return rc, curr_connection
 
-
 # END connect
-
-
-def create_DBC(target, owner, target_logger):
-    """
-    Force the creation or recreation of the CLOUD_DBC database user
-    :param target:
-    :param owner:
-    :param target_logger:
-    :return: result: Status of command. 1 = success, 0 = fail, -1 = could not run
-    """
-    instance, host = target.split('_')
-    result = -1
-    target_logger.debug('Fix CLOUD_DBC on: %s', str(target))
-
-    DBC_COMMAND = """ . ./.bash_profile;    sqlplus / as sysdba <<sqlOUT
-ALTER SESSION SET "_oracle_script"=TRUE;
-create user Cloud_DBC identified by "Just4Now" account unlock;
-ALTER USER CLOUD_DBC IDENTIFIED BY VALUES 'S:86DFBCB95B28142998C2C27D6CC6F29F1BFFD1D15E5F996DCAAB6E2F13B1;T:BA8D9BE25142F60BFBB2DBE0658D594086E583252F18CBE7B1E05AB97F3A751A258C4019A3A7247B7545B4D230D9F085A7CB0038D47272070E00FA586A4D4BB104BD778E6DE6339DAB20966392D66F4C' account unlock;
-ALTER USER CLOUD_DBC profile NOEXPIRE_PWD;
-grant dba to Cloud_DBC;
-ALTER USER Cloud_DBC SET CONTAINER_DATA=ALL CONTAINER=CURRENT;
-exit
-sqlOUT"""
-
-    try:
-        ssh_connection = paramiko.SSHClient()
-        ssh_connection.load_system_host_keys()
-        ssh_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-        timer = threading.Timer(30, ssh_connection.close)
-        timer.start()  # start counting right before connecting to the database
-
-        target_logger.info("Connecting to %s as %s ", host, owner)
-        ssh_connection.connect(host, 22, owner)
-
-    except paramiko.ssh_exception.AuthenticationException:
-        target_logger.error("Authentication failed, Host: %s    Owner: %s", host, owner)
-    except paramiko.TimeoutError:
-        target_logger.error("Timeout connecting to Host: %s    Owner: %s", host, owner)
-    else:
-        try:
-            if owner != '':
-                target_logger.info("Running %s as %s on %s ", DBC_COMMAND, owner, host)
-                stdin, stdout, stderr = ssh_connection.exec_command(DBC_COMMAND, timeout=15, get_pty=True)
-
-                result_row = stdout.readlines()
-                result_err = stderr.readlines()
-                target_logger.info("OS Check stdout: %s ", str(result_row))
-                target_logger.info("OS Check Errors: %s ", str(result_err))
-                result = 1
-
-        except Exception as sshException:
-            target_logger.error("Unable to run on host: %s as %s Result: %s",
-                                host, owner, sshException)
-            result = 0
-
-    finally:
-        ssh_connection.close()
-
-    target_logger.debug('CLOUD_DBC database user creation result: %s', str(result))
-    return result
-
-# END create_DBC
-
-# TODO:   Make the check timeout a parameter and setting for each check
 
 def get_info(check, handler, connection, target_logger):
     """
@@ -216,7 +131,6 @@ def get_info(check, handler, connection, target_logger):
 
     target_logger.debug('get_info returning Result: %s (rc = %s)', str(result), str(rc))
     return rc, result
-
 
 # END get_info
 
@@ -247,16 +161,9 @@ def get_oracle_info(check, connection, target_logger):
         else:
             value = ''
 
-    except cx_Oracle.DatabaseError as exc:
+    except cx_Oracle.Error as exc:
         # Now Handle all the things that could go wrong with this request
         # If there was a database error, return it as the value
-        error, = exc.args
-        oracle_err = str(error.code)
-        target_logger.error('GetOracleInfo Error: ORA-%s  Message: %s', oracle_err, str(error))
-        rc = 0
-        value = error.code
-
-    except cx_Oracle.OperationalError as exc:
         error, = exc.args
         oracle_err = str(error.code)
         target_logger.error('GetOracleInfo Error: ORA-%s  Message: %s', oracle_err, str(error))
@@ -269,14 +176,10 @@ def get_oracle_info(check, connection, target_logger):
         except :
             target_logger.error('GetOracleInfo Error: Timer not established')
 
-
     target_logger.debug('get_oracle_info returning Result: %s (rc = %s)', str(value), str(rc))
     return rc, value
 
-
 # END get_oracle_info
-
-# TODO:   Make the check timeout a parameter and setting for each check
 
 
 def get_PLSQL_info(check, connection, target_logger):
@@ -310,32 +213,24 @@ def get_PLSQL_info(check, connection, target_logger):
             target_logger.info('get_PLSQL_info: Lines: %s Count %s ', lines_var, num_lines_var)
             num_lines = num_lines_var.getvalue()
             lines = lines_var.getvalue()[:num_lines]
-            for line in lines:
-                print(line or "")
+            # for line in lines:
+            #    print(line or "")
             if num_lines < chunk_size:
                 break
 
         value = str(lines[0])
 
-    except cx_Oracle.DatabaseError as exc:
+    except cx_Oracle.Error as exc:
         # Now Handle all the things that could go wrong with this request
         # If there was a database error, return it as the value
         error, = exc.args
         oracle_err = str(error.code)
-        target_logger.error('GetOracleInfo Error: ORA-%s  Message: %s', oracle_err, str(error))
-        rc = 0
-        value = error.code
-
-    except cx_Oracle.OperationalError as exc:
-        error, = exc.args
-        oracle_err = str(error.code)
-        target_logger.error('GetOracleInfo Error: ORA-%s  Message: %s', oracle_err, str(error))
+        target_logger.error('get_PLSQL_info Error: ORA-%s  Message: %s', oracle_err, str(error))
         rc = 0
         value = error.code
 
     target_logger.debug('get_PLSQL_info returning Result: %s (rc = %s)', str(value), str(rc))
     return rc, value
-
 
 # END get_PLSQL_info
 
@@ -353,7 +248,7 @@ def get_OS_info(check, connection, target_logger):
     result = ''
     rc = 0
     timer = threading.Timer(15, connection.close)
-    timer.start()  # start counting right before connecting to the database
+    timer.start()  # start counting right before connecting to the target
 
     try:
 
@@ -410,16 +305,8 @@ def get_OS_info(check, connection, target_logger):
         result = ''.join(str(stdout_chunks[len(stdout_chunks) - 1].decode("utf-8")).strip())
         result = result.replace('\n', ' ').replace('\r', '').replace('logout', '')
 
-        # result_list=[ str(v) for lst in stdout_chunks for key, value in lst.decode('utf-8').items() ]
-        # target_logger.info("OS result length: %s result: %s", str(len(result_list)), str(result_list) )
-
         if stderr:
             target_logger.error("OS Check Errors: %s ", stderr)
-
-        # if result != '' :
-        # result=str(result[2].strip())
-        # if result=="logout" :
-        #  result=str(result[len(result)-2].strip())
 
         # close all the pseudofiles
         stdout.close()
@@ -435,7 +322,6 @@ def get_OS_info(check, connection, target_logger):
         timer.cancel()  # start counting right before connecting to the database
 
     return rc, result
-
 
 # END get_OS_info
 
@@ -459,7 +345,7 @@ def update_column(inventory_id, column_name, value, target_logger):
         target_logger.error('TO CHANGE HOSTNAME OR INSTANCENAME PLEASE UPDATE MANUALLY')
         return 0
 
-    if value != '':
+    if value != '' and value != 'UNKNOWN':
         # ============================================================================
         # Get the old (current) value of the attribute in the inventory
         # and update the inventory only if anything has changed about the target 
@@ -493,13 +379,11 @@ def update_column(inventory_id, column_name, value, target_logger):
     target_logger.debug('update_column returning result = %s', str(result))
     return result
 
-
 # END update_column
 
 
 def reject(host, vendor, instance, status, owner, home_dir, important_notes, target_type, target_logger):
     """
-
     :param host:
     :param vendor:
     :param instance:

@@ -106,6 +106,6 @@ def exec_sql(inventory_query, scale, target_logger):
     finally: 
         inventory_conn.close()
 
-    target_logger.debug("Query result length: %s", len(query_result))
+    target_logger.debug("Query result: %s", query_result)
 
     return RC, query_result

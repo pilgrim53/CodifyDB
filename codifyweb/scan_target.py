@@ -1,14 +1,14 @@
 from datetime import date, datetime  # not included by default
 from decouple import config  # Allows us to read .env
 import sys, getopt  # Allows us to interact with the o/s
-import psycopg2  # for PostgreSQL database calls
 import cx_Oracle
-from inv_logging import start_logging  # Allows us to log to a file
-import targets  # All target functions
+
 
 CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 import inventory
+import targets  # All target functions
+from inv_logging import start_logging  # Allows us to log to a file
 
 # Set  Environment and Global Variables
 TARGET_FILE = "./discovery.txt"
@@ -20,7 +20,6 @@ LOG_TO_CONSOLE = "ON"
 ORACLE_BASE = config('ORACLE_BASE')
 ORACLE_HOME = config('ORACLE_HOME')
 TNS_ADMIN = "/u01/app/oracle/DBTools/"
-
 
 # ---------------------------   MAIN PROGRAM   -------------------------------
 # Evaluate target info and look for changes to targets. Then insert new or update existing records in Targets table
@@ -111,7 +110,7 @@ def main(argv):
 
                 target_logger.info("Inventory ID: %s Attribute: %s Value: %s", inventory_id, result_column, result)
 
-            if curr_connection:
+            if curr_connection !='' :
                 try:
                     curr_connection.close()
                 except cx_Oracle.DatabaseError as exc:
@@ -199,7 +198,7 @@ def main(argv):
                                 rc, curr_connection = targets.connect(hostname, instance_name,
                                                                       owner, handler, target_logger)
 
-                            if curr_connection:  # connection still works
+                            if curr_connection !='' :  # connection still works
                                 targets.update_column(inventory_id, 'status', handler + ' Connected', target_logger)
                                 rc, result = targets.get_info(check, handler, curr_connection, target_logger)
                                 if result:
