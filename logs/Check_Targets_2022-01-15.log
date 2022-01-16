@@ -1,0 +1,105 @@
+2022-01-15 20:51:22,366 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-15 20:51:22,368 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-15 20:51:22,368 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-15 20:51:22,370 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-15 20:51:22,371 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-15 20:53:53,613 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-15 20:53:53,614 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-15 20:53:53,615 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-15 20:53:53,615 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-15 20:53:53,616 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-15 20:53:53,682 - Check_Targets - DEBUG - Query result: [(1, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'ORACLE'), (2, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'POSTGRES'), (6, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'POSTGRES')]
+2022-01-15 20:53:53,683 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-15 20:53:53,684 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-15 20:53:53,713 - Check_Targets - DEBUG - Query result: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-15 20:53:53,714 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-15 20:53:53,715 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-15 20:53:53,716 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-15 20:53:53,726 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-15 20:53:53,730 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-15 20:53:53,731 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-15 20:53:53,732 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-15 20:53:53,742 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-15 20:53:53,766 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-15 20:53:53,807 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-15 20:53:53,824 - Check_Targets - DEBUG - get_oracle_info returning Result: 27 (rc = 1)
+2022-01-15 20:53:53,825 - Check_Targets - DEBUG - get_info returning Result: 27 (rc = 1)
+2022-01-15 20:53:53,825 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 27 RC: 1
+2022-01-15 20:53:53,826 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-15 20:53:53.826927', '27', 'check_results' ); 
+2022-01-15 20:53:53,844 - Check_Targets - DEBUG - Query result: 1
+2022-01-15 20:53:53,860 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-15 20:53:53,870 - Check_Targets - DEBUG - get_oracle_info returning Result: 28 (rc = 1)
+2022-01-15 20:53:53,871 - Check_Targets - DEBUG - get_info returning Result: 28 (rc = 1)
+2022-01-15 20:53:53,872 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 28 RC: 1
+2022-01-15 20:53:53,873 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-15 20:53:53.873933', '28', 'check_results' ); 
+2022-01-15 20:53:53,888 - Check_Targets - DEBUG - Query result: 1
+2022-01-15 20:53:53,889 - Check_Targets - DEBUG - inventory_id: 6 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-15 20:53:53,890 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-15 20:53:53,908 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-15 20:53:53,911 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-15 20:53:53,931 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-15 20:53:53,941 - Check_Targets - DEBUG - get_oracle_info returning Result: 29 (rc = 1)
+2022-01-15 20:53:53,942 - Check_Targets - DEBUG - get_info returning Result: 29 (rc = 1)
+2022-01-15 20:53:53,943 - Check_Targets - DEBUG - Inventory ID: 6 Attribute: check_results Value: 29 RC: 1
+2022-01-15 20:53:53,943 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 6, '2022-01-15 20:53:53.943928', '29', 'check_results' ); 
+2022-01-15 20:53:53,960 - Check_Targets - DEBUG - Query result: 1
+2022-01-15 20:53:53,977 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-15 20:53:53,985 - Check_Targets - DEBUG - get_oracle_info returning Result: 30 (rc = 1)
+2022-01-15 20:53:53,986 - Check_Targets - DEBUG - get_info returning Result: 30 (rc = 1)
+2022-01-15 20:53:53,986 - Check_Targets - DEBUG - Inventory ID: 6 Attribute: check_results Value: 30 RC: 1
+2022-01-15 20:53:53,987 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 6, '2022-01-15 20:53:53.987928', '30', 'check_results' ); 
+2022-01-15 20:53:54,003 - Check_Targets - DEBUG - Query result: 1
+2022-01-15 20:53:54,004 - Check_Targets - INFO - Completed running check_targets.py with target_type=Database vendor=POSTGRES frequency=HOURLY check_type=DB
+2022-01-15 20:53:54,005 - Check_Targets - INFO - ====================================================================================
+2022-01-15 20:56:33,131 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-15 20:56:33,133 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-15 20:56:33,133 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-15 20:56:33,135 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-15 20:56:33,136 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-15 20:56:33,164 - Check_Targets - DEBUG - Query result: [(1, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'ORACLE'), (2, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'POSTGRES'), (6, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'POSTGRES')]
+2022-01-15 20:56:33,165 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-15 20:56:33,166 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-15 20:56:33,195 - Check_Targets - DEBUG - Query result: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-15 20:56:33,196 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-15 20:56:33,197 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-15 20:56:33,198 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-15 20:56:33,210 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-15 20:56:33,213 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-15 20:56:33,214 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-15 20:56:33,215 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-15 20:56:33,225 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-15 20:56:33,227 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-15 20:56:33,229 - Check_Targets - DEBUG - get_info with check=select count(*) from check_results, handler=Postgres
+2022-01-15 20:56:33,230 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-15 20:56:33,243 - Check_Targets - DEBUG - get_oracle_info returning Result: 31 (rc = 1)
+2022-01-15 20:56:33,244 - Check_Targets - DEBUG - get_info returning Result: 31 (rc = 1)
+2022-01-15 20:56:33,244 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 31 RC: 1
+2022-01-15 20:56:33,245 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-15 20:56:33.245417', '31', 'check_results' ); 
+2022-01-15 20:56:33,279 - Check_Targets - DEBUG - Query result: 1
+2022-01-15 20:56:33,280 - Check_Targets - DEBUG - get_info with check=select count(*) from check_results, handler=Postgres
+2022-01-15 20:56:33,280 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-15 20:56:33,292 - Check_Targets - DEBUG - get_oracle_info returning Result: 32 (rc = 1)
+2022-01-15 20:56:33,292 - Check_Targets - DEBUG - get_info returning Result: 32 (rc = 1)
+2022-01-15 20:56:33,293 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 32 RC: 1
+2022-01-15 20:56:33,294 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-15 20:56:33.294430', '32', 'check_results' ); 
+2022-01-15 20:56:33,311 - Check_Targets - DEBUG - Query result: 1
+2022-01-15 20:56:33,312 - Check_Targets - DEBUG - inventory_id: 6 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-15 20:56:33,313 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-15 20:56:33,333 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-15 20:56:33,335 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-15 20:56:33,337 - Check_Targets - DEBUG - get_info with check=select count(*) from check_results, handler=Postgres
+2022-01-15 20:56:33,337 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-15 20:56:33,349 - Check_Targets - DEBUG - get_oracle_info returning Result: 33 (rc = 1)
+2022-01-15 20:56:33,350 - Check_Targets - DEBUG - get_info returning Result: 33 (rc = 1)
+2022-01-15 20:56:33,350 - Check_Targets - DEBUG - Inventory ID: 6 Attribute: check_results Value: 33 RC: 1
+2022-01-15 20:56:33,351 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 6, '2022-01-15 20:56:33.351426', '33', 'check_results' ); 
+2022-01-15 20:56:33,386 - Check_Targets - DEBUG - Query result: 1
+2022-01-15 20:56:33,387 - Check_Targets - DEBUG - get_info with check=select count(*) from check_results, handler=Postgres
+2022-01-15 20:56:33,387 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-15 20:56:33,398 - Check_Targets - DEBUG - get_oracle_info returning Result: 34 (rc = 1)
+2022-01-15 20:56:33,399 - Check_Targets - DEBUG - get_info returning Result: 34 (rc = 1)
+2022-01-15 20:56:33,399 - Check_Targets - DEBUG - Inventory ID: 6 Attribute: check_results Value: 34 RC: 1
+2022-01-15 20:56:33,400 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 6, '2022-01-15 20:56:33.400418', '34', 'check_results' ); 
+2022-01-15 20:56:33,431 - Check_Targets - DEBUG - Query result: 1
+2022-01-15 20:56:33,432 - Check_Targets - INFO - Completed running check_targets.py with target_type=Database vendor=POSTGRES frequency=HOURLY check_type=DB
+2022-01-15 20:56:33,433 - Check_Targets - INFO - ====================================================================================
