@@ -1,8 +1,6 @@
-from inv_logging import start_logging
 import cx_Oracle
-import psycopg2
+from inv_logging import start_logging
 import sys, getopt  # Allows us to interact with the o/s
-from datetime import datetime
 from datetime import date
 from decouple import config  # Allows us to read .env
 # ============================================================================
@@ -13,9 +11,6 @@ import results
 import inventory
 
 # Set  Environment and Global Variables
-ORACLE_BASE = config('ORACLE_BASE')
-ORACLE_HOME = config('ORACLE_HOME')
-TNS_ADMIN = config('TNS_ADMIN')
 LOG_DIR = config('LOG_DIR')
 GLOBAL_LOG_NAME = "Check_Targets"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
@@ -111,81 +106,51 @@ def main(argv):
     # Get ALL the checks to perform on these targets
     RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)  
     target_logger.info("All Checks: %s", all_checks)
-
-    # Main Loop of all in-scope Targets
-    for check in all_checks :
-        print(check)
-    for target in all_targets :
-        print(target)
+    
+    # Build the set of handlers required 
+    handlers=set()
+    for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
+        handlers.add(handler)
 
     for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type, vendor in all_targets:
         target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
                             inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
 
-        # Sub Loop of All Checks for the Target
-        # Reuse the connection to the target for all similar checks with same handler
-        old_handler = ''
-        curr_connection = ''
-        rc = 1
-        connected = 'FALSE'
+        connection = {} # dictionary of connections
+        for handler in handlers :
+            connection_name = handler + '_' + hostname 
+            rc, curr_connection = targets.connect(hostname, instance_name, owner, handler, target_logger)
+            if rc == 1 : 
+                connection[connection_name] = curr_connection
+            else :
+                 connection[connection_name] = ''
 
+        # Sub Loop of All Checks for the Target
         for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
           if (check_vendor == 'ALL' ) or ( check_vendor == vendor ):
             result = ''
-            if handler != old_handler:
-                old_handler = handler
-                if connected == 'TRUE':
-                    try:
-                        connected = 'FALSE'
-                        curr_connection.close()
-                    except cx_Oracle.DatabaseError as exc:
-                        error, = exc.args
-                        target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-
-                rc, curr_connection = targets.connect(hostname, instance_name, owner, handler, target_logger)
-                target_logger.info("Connecting to Host: %s Instance: %s returned: %s ", hostname, instance_name, rc)
-                if rc != 1:
-                    results.add(inventory_id, handler + ':' + str(rc), 'access', target_logger)
-                    target_logger.debug("%s connection failed to Host: %s Instance: %s Error: %s", handler, hostname,
-                                        instance_name, rc)
-                    connected = 'FALSE'
-                else:
-                    connected = 'TRUE'
-
-            target_logger.info("Check %s Handler: %s Connected: %s ", check, handler, connected)
-
-            if connected == 'TRUE':
+            connection_name = handler + '_' + hostname 
+            if connection[connection_name] != '' :
                 # if check_sub_type == "" or ( check_sub_type == target_sub_type) :
-                    if handler == 'OMS':
-                        check = f"{check.format(hostname, instance_name)}"
+                if handler == 'OMS':  # Need to do this here because we need hostname and instance_name
+                    check = f"{check.format(hostname, instance_name)}"  
 
-                    info_rc, result = targets.get_info(check, handler, curr_connection, target_logger)
-                    target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
-                                        result, info_rc)
-                    if info_rc == 1:
-                        results.add(inventory_id, result, result_column, target_logger)
-                    else:  # connection no longer works
-                        target_logger.debug("Check %s RC: %s returned: %s ", check, info_rc, result)
-                        connected = 'FALSE'
-                        try:
-                            curr_connection.close()
-                        except cx_Oracle.DatabaseError as exc:
-                            error, = exc.args
-                            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+                info_rc, result = targets.get_info(check, handler, curr_connection, target_logger)
+                target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
+                                    result, info_rc)
+                if info_rc == 1:
+                    results.add(inventory_id, result, result_column, target_logger)
 
-        try:
-            if curr_connection != '':
-                curr_connection.close()
-        except cx_Oracle.Error as exc:
-            error, = exc.args
-            target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+        for handler in handlers :
+            connection_name = handler + '_' + hostname 
+            if connection[connection_name] != '' :
+                connection[connection_name].close
 
     target_logger.info("Completed running check_targets.py with target_type=%s vendor=%s frequency=%s check_type=%s",
                        target_type, vendor, frequency, check_type)
     target_logger.info("====================================================================================")
 
 # END main program
-
 
 if __name__ == "__main__":
     target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File

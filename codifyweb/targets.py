@@ -116,7 +116,7 @@ def get_info(check, handler, connection, target_logger):
     :return: result: The result of the check query
     :return: rc: Return code that indicates whether connection was successful (1 = Success, 0 = Fail, -1 = Could not connect)
     """
-    target_logger.debug('get_info with check=%s, handler=%s', check, handler, connection)
+    target_logger.debug('get_info with check=%s, handler=%s', check, handler)
     rc = 0
     result = ''
 
