@@ -1,13 +1,14 @@
 from datetime import date, datetime  # not included by default
 from decouple import config  # Allows us to read .env
 import sys, getopt  # Allows us to interact with the o/s
-import psycopg2  # for PostgreSQL database calls
 import cx_Oracle
-from inv_logging import start_logging  # Allows us to log to a file
-import targets  # All target functions
+
 
 CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
+import inventory
+import targets  # All target functions
+from inv_logging import start_logging  # Allows us to log to a file
 
 # Set  Environment and Global Variables
 TARGET_FILE = "./discovery.txt"
@@ -16,17 +17,9 @@ LOG_NAME = "Scan_Targets"
 LOG_FILE = LOG_DIR + LOG_NAME + "_" + str(date.today()) + ".log"
 LOG_LEVEL = "INFO"
 LOG_TO_CONSOLE = "ON"
-DBC_USER = config('DBC_USER')
-DBC_PWD = config('DBC_PWD')
-INV_USER = config('INV_USER')
-INV_PWD = config('INV_PWD')
 ORACLE_BASE = config('ORACLE_BASE')
 ORACLE_HOME = config('ORACLE_HOME')
-TNS_ADMIN = "/u01/app/oracle//"
-CODIFYDB_HOST = config('CODIFYDB_HOST')
-CODIFYDB = config('CODIFYDB')
-INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
-
+TNS_ADMIN = "/u01/app/oracle/DBTools/"
 
 # ---------------------------   MAIN PROGRAM   -------------------------------
 # Evaluate target info and look for changes to targets. Then insert new or update existing records in Targets table
@@ -76,29 +69,14 @@ def main(argv):
     target_logger.info("Check Query: %s", check_query)
     target_logger.info("Target Query: %s", target_query)
 
-    # Connect to the Inventory DB
-    inventory_conn = psycopg2.connect(INVENTORYDB)
-    target_cursor = inventory_conn.cursor()
-
-    # Get ALL the checks to perform on these targets
-    target_cursor.execute(check_query)
-    all_checks = target_cursor.fetchall()
-    target_logger.info("All Checks: %s", all_checks)
+    # Collect alll the applicable monitoring "checks"
+    all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
 
     if check_type == 'UPDATE':
-        # Update existing targets that match the target criteria
-        # Fetch all the valid database targets from the Inventory DB and
-        # check each one database by database
-        # Attempt to query that target and record the results
         # Get ALL the active targets
-        target_cursor.execute(target_query)
-        all_targets = target_cursor.fetchall()
-        target_logger.debug("All targets: %s", all_targets)
+        all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
 
-        inventory_conn.close()
-
-        # Main Loop of all in-scope Targets
-
+        # Main Loop of all in-scope Targets - check each one database by database
         for inventory_id, instance, owner, home_dir, hostname, TargetType, target_vendor in all_targets:
             result = 0
             target_logger.debug("inventory_id: %s instance: %s owner: %s home_dir: %s hostname: %s TargetType: %s",
@@ -132,7 +110,7 @@ def main(argv):
 
                 target_logger.info("Inventory ID: %s Attribute: %s Value: %s", inventory_id, result_column, result)
 
-            if curr_connection:
+            if curr_connection !='' :
                 try:
                     curr_connection.close()
                 except cx_Oracle.DatabaseError as exc:
@@ -220,7 +198,7 @@ def main(argv):
                                 rc, curr_connection = targets.connect(hostname, instance_name,
                                                                       owner, handler, target_logger)
 
-                            if curr_connection:  # connection still works
+                            if curr_connection !='' :  # connection still works
                                 targets.update_column(inventory_id, 'status', handler + ' Connected', target_logger)
                                 rc, result = targets.get_info(check, handler, curr_connection, target_logger)
                                 if result:
@@ -262,9 +240,7 @@ def main(argv):
                            and check_result not like ''
                   except select hostname, instance_name from target;  """
 
-        target_cursor.execute(target_query)
-        all_targets = target_cursor.fetchall()
-        target_logger.debug("All targets: %s", all_targets)
+        all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
 
         for hostname, instance_list in all_targets :
             instance_list = instance_list.split(" ")

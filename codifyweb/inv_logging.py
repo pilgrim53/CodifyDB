@@ -27,7 +27,7 @@ def start_logging(log_level, log_file, log_name, log_to_console):
     # End StartLogging
 
 # ============================================================================
-# Logging examples
+# Logging usage examples
 # ============================================================================
 # logging.debug('This should go to the log file.')
 # logging.info('So should this')

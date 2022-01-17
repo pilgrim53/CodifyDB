@@ -1,0 +1,537 @@
+2022-01-13 15:17:12,320 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:17:12,320 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:17:12,320 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:17:12,331 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:17:12,331 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:17:12,385 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:17:12,386 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:17:12,387 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:17:12,402 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:17:12,403 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:25:49,443 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:25:49,445 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:25:49,445 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:25:49,446 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:25:49,447 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:25:49,478 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:25:49,479 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:25:49,480 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:25:49,510 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:25:49,511 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:26:40,583 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:26:40,585 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:26:40,585 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:26:40,586 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:26:40,587 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:26:40,606 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:26:40,607 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:26:40,607 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:26:40,641 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:26:40,642 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:27:28,067 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:27:28,083 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:27:28,084 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:27:28,085 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:27:28,085 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:27:28,124 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:27:28,124 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:27:28,125 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:27:28,153 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:27:28,154 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:28:21,509 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:28:21,511 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:28:21,512 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:28:21,513 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:28:21,514 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:28:21,531 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:28:21,532 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:28:21,532 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:28:21,566 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:28:21,567 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:29:21,867 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:29:21,868 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:29:21,869 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:29:21,870 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:29:21,871 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:29:21,907 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:29:21,908 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:29:21,908 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:29:21,922 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:29:21,923 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:34:29,646 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:34:29,648 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:34:29,648 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:34:29,649 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:34:29,650 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:34:29,668 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:34:29,668 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:34:29,669 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:34:29,695 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:34:29,696 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:36:47,929 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:36:47,931 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:36:47,931 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:36:47,932 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:36:47,933 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:36:47,952 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:36:47,953 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:36:47,954 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:36:47,984 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:36:47,985 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:42:29,014 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:42:29,016 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:42:29,017 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:42:29,018 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:42:29,019 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:42:29,048 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:42:29,048 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:42:29,049 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:42:29,063 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:42:29,064 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:45:47,210 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:45:47,210 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:45:47,226 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:45:47,227 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:45:47,228 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:45:47,247 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:45:47,248 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:45:47,249 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:45:47,284 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:45:47,284 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:46:46,274 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:46:46,275 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:46:46,276 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:46:46,277 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:46:46,278 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:46:46,309 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:46:46,310 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:46:46,311 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:46:46,325 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:46:46,326 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:47:49,531 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:47:49,532 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:47:49,533 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:47:49,534 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:47:49,535 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:47:49,569 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:47:49,570 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:47:49,571 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:47:49,586 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:47:49,586 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:48:18,605 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:48:18,621 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:48:18,621 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:48:18,622 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:48:18,623 - Check_Targets - DEBUG - Scale: ONE, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:48:18,640 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 15:48:18,641 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:48:18,642 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:48:18,678 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:48:18,679 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:48:34,481 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:48:34,482 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:48:34,483 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:48:34,484 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:48:34,485 - Check_Targets - DEBUG - Scale: ONE, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:48:34,502 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 15:48:34,503 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:48:34,504 - Check_Targets - DEBUG - Scale: ONE, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:48:34,518 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 15:48:34,519 - Check_Targets - INFO - All Checks: (1, [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')])
+2022-01-13 15:49:59,299 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:49:59,300 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:49:59,301 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:49:59,302 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:49:59,303 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:49:59,321 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:49:59,322 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-13 15:49:59,323 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:49:59,337 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:49:59,338 - Check_Targets - INFO - All Checks: (1, ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'))
+2022-01-13 15:51:16,160 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:51:16,161 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:51:16,162 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:51:16,163 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:51:16,164 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:51:16,182 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:51:16,183 - Check_Targets - DEBUG - # of Targets: 8
+2022-01-13 15:51:16,184 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:51:16,218 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:51:16,218 - Check_Targets - INFO - All Checks: ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')
+2022-01-13 15:53:03,829 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:53:03,830 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:53:03,831 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:53:03,832 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:53:03,833 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:53:03,862 - Check_Targets - DEBUG - Query result length: 8
+2022-01-13 15:53:03,863 - Check_Targets - DEBUG - # of Targets: 8
+2022-01-13 15:53:03,864 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:53:03,893 - Check_Targets - DEBUG - Query result length: 6
+2022-01-13 15:53:03,894 - Check_Targets - INFO - All Checks: ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')
+2022-01-13 15:53:57,793 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:53:57,794 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:53:57,795 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:53:57,796 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:53:57,797 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:53:57,827 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 15:53:57,828 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 15:53:57,829 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:53:57,858 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 15:53:57,859 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 15:53:57,861 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 15:53:57,863 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 15:53:57,864 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 15:53:57,884 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 15:53:57,887 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 15:53:57,888 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 15:53:57,888 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 15:53:57,889 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 15:53:57,890 - Check_Targets - DEBUG - inventory_id: 6 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 15:53:57,890 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 15:53:57,900 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 15:53:57,903 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 15:53:57,904 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 15:53:57,905 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 15:53:57,905 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 15:53:57,906 - Check_Targets - INFO - Completed running check_targets.py with target_type=Database vendor=POSTGRES frequency=HOURLY check_type=DB
+2022-01-13 15:53:57,907 - Check_Targets - INFO - ====================================================================================
+2022-01-13 15:54:35,400 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 15:54:35,401 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 15:54:35,402 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:54:35,402 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:54:35,404 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 15:54:35,446 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 15:54:35,447 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 15:54:35,447 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 15:54:35,474 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 15:54:35,474 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 15:54:35,477 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 15:54:35,478 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 15:54:35,479 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 15:54:35,503 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 15:54:35,506 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 15:54:35,507 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 15:54:35,508 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 15:54:35,509 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 15:54:35,510 - Check_Targets - DEBUG - inventory_id: 6 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 15:54:35,511 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 15:54:35,521 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 15:54:35,523 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 15:54:35,524 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 15:54:35,524 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 15:54:35,525 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 15:54:35,526 - Check_Targets - INFO - Completed running check_targets.py with target_type=Database vendor=POSTGRES frequency=HOURLY check_type=DB
+2022-01-13 15:54:35,527 - Check_Targets - INFO - ====================================================================================
+2022-01-13 16:08:16,687 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:08:16,687 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:08:16,699 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:08:16,699 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:08:16,700 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:08:16,720 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:08:16,721 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:08:16,722 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:08:16,735 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:08:16,736 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:08:16,739 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:08:16,741 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:08:16,742 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:08:16,752 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:08:16,756 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:08:16,757 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:08:16,758 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:08:16,782 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:08:16,793 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:08:16,793 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:08:16,794 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:17:19,533 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:17:19,533 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:17:19,545 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:17:19,545 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:17:19,546 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:17:19,596 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:17:19,597 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:17:19,598 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:17:19,614 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:17:19,614 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:17:19,617 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:17:19,618 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:17:19,619 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:17:19,644 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:17:19,647 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:17:19,648 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:17:19,649 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:17:19,673 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:17:19,684 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:17:19,685 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:17:19,686 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:17:19,687 - Check_Targets - DEBUG - Scale: ONE, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( %s, %s, %s, %s ); 
+2022-01-13 16:20:58,477 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:20:58,478 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:20:58,479 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:20:58,480 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:20:58,481 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:20:58,500 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:20:58,501 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:20:58,502 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:20:58,537 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:20:58,538 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:20:58,542 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:20:58,543 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:20:58,544 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:20:58,555 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:20:58,559 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:20:58,560 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:20:58,561 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:20:58,587 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:20:58,600 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:20:58,600 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:20:58,601 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:28:00,184 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:28:00,184 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:28:00,184 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:28:00,198 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:28:00,199 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:28:00,216 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:28:00,217 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:28:00,218 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:28:00,231 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:28:00,232 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:28:00,234 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:28:00,235 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:28:00,236 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:28:00,246 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:28:00,249 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:28:00,250 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:28:00,250 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:28:00,276 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:28:00,292 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:28:00,293 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:28:00,294 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:28:00,295 - Check_Targets - DEBUG - Scale: ONE, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, 2022-01-13 16:28:00.294411, 21, check_results ); 
+2022-01-13 16:30:13,996 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:30:13,998 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:30:13,998 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:30:13,999 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:30:14,000 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:30:14,035 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:30:14,036 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:30:14,037 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:30:14,051 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:30:14,052 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:30:14,055 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:30:14,056 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:30:14,057 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:30:14,066 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:30:14,069 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:30:14,070 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:30:14,071 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:30:14,096 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:30:14,108 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:30:14,109 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:30:14,109 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:30:14,110 - Check_Targets - DEBUG - Scale: ONE, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, "2022-01-13 16:30:14.110616", 21, check_results ); 
+2022-01-13 16:30:38,691 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:30:38,693 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:30:38,693 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:30:38,694 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:30:38,695 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:30:38,725 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:30:38,726 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:30:38,726 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:30:38,741 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:30:38,742 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:30:38,744 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:30:38,745 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:30:38,746 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:30:38,756 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:30:38,759 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:30:38,760 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:30:38,760 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:30:38,787 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:30:38,799 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:30:38,799 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:30:38,800 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:30:38,801 - Check_Targets - DEBUG - Scale: ONE, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 16:30:38.801251', 21, check_results ); 
+2022-01-13 16:31:37,902 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:31:37,903 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:31:37,904 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:31:37,905 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:31:37,906 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:31:37,926 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:31:37,927 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:31:37,928 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:31:37,960 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:31:37,961 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:31:37,964 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:31:37,964 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:31:37,965 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:31:37,986 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:31:37,988 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:31:37,989 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:31:37,990 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:31:38,017 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:31:38,031 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:31:38,031 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:31:38,032 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:31:38,033 - Check_Targets - DEBUG - Scale: ONE, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 16:31:38.033788', '21', 'check_results' ); 
+2022-01-13 16:35:32,331 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:35:32,333 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:35:32,333 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:35:32,334 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:35:32,334 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:35:32,353 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:35:32,353 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:35:32,354 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:35:32,382 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:35:32,383 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:35:32,386 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:35:32,387 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:35:32,388 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:35:32,399 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:35:32,403 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:35:32,404 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:35:32,405 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:35:32,432 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:35:32,445 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:35:32,446 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:35:32,447 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:35:32,448 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 16:35:32.448738', '21', 'check_results' ); 
+2022-01-13 16:51:43,426 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:51:43,428 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:51:43,429 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:51:43,429 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:51:43,430 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:51:43,471 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:51:43,472 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:51:43,472 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:51:43,497 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:51:43,498 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:51:43,501 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:51:43,501 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:51:43,503 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:51:43,528 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:51:43,532 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:51:43,533 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:51:43,533 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:51:43,559 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:51:43,571 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:51:43,572 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:51:43,573 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:51:43,574 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 16:51:43.574309', '21', 'check_results' ); 
+2022-01-13 16:56:39,441 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 16:56:39,442 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 16:56:39,443 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:56:39,445 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:56:39,446 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 16:56:39,466 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 16:56:39,467 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 16:56:39,467 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 16:56:39,480 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 16:56:39,481 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 16:56:39,485 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:56:39,486 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 16:56:39,486 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 16:56:39,518 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 16:56:39,522 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 16:56:39,523 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 16:56:39,524 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 16:56:39,548 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 16:56:39,559 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 16:56:39,560 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 16:56:39,561 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 16:56:39,562 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 16:56:39.562096', '21', 'check_results' ); 
+2022-01-13 17:00:03,593 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 17:00:03,595 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 17:00:03,597 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 17:00:03,598 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 17:00:03,599 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 17:00:03,618 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 17:00:03,618 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 17:00:03,619 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 17:00:03,633 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 17:00:03,634 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 17:00:03,637 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 17:00:03,638 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 17:00:03,639 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 17:00:03,649 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 17:00:03,651 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 17:00:03,652 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 17:00:03,653 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 17:00:03,676 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 17:00:03,688 - Check_Targets - DEBUG - get_oracle_info returning Result: 21 (rc = 1)
+2022-01-13 17:00:03,689 - Check_Targets - DEBUG - get_info returning Result: 21 (rc = 1)
+2022-01-13 17:00:03,690 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 21 RC: 1
+2022-01-13 17:00:03,691 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 17:00:03.691417', '21', 'check_results' ); 
+2022-01-13 17:25:23,138 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 17:25:23,139 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 17:25:23,140 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 17:25:23,142 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 17:25:23,143 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 17:25:23,185 - Check_Targets - DEBUG - Query result length: 3
+2022-01-13 17:25:23,186 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 17:25:23,187 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 17:25:23,200 - Check_Targets - DEBUG - Query result length: 2
+2022-01-13 17:25:23,201 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 17:25:23,204 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 17:25:23,204 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 17:25:23,205 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 17:25:23,226 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 17:25:23,229 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 17:25:23,230 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 17:25:23,230 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 17:25:23,254 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 17:25:23,266 - Check_Targets - DEBUG - get_oracle_info returning Result: 22 (rc = 1)
+2022-01-13 17:25:23,267 - Check_Targets - DEBUG - get_info returning Result: 22 (rc = 1)
+2022-01-13 17:25:23,268 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 22 RC: 1
+2022-01-13 17:25:23,269 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 17:25:23.269880', '22', 'check_results' ); 
+2022-01-13 17:27:17,038 - Check_Targets - INFO - Command Options: [('-t', 'Database')]  Arguments: [] 
+2022-01-13 17:27:17,039 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Database VENDOR=% FREQUENCY=HOURLY CHECKTYPE=%
+2022-01-13 17:27:17,040 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 17:27:17,041 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 17:27:17,042 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Database' order by inventory_id
+2022-01-13 17:27:17,071 - Check_Targets - DEBUG - Query result: [(1, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'ORACLE'), (2, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'POSTGRES'), (6, 'codifydb', 'codify', 'test', 'localhost', 'Database', 'STANDALONE', 'POSTGRES')]
+2022-01-13 17:27:17,072 - Check_Targets - DEBUG - # of Targets: 3
+2022-01-13 17:27:17,073 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and frequency = 'HOURLY'  order by handler, priority
+2022-01-13 17:27:17,089 - Check_Targets - DEBUG - Query result: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 17:27:17,090 - Check_Targets - INFO - All Checks: [('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES'), ('select count(*) from check_results', 'DB', 'check_results', 'Postgres', None, 'POSTGRES')]
+2022-01-13 17:27:17,093 - Check_Targets - DEBUG - inventory_id: 1 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 17:27:17,094 - Check_Targets - DEBUG - inventory_id: 2 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 17:27:17,095 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 17:27:17,114 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 17:27:17,117 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 17:27:17,118 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 17:27:17,118 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 17:27:17,147 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 17:27:17,160 - Check_Targets - DEBUG - get_oracle_info returning Result: 23 (rc = 1)
+2022-01-13 17:27:17,161 - Check_Targets - DEBUG - get_info returning Result: 23 (rc = 1)
+2022-01-13 17:27:17,162 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 23 RC: 1
+2022-01-13 17:27:17,163 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 17:27:17.163691', '23', 'check_results' ); 
+2022-01-13 17:27:17,202 - Check_Targets - DEBUG - Query result: 1
+2022-01-13 17:27:17,202 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 17:27:17,222 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 17:27:17,233 - Check_Targets - DEBUG - get_oracle_info returning Result: 24 (rc = 1)
+2022-01-13 17:27:17,234 - Check_Targets - DEBUG - get_info returning Result: 24 (rc = 1)
+2022-01-13 17:27:17,235 - Check_Targets - DEBUG - Inventory ID: 2 Attribute: check_results Value: 24 RC: 1
+2022-01-13 17:27:17,236 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 2, '2022-01-13 17:27:17.235682', '24', 'check_results' ); 
+2022-01-13 17:27:17,254 - Check_Targets - DEBUG - Query result: 1
+2022-01-13 17:27:17,255 - Check_Targets - DEBUG - inventory_id: 6 instance_name: codifydb owner: codify home_dir: test hostname: localhost target_type: Database target_sub_type: STANDALONE
+2022-01-13 17:27:17,256 - Check_Targets - DEBUG - Connecting to: localhost with Postgres as codify
+2022-01-13 17:27:17,268 - Check_Targets - DEBUG - Connected to: localhost with Postgres 
+2022-01-13 17:27:17,299 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-13 17:27:17,300 - Check_Targets - INFO - Connecting to Host: localhost Instance: codifydb returned: 1 
+2022-01-13 17:27:17,301 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 17:27:17,323 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 17:27:17,333 - Check_Targets - DEBUG - get_oracle_info returning Result: 25 (rc = 1)
+2022-01-13 17:27:17,334 - Check_Targets - DEBUG - get_info returning Result: 25 (rc = 1)
+2022-01-13 17:27:17,334 - Check_Targets - DEBUG - Inventory ID: 6 Attribute: check_results Value: 25 RC: 1
+2022-01-13 17:27:17,334 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 6, '2022-01-13 17:27:17.334681', '25', 'check_results' ); 
+2022-01-13 17:27:17,347 - Check_Targets - DEBUG - Query result: 1
+2022-01-13 17:27:17,348 - Check_Targets - INFO - Check select count(*) from check_results Handler: Postgres Connected: TRUE 
+2022-01-13 17:27:17,365 - Check_Targets - DEBUG - get_oracle_info with check=select count(*) from check_results
+2022-01-13 17:27:17,375 - Check_Targets - DEBUG - get_oracle_info returning Result: 26 (rc = 1)
+2022-01-13 17:27:17,376 - Check_Targets - DEBUG - get_info returning Result: 26 (rc = 1)
+2022-01-13 17:27:17,377 - Check_Targets - DEBUG - Inventory ID: 6 Attribute: check_results Value: 26 RC: 1
+2022-01-13 17:27:17,377 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 6, '2022-01-13 17:27:17.377683', '26', 'check_results' ); 
+2022-01-13 17:27:17,394 - Check_Targets - DEBUG - Query result: 1
+2022-01-13 17:27:17,396 - Check_Targets - INFO - Completed running check_targets.py with target_type=Database vendor=POSTGRES frequency=HOURLY check_type=DB
+2022-01-13 17:27:17,397 - Check_Targets - INFO - ====================================================================================

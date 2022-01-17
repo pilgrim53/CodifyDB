@@ -8,6 +8,7 @@ from decouple import config  # Allows us to read .env
 CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 from inv_logging import start_logging
+import inventory
 
 # ============================================================================
 
@@ -16,16 +17,10 @@ from inv_logging import start_logging
 # ============================================================================
 DBC_USER      = config('DBC_USER')
 DBC_PWD       = config('DBC_PWD')
-INV_USER      = config('INV_USER')
-INV_PWD       = config('INV_PWD')
 ORACLE_BASE   = config('ORACLE_BASE')
 ORACLE_HOME   = config('ORACLE_HOME')
 TNS_ADMIN     = config('TNS_ADMIN')
 LOG_DIR       = config('LOG_DIR')
-CODIFYDB_HOST = config('CODIFYDB_HOST')
-CODIFYDB = config('CODIFYDB')
-INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
-
 GLOBAL_LOG_NAME = "Notifications"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'INFO'
@@ -84,17 +79,9 @@ def main(argv):
                         interval, frequency, support_tier)
     target_logger.debug("Check Query: %s", check_query)
 
-    # ============================================================================
-    # Connect to the inventory DB to get the notification checks
-    # ============================================================================
-
-    # Connect to the Inventory DB
-    inventory_conn = psycopg2.connect(INVENTORYDB)
-    notification_cursor = inventory_conn.cursor()
-
     # Get ALL the checks to perform on these targets
-    notification_cursor.execute(check_query)
-    all_checks = notification_cursor.fetchall()
+    all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
+
     target_logger.debug("# of Checks: %s" , len(all_checks))
     target_logger.debug("All Checks: %s" , all_checks)
 
@@ -104,16 +91,13 @@ def main(argv):
     TEXT = ''
     for threshold, result_column in all_checks:
         target_query = target_prefix + '\'' + result_column + '\' and check_result::bigint ' + threshold + target_suffix;
-        target_logger.debug("Target Query: %s", target_query)
-        notification_cursor.execute(target_query)
-        targets = notification_cursor.fetchall()
+        targets=inventory.exec_sql(target_query, 'ALL', target_logger)
+
         for hostname, instance_name, date_time, result in targets :
             target_logger.info("%s ALERT: %s value: %s", result_column.upper(), instance_name, result )
             TEXT += result_column.upper() + ' = ' + result + ' on ' + instance_name + '_' + hostname + ' at ' + date_time
             TEXT += '\n'
             TEXT += '\n'
-
-    inventory_conn.close()
 
 
     # All Done, let's send the email
@@ -135,7 +119,7 @@ Subject: %s
         server.set_debuglevel(3)
         server.sendmail(FROM, TO, message)
         server.quit()
-    except SMTPException:
+    except smtplib.SMTPException:
         target_logger.error( "Error: unable to send email")
 
     target_logger.info("Completed notifications.py with TARGETTYPE=%s INTERVAL=%s FREQUENCY=%s SUPPORT_TIER=%s", target_type,

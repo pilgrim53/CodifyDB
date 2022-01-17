@@ -7,6 +7,8 @@ from decouple import config  # Allows us to read .env
 CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 from inv_logging import start_logging
+import inventory
+
 # ============================================================================
 
 # ============================================================================
@@ -14,16 +16,10 @@ from inv_logging import start_logging
 # ============================================================================
 DBC_USER      = config('DBC_USER')
 DBC_PWD       = config('DBC_PWD')
-INV_USER      = config('INV_USER')
-INV_PWD       = config('INV_PWD')
 ORACLE_BASE   = config('ORACLE_BASE')
 ORACLE_HOME   = config('ORACLE_HOME')
 TNS_ADMIN     = config('TNS_ADMIN')
 LOG_DIR       = config('LOG_DIR')
-CODIFYDB_HOST = config('CODIFYDB_HOST')
-CODIFYDB      = config('CODIFYDB')
-INVENTORYDB = "dbname=" + CODIFYDB + " user=" + INV_USER + " password=" + INV_PWD + " host=" + CODIFYDB_HOST
-
 GLOBAL_LOG_NAME = "Mighty_List"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
@@ -76,17 +72,8 @@ def main(argv):
     target_logger.info("Running mighty.py with TARGETTYPE=%s", target_type)
     target_logger.debug("Query: %s", query_stmt)
 
-    # ============================================================================
-    # Connect to the inventory DB to get the mighty checks
-    # ============================================================================
-
-    # Connect to the Inventory DB
-    inventory_conn = psycopg2.connect(INVENTORYDB)
-    mighty_cursor = inventory_conn.cursor()
-
     # Get ALL the checks to perform on these targets
-    mighty_cursor.execute(query_stmt)
-    targets = mighty_cursor.fetchall()
+    targets = inventory.exec_sql(query_stmt, 'ALL', target_logger)
 
     ######################################################
     # * * * *   Main Loop of all Targets   * * * * #
@@ -95,9 +82,6 @@ def main(argv):
     for inventory_id, hostname, instance_name, owner, version, home_dir, rac, container  in targets:
         target_logger.info("%s,%s,%s,%s,%s,%s,%s,%s",str(inventory_id), hostname, instance_name, owner, \
                                                      version, home_dir.strip(), rac, container)
-
-    inventory_conn.close()
-
 
     target_logger.info("Completed mighty.py with TARGETTYPE=%s ", target_type)
     target_logger.info("====================================================================================")
