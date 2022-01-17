@@ -118,15 +118,11 @@ def main(argv):
         target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
                             inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
 
-        connection = {} # dictionary of connections
+        connection = [''] * len(handler_list)  # initiallize array of connections
         x = 0
         for handler in handler_list :
-            rc, curr_connection = targets.connect(hostname, instance_name, owner, handler, target_logger)
-            if rc == 1 : 
-                connection[x] = curr_connection
-            else :
-                 connection[x] = ''
-            x = +x
+            rc, connection[x] = targets.connect(hostname, instance_name, owner, handler, target_logger)
+            x += 1
 
         # Sub Loop of All Checks for the Target
         for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
