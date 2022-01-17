@@ -80,7 +80,7 @@ def main(argv):
     target_logger.debug("Check Query: %s", check_query)
 
     # Get ALL the checks to perform on these targets
-    all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
+    RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
 
     target_logger.debug("# of Checks: %s" , len(all_checks))
     target_logger.debug("All Checks: %s" , all_checks)
@@ -91,7 +91,7 @@ def main(argv):
     TEXT = ''
     for threshold, result_column in all_checks:
         target_query = target_prefix + '\'' + result_column + '\' and check_result::bigint ' + threshold + target_suffix;
-        targets=inventory.exec_sql(target_query, 'ALL', target_logger)
+        RC, targets=inventory.exec_sql(target_query, 'ALL', target_logger)
 
         for hostname, instance_name, date_time, result in targets :
             target_logger.info("%s ALERT: %s value: %s", result_column.upper(), instance_name, result )
