@@ -112,39 +112,41 @@ def main(argv):
     for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
         handlers.add(handler)
 
+    handler_list=list(handlers)
+
     for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type, vendor in all_targets:
         target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
                             inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
 
         connection = {} # dictionary of connections
-        for handler in handlers :
-            connection_name = handler + '_' + hostname 
+        x = 0
+        for handler in handler_list :
             rc, curr_connection = targets.connect(hostname, instance_name, owner, handler, target_logger)
             if rc == 1 : 
-                connection[connection_name] = curr_connection
+                connection[x] = curr_connection
             else :
-                 connection[connection_name] = ''
+                 connection[x] = ''
+            x = +x
 
         # Sub Loop of All Checks for the Target
         for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
           if (check_vendor == 'ALL' ) or ( check_vendor == vendor ):
             result = ''
-            connection_name = handler + '_' + hostname 
-            if connection[connection_name] != '' :
+
+            if connection[handler_list.index(handler)] != '' :
                 # if check_sub_type == "" or ( check_sub_type == target_sub_type) :
                 if handler == 'OMS':  # Need to do this here because we need hostname and instance_name
                     check = f"{check.format(hostname, instance_name)}"  
 
-                info_rc, result = targets.get_info(check, handler, curr_connection, target_logger)
+                info_rc, result = targets.get_info(check, handler, connection[handler_list.index(handler)], target_logger)
                 target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
                                     result, info_rc)
                 if info_rc == 1:
                     results.add(inventory_id, result, result_column, target_logger)
 
-        for handler in handlers :
-            connection_name = handler + '_' + hostname 
-            if connection[connection_name] != '' :
-                connection[connection_name].close
+        for x in range(len(handlers))  :
+            if connection[x] != '' :
+                connection[x].close
 
     target_logger.info("Completed running check_targets.py with target_type=%s vendor=%s frequency=%s check_type=%s",
                        target_type, vendor, frequency, check_type)
