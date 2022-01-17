@@ -73,7 +73,7 @@ def main(argv):
     target_logger.debug("Query: %s", query_stmt)
 
     # Get ALL the checks to perform on these targets
-    targets = inventory.exec_sql(query_stmt, 'ALL', target_logger)
+    RC, targets = inventory.exec_sql(query_stmt, 'ALL', target_logger)
 
     ######################################################
     # * * * *   Main Loop of all Targets   * * * * #
