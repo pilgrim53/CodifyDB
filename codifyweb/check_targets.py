@@ -122,6 +122,7 @@ def main(argv):
         x = 0
         for handler in handler_list :
             rc, connection[x] = targets.connect(hostname, instance_name, owner, handler, target_logger)
+            results.add(inventory_id, handler + ':' + str(rc), 'access', target_logger)
             x += 1
 
         # Sub Loop of All Checks for the Target
