@@ -70,11 +70,11 @@ def main(argv):
     target_logger.info("Target Query: %s", target_query)
 
     # Collect alll the applicable monitoring "checks"
-    all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
+    rc, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
 
     if check_type == 'UPDATE':
         # Get ALL the active targets
-        all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
+        rc, all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
 
         # Main Loop of all in-scope Targets - check each one database by database
         for inventory_id, instance, owner, home_dir, hostname, TargetType, target_vendor in all_targets:
@@ -240,7 +240,7 @@ def main(argv):
                            and check_result not like ''
                   except select hostname, instance_name from target;  """
 
-        all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
+        rc, all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
 
         for hostname, instance_list in all_targets :
             instance_list = instance_list.split(" ")
@@ -308,7 +308,6 @@ def main(argv):
     target_logger.info("====================================================================================")
                                
 # END main program
-
 
 if __name__ == "__main__":
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
