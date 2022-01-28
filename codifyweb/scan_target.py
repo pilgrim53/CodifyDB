@@ -309,7 +309,6 @@ def main(argv):
                                
 # END main program
 
-
 if __name__ == "__main__":
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
     main(sys.argv[1:])
