@@ -49,9 +49,13 @@ def connect(hostname, instance_name, owner, handler, target_logger):
         elif handler == 'ssh':
             curr_connection = paramiko.SSHClient()
             curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            private_key = paramiko.RSAKey.from_private_key_file(PKEY)
-            curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
-                                    banner_timeout=10, auth_timeout=10, pkey=private_key)
+            if PKEY != 'NONE' :
+                private_key = paramiko.RSAKey.from_private_key_file(PKEY)
+                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
+                                        banner_timeout=10, auth_timeout=10, pkey=private_key)
+            else :
+                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
+                                        password=DBC_PWD, banner_timeout=10, auth_timeout=10)
         elif handler == 'OMS':
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
             curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds

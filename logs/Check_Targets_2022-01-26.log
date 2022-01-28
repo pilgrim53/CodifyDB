@@ -1,0 +1,364 @@
+2022-01-26 20:26:53,032 - Check_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-01-26 20:26:53,033 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Server VENDOR=% FREQUENCY=HOURLY CHECKTYPE=OS
+2022-01-26 20:26:53,034 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:26:53,036 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:26:53,037 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:26:53,059 - Check_Targets - DEBUG - Query result: [(7, '192.168.10.33', 'codify', None, '192.168.10.33', 'Server', None, 'Linux')]
+2022-01-26 20:26:53,060 - Check_Targets - DEBUG - # of Targets: 1
+2022-01-26 20:26:53,061 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:26:53,086 - Check_Targets - DEBUG - Query result: []
+2022-01-26 20:26:53,087 - Check_Targets - INFO - All Checks: []
+2022-01-26 20:26:53,087 - Check_Targets - DEBUG - inventory_id: 7 instance_name: 192.168.10.33 owner: codify home_dir: None hostname: 192.168.10.33 target_type: Server target_sub_type: None
+2022-01-26 20:26:53,088 - Check_Targets - INFO - Completed running check_targets.py with target_type=Server vendor=Linux frequency=HOURLY check_type=OS
+2022-01-26 20:26:53,089 - Check_Targets - INFO - ====================================================================================
+2022-01-26 20:28:45,081 - Check_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-01-26 20:28:45,082 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Server VENDOR=% FREQUENCY=HOURLY CHECKTYPE=OS
+2022-01-26 20:28:45,083 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:28:45,084 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:28:45,085 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:28:45,127 - Check_Targets - DEBUG - Query result: [(7, '192.168.10.33', 'codify', None, '192.168.10.33', 'Server', None, 'Linux')]
+2022-01-26 20:28:45,129 - Check_Targets - DEBUG - # of Targets: 1
+2022-01-26 20:28:45,130 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:28:45,145 - Check_Targets - DEBUG - Query result: [('uptime', 'OS', 'uptime', 'ssh', None, 'Linux')]
+2022-01-26 20:28:45,146 - Check_Targets - INFO - All Checks: [('uptime', 'OS', 'uptime', 'ssh', None, 'Linux')]
+2022-01-26 20:28:45,146 - Check_Targets - DEBUG - inventory_id: 7 instance_name: 192.168.10.33 owner: codify home_dir: None hostname: 192.168.10.33 target_type: Server target_sub_type: None
+2022-01-26 20:28:45,147 - Check_Targets - DEBUG - Connecting to: 192.168.10.33 with ssh as codify
+2022-01-26 20:28:45,149 - Check_Targets - ERROR - General Exception in os command: [Errno 2] No such file or directory: 'pkey.ppk' 
+2022-01-26 20:28:45,150 - Check_Targets - DEBUG - Connection rc: sshException
+2022-01-26 20:28:45,150 - Check_Targets - INFO - Completed running check_targets.py with target_type=Server vendor=Linux frequency=HOURLY check_type=OS
+2022-01-26 20:28:45,151 - Check_Targets - INFO - ====================================================================================
+2022-01-26 20:32:49,174 - Check_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-01-26 20:32:49,175 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Server VENDOR=% FREQUENCY=HOURLY CHECKTYPE=OS
+2022-01-26 20:32:49,176 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:32:49,177 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:32:49,179 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:32:49,198 - Check_Targets - DEBUG - Query result: [(7, '192.168.10.33', 'codify', None, '192.168.10.33', 'Server', None, 'Linux')]
+2022-01-26 20:32:49,199 - Check_Targets - DEBUG - # of Targets: 1
+2022-01-26 20:32:49,200 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:32:49,222 - Check_Targets - DEBUG - Query result: [('uptime', 'OS', 'uptime', 'ssh', None, 'Linux')]
+2022-01-26 20:32:49,223 - Check_Targets - INFO - All Checks: [('uptime', 'OS', 'uptime', 'ssh', None, 'Linux')]
+2022-01-26 20:32:49,224 - Check_Targets - DEBUG - inventory_id: 7 instance_name: 192.168.10.33 owner: codify home_dir: None hostname: 192.168.10.33 target_type: Server target_sub_type: None
+2022-01-26 20:32:49,225 - Check_Targets - DEBUG - Connecting to: 192.168.10.33 with ssh as codify
+2022-01-26 20:32:49,287 - Check_Targets - ERROR - General Exception in os command: No authentication methods available 
+2022-01-26 20:32:49,289 - Check_Targets - DEBUG - Connection rc: sshException
+2022-01-26 20:32:49,289 - Check_Targets - INFO - Completed running check_targets.py with target_type=Server vendor=Linux frequency=HOURLY check_type=OS
+2022-01-26 20:32:49,290 - Check_Targets - INFO - ====================================================================================
+2022-01-26 20:35:25,888 - Check_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-01-26 20:35:25,889 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Server VENDOR=% FREQUENCY=HOURLY CHECKTYPE=OS
+2022-01-26 20:35:25,890 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:35:25,891 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:35:25,892 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:35:25,919 - Check_Targets - DEBUG - Query result: [(7, '192.168.10.33', 'codify', None, '192.168.10.33', 'Server', None, 'Linux')]
+2022-01-26 20:35:25,920 - Check_Targets - DEBUG - # of Targets: 1
+2022-01-26 20:35:25,921 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:35:25,954 - Check_Targets - DEBUG - Query result: [('uptime', 'OS', 'uptime', 'ssh', None, 'Linux')]
+2022-01-26 20:35:25,955 - Check_Targets - INFO - All Checks: [('uptime', 'OS', 'uptime', 'ssh', None, 'Linux')]
+2022-01-26 20:35:25,956 - Check_Targets - DEBUG - inventory_id: 7 instance_name: 192.168.10.33 owner: codify home_dir: None hostname: 192.168.10.33 target_type: Server target_sub_type: None
+2022-01-26 20:35:25,957 - Check_Targets - DEBUG - Connecting to: 192.168.10.33 with ssh as codify
+2022-01-26 20:35:26,068 - Check_Targets - DEBUG - Connected to: 192.168.10.33 with ssh 
+2022-01-26 20:35:26,071 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-26 20:35:26,072 - Check_Targets - DEBUG - get_info with check=uptime, handler=ssh
+2022-01-26 20:35:26,072 - Check_Targets - DEBUG - get_OS_info with check = uptime
+2022-01-26 20:35:26,074 - Check_Targets - INFO - Running uptime 
+2022-01-26 20:35:26,736 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:35:26.735508
+2022-01-26 20:35:26,752 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 20:35:26,753 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 0 (closed) -> <paramiko.Transport at 0x507dd6d8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:35:26,756 - Check_Targets - INFO - Returning result from OS command: 02:35:26 up 36 min,  5 users,  load average: 0.00, 0.00, 0.04
+2022-01-26 20:35:26,758 - Check_Targets - DEBUG - get_info returning Result: 02:35:26 up 36 min,  5 users,  load average: 0.00, 0.00, 0.04 (rc = 1)
+2022-01-26 20:35:26,760 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: uptime Value: 02:35:26 up 36 min,  5 users,  load average: 0.00, 0.00, 0.04 RC: 1
+2022-01-26 20:35:26,762 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 20:35:26.762765', '02:35:26 up 36 min,  5 users,  load average: 0.00, 0.00, 0.04', 'uptime' ); 
+2022-01-26 20:35:26,804 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 20:35:26,805 - Check_Targets - INFO - Completed running check_targets.py with target_type=Server vendor=Linux frequency=HOURLY check_type=OS
+2022-01-26 20:35:26,806 - Check_Targets - INFO - ====================================================================================
+2022-01-26 20:52:37,941 - Check_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-01-26 20:52:37,943 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Server VENDOR=% FREQUENCY=HOURLY CHECKTYPE=OS
+2022-01-26 20:52:37,943 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:52:37,945 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:52:37,946 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:52:37,978 - Check_Targets - DEBUG - Query result: [(7, '192.168.10.33', 'codify', None, '192.168.10.33', 'Server', None, 'Linux')]
+2022-01-26 20:52:37,979 - Check_Targets - DEBUG - # of Targets: 1
+2022-01-26 20:52:37,980 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:52:37,994 - Check_Targets - DEBUG - Query result: [("uptime | awk '{print $(NF-2)}'\tuptime\t7", 'OS', 'uptime', 'ssh', None, 'Linux'), ('uname -rs', 'OS', 'os', 'ssh', None, 'Linux'), ('pwd', 'OS', 'codify_home', 'ssh', None, 'Linux'), ('dmesg | grep "Hardware name:" | head -n 1 | awk -F":" \'{print $2}\'', 'OS', 'hosttype', 'ssh', None, 'Linux')]
+2022-01-26 20:52:37,995 - Check_Targets - INFO - All Checks: [("uptime | awk '{print $(NF-2)}'\tuptime\t7", 'OS', 'uptime', 'ssh', None, 'Linux'), ('uname -rs', 'OS', 'os', 'ssh', None, 'Linux'), ('pwd', 'OS', 'codify_home', 'ssh', None, 'Linux'), ('dmesg | grep "Hardware name:" | head -n 1 | awk -F":" \'{print $2}\'', 'OS', 'hosttype', 'ssh', None, 'Linux')]
+2022-01-26 20:52:37,997 - Check_Targets - DEBUG - inventory_id: 7 instance_name: 192.168.10.33 owner: codify home_dir: None hostname: 192.168.10.33 target_type: Server target_sub_type: None
+2022-01-26 20:52:37,998 - Check_Targets - DEBUG - Connecting to: 192.168.10.33 with ssh as codify
+2022-01-26 20:52:38,093 - Check_Targets - DEBUG - Connected to: 192.168.10.33 with ssh 
+2022-01-26 20:52:38,096 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-26 20:52:38,097 - Check_Targets - DEBUG - get_info with check=uptime | awk '{print $(NF-2)}'	uptime	7, handler=ssh
+2022-01-26 20:52:38,098 - Check_Targets - DEBUG - get_OS_info with check = uptime | awk '{print $(NF-2)}'	uptime	7
+2022-01-26 20:52:38,100 - Check_Targets - INFO - Running uptime | awk '{print $(NF-2)}'	uptime	7 
+2022-01-26 20:52:38,748 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.748384
+2022-01-26 20:52:38,757 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.757384
+2022-01-26 20:52:38,762 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 20:52:38,763 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 0 (closed) -> <paramiko.Transport at 0xb4d3f898 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:52:38,765 - Check_Targets - INFO - Returning result from OS command: awk: fatal: cannot open file `uptime' for reading (No such file or directory)
+2022-01-26 20:52:38,767 - Check_Targets - DEBUG - get_info returning Result: awk: fatal: cannot open file `uptime' for reading (No such file or directory) (rc = 2)
+2022-01-26 20:52:38,768 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: uptime Value: awk: fatal: cannot open file `uptime' for reading (No such file or directory) RC: 2
+2022-01-26 20:52:38,769 - Check_Targets - DEBUG - get_info with check=uname -rs, handler=ssh
+2022-01-26 20:52:38,770 - Check_Targets - DEBUG - get_OS_info with check = uname -rs
+2022-01-26 20:52:38,774 - Check_Targets - INFO - Running uname -rs 
+2022-01-26 20:52:38,818 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.818733
+2022-01-26 20:52:38,822 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.822189
+2022-01-26 20:52:38,823 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.823188
+2022-01-26 20:52:38,826 - Check_Targets - DEBUG - OS result length : 3 
+2022-01-26 20:52:38,827 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 1 (closed) -> <paramiko.Transport at 0xb4d3f898 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:52:38,829 - Check_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-01-26 20:52:38,830 - Check_Targets - DEBUG - get_info returning Result: Linux 5.4.0-94-generic (rc = 1)
+2022-01-26 20:52:38,831 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: os Value: Linux 5.4.0-94-generic RC: 1
+2022-01-26 20:52:38,831 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 20:52:38.831187', 'Linux 5.4.0-94-generic', 'os' ); 
+2022-01-26 20:52:38,868 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 20:52:38,868 - Check_Targets - DEBUG - get_info with check=pwd, handler=ssh
+2022-01-26 20:52:38,869 - Check_Targets - DEBUG - get_OS_info with check = pwd
+2022-01-26 20:52:38,872 - Check_Targets - INFO - Running pwd 
+2022-01-26 20:52:38,888 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.888573
+2022-01-26 20:52:38,890 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.890571
+2022-01-26 20:52:38,894 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.893574
+2022-01-26 20:52:38,896 - Check_Targets - DEBUG - OS result length : 3 
+2022-01-26 20:52:38,896 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 2 (closed) -> <paramiko.Transport at 0xb4d3f898 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:52:38,897 - Check_Targets - INFO - Returning result from OS command: /
+2022-01-26 20:52:38,898 - Check_Targets - DEBUG - get_info returning Result: / (rc = 1)
+2022-01-26 20:52:38,898 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: codify_home Value: / RC: 1
+2022-01-26 20:52:38,899 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 20:52:38.899572', '/', 'codify_home' ); 
+2022-01-26 20:52:38,916 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 20:52:38,917 - Check_Targets - DEBUG - get_info with check=dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}', handler=ssh
+2022-01-26 20:52:38,917 - Check_Targets - DEBUG - get_OS_info with check = dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}'
+2022-01-26 20:52:38,920 - Check_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-01-26 20:52:38,955 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.955594
+2022-01-26 20:52:38,957 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:52:38.957592
+2022-01-26 20:52:38,976 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 20:52:38,977 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 3 (closed) -> <paramiko.Transport at 0xb4d3f898 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:52:38,978 - Check_Targets - INFO - Returning result from OS command: Could not chdir to home directory /home/codify: No such file or directory
+2022-01-26 20:52:38,979 - Check_Targets - DEBUG - get_info returning Result: Could not chdir to home directory /home/codify: No such file or directory (rc = 1)
+2022-01-26 20:52:38,981 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: hosttype Value: Could not chdir to home directory /home/codify: No such file or directory RC: 1
+2022-01-26 20:52:38,982 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 20:52:38.981592', 'Could not chdir to home directory /home/codify: No such file or directory', 'hosttype' ); 
+2022-01-26 20:52:39,024 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 20:52:39,025 - Check_Targets - INFO - Completed running check_targets.py with target_type=Server vendor=Linux frequency=HOURLY check_type=OS
+2022-01-26 20:52:39,026 - Check_Targets - INFO - ====================================================================================
+2022-01-26 20:56:58,200 - Check_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-01-26 20:56:58,202 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Server VENDOR=% FREQUENCY=HOURLY CHECKTYPE=OS
+2022-01-26 20:56:58,202 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:56:58,204 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:56:58,205 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 20:56:58,225 - Check_Targets - DEBUG - Query result: [(7, '192.168.10.33', 'codify', None, '192.168.10.33', 'Server', None, 'Linux')]
+2022-01-26 20:56:58,227 - Check_Targets - DEBUG - # of Targets: 1
+2022-01-26 20:56:58,227 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 20:56:58,242 - Check_Targets - DEBUG - Query result: [("uptime | awk '{print $(NF-2)}'\tuptime\t7", 'OS', 'uptime', 'ssh', None, 'Linux'), ('uname -rs', 'OS', 'os', 'ssh', None, 'Linux'), ('pwd', 'OS', 'codify_home', 'ssh', None, 'Linux'), ('dmesg | grep "Hardware name:" | head -n 1 | awk -F":" \'{print $2}\'', 'OS', 'hosttype', 'ssh', None, 'Linux')]
+2022-01-26 20:56:58,243 - Check_Targets - INFO - All Checks: [("uptime | awk '{print $(NF-2)}'\tuptime\t7", 'OS', 'uptime', 'ssh', None, 'Linux'), ('uname -rs', 'OS', 'os', 'ssh', None, 'Linux'), ('pwd', 'OS', 'codify_home', 'ssh', None, 'Linux'), ('dmesg | grep "Hardware name:" | head -n 1 | awk -F":" \'{print $2}\'', 'OS', 'hosttype', 'ssh', None, 'Linux')]
+2022-01-26 20:56:58,244 - Check_Targets - DEBUG - inventory_id: 7 instance_name: 192.168.10.33 owner: codify home_dir: None hostname: 192.168.10.33 target_type: Server target_sub_type: None
+2022-01-26 20:56:58,245 - Check_Targets - DEBUG - Connecting to: 192.168.10.33 with ssh as codify
+2022-01-26 20:56:58,437 - Check_Targets - DEBUG - Connected to: 192.168.10.33 with ssh 
+2022-01-26 20:56:58,441 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-26 20:56:58,442 - Check_Targets - DEBUG - get_info with check=uptime | awk '{print $(NF-2)}'	uptime	7, handler=ssh
+2022-01-26 20:56:58,443 - Check_Targets - DEBUG - get_OS_info with check = uptime | awk '{print $(NF-2)}'	uptime	7
+2022-01-26 20:56:58,447 - Check_Targets - INFO - Running uptime | awk '{print $(NF-2)}'	uptime	7 
+2022-01-26 20:56:59,137 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:56:59.137875
+2022-01-26 20:56:59,141 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:56:59.141875
+2022-01-26 20:56:59,144 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 20:56:59,145 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 0 (closed) -> <paramiko.Transport at 0xd9b6d9e8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:56:59,146 - Check_Targets - INFO - Returning result from OS command: awk: fatal: cannot open file `uptime' for reading (No such file or directory)
+2022-01-26 20:56:59,147 - Check_Targets - DEBUG - get_info returning Result: awk: fatal: cannot open file `uptime' for reading (No such file or directory) (rc = 2)
+2022-01-26 20:56:59,148 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: uptime Value: awk: fatal: cannot open file `uptime' for reading (No such file or directory) RC: 2
+2022-01-26 20:56:59,149 - Check_Targets - DEBUG - get_info with check=uname -rs, handler=ssh
+2022-01-26 20:56:59,150 - Check_Targets - DEBUG - get_OS_info with check = uname -rs
+2022-01-26 20:56:59,153 - Check_Targets - INFO - Running uname -rs 
+2022-01-26 20:56:59,347 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:56:59.346950
+2022-01-26 20:56:59,355 - Check_Targets - DEBUG - OS result length : 1 
+2022-01-26 20:56:59,357 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 1 (closed) -> <paramiko.Transport at 0xd9b6d9e8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:56:59,359 - Check_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-01-26 20:56:59,361 - Check_Targets - DEBUG - get_info returning Result: Linux 5.4.0-94-generic (rc = 1)
+2022-01-26 20:56:59,363 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: os Value: Linux 5.4.0-94-generic RC: 1
+2022-01-26 20:56:59,365 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 20:56:59.364939', 'Linux 5.4.0-94-generic', 'os' ); 
+2022-01-26 20:56:59,390 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 20:56:59,391 - Check_Targets - DEBUG - get_info with check=pwd, handler=ssh
+2022-01-26 20:56:59,392 - Check_Targets - DEBUG - get_OS_info with check = pwd
+2022-01-26 20:56:59,395 - Check_Targets - INFO - Running pwd 
+2022-01-26 20:56:59,412 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:56:59.412936
+2022-01-26 20:56:59,415 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:56:59.415934
+2022-01-26 20:56:59,418 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 20:56:59,418 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 2 (closed) -> <paramiko.Transport at 0xd9b6d9e8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:56:59,419 - Check_Targets - INFO - Returning result from OS command: /home/codify
+2022-01-26 20:56:59,420 - Check_Targets - DEBUG - get_info returning Result: /home/codify (rc = 1)
+2022-01-26 20:56:59,421 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: codify_home Value: /home/codify RC: 1
+2022-01-26 20:56:59,421 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 20:56:59.421742', '/home/codify', 'codify_home' ); 
+2022-01-26 20:56:59,440 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 20:56:59,441 - Check_Targets - DEBUG - get_info with check=dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}', handler=ssh
+2022-01-26 20:56:59,442 - Check_Targets - DEBUG - get_OS_info with check = dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}'
+2022-01-26 20:56:59,447 - Check_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-01-26 20:56:59,533 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 20:56:59.533184
+2022-01-26 20:56:59,536 - Check_Targets - DEBUG - OS result length : 1 
+2022-01-26 20:56:59,537 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 3 (closed) -> <paramiko.Transport at 0xd9b6d9e8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 20:56:59,537 - Check_Targets - INFO - Returning result from OS command: 
+2022-01-26 20:56:59,538 - Check_Targets - DEBUG - get_info returning Result:  (rc = 1)
+2022-01-26 20:56:59,539 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: hosttype Value:  RC: 1
+2022-01-26 20:56:59,540 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 20:56:59.539186', '', 'hosttype' ); 
+2022-01-26 20:56:59,556 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 20:56:59,557 - Check_Targets - INFO - Completed running check_targets.py with target_type=Server vendor=Linux frequency=HOURLY check_type=OS
+2022-01-26 20:56:59,559 - Check_Targets - INFO - ====================================================================================
+2022-01-26 21:11:11,500 - Check_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-01-26 21:11:11,502 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Server VENDOR=% FREQUENCY=HOURLY CHECKTYPE=OS
+2022-01-26 21:11:11,503 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 21:11:11,504 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 21:11:11,506 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 21:11:11,528 - Check_Targets - DEBUG - Query result: [(7, 'Tolkien', 'codify', None, '192.168.10.33', 'Server', None, 'Linux')]
+2022-01-26 21:11:11,529 - Check_Targets - DEBUG - # of Targets: 1
+2022-01-26 21:11:11,530 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 21:11:11,544 - Check_Targets - DEBUG - Query result: [("uptime | awk '{print $(NF-2)}'\tuptime\t7", 'OS', 'uptime', 'ssh', None, 'Linux'), ('uname -rs', 'OS', 'os', 'ssh', None, 'Linux'), ('pwd', 'OS', 'codify_home', 'ssh', None, 'Linux'), ('dmesg | grep "Hardware name:" | head -n 1 | awk -F":" \'{print $2}\'', 'OS', 'hosttype', 'ssh', None, 'Linux')]
+2022-01-26 21:11:11,545 - Check_Targets - INFO - All Checks: [("uptime | awk '{print $(NF-2)}'\tuptime\t7", 'OS', 'uptime', 'ssh', None, 'Linux'), ('uname -rs', 'OS', 'os', 'ssh', None, 'Linux'), ('pwd', 'OS', 'codify_home', 'ssh', None, 'Linux'), ('dmesg | grep "Hardware name:" | head -n 1 | awk -F":" \'{print $2}\'', 'OS', 'hosttype', 'ssh', None, 'Linux')]
+2022-01-26 21:11:11,547 - Check_Targets - DEBUG - inventory_id: 7 instance_name: Tolkien owner: codify home_dir: None hostname: 192.168.10.33 target_type: Server target_sub_type: None
+2022-01-26 21:11:11,548 - Check_Targets - DEBUG - Connecting to: 192.168.10.33 with ssh as codify
+2022-01-26 21:11:11,683 - Check_Targets - DEBUG - Connected to: 192.168.10.33 with ssh 
+2022-01-26 21:11:11,687 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-26 21:11:11,688 - Check_Targets - DEBUG - get_info with check=uptime | awk '{print $(NF-2)}'	uptime	7, handler=ssh
+2022-01-26 21:11:11,689 - Check_Targets - DEBUG - get_OS_info with check = uptime | awk '{print $(NF-2)}'	uptime	7
+2022-01-26 21:11:11,693 - Check_Targets - INFO - Running uptime | awk '{print $(NF-2)}'	uptime	7 
+2022-01-26 21:11:12,337 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:12.337908
+2022-01-26 21:11:12,340 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:12,341 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 0 (closed) -> <paramiko.Transport at 0x1071b9e8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:12,342 - Check_Targets - INFO - Returning result from OS command: awk: fatal: cannot open file `uptime' for reading (No such file or directory)
+2022-01-26 21:11:12,344 - Check_Targets - DEBUG - get_info returning Result: awk: fatal: cannot open file `uptime' for reading (No such file or directory) (rc = 2)
+2022-01-26 21:11:12,344 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: uptime Value: awk: fatal: cannot open file `uptime' for reading (No such file or directory) RC: 2
+2022-01-26 21:11:12,345 - Check_Targets - DEBUG - get_info with check=uname -rs, handler=ssh
+2022-01-26 21:11:12,346 - Check_Targets - DEBUG - get_OS_info with check = uname -rs
+2022-01-26 21:11:12,348 - Check_Targets - INFO - Running uname -rs 
+2022-01-26 21:11:12,399 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:12.399850
+2022-01-26 21:11:12,403 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:12.403440
+2022-01-26 21:11:12,405 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:12,406 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 1 (closed) -> <paramiko.Transport at 0x1071b9e8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:12,406 - Check_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-01-26 21:11:12,408 - Check_Targets - DEBUG - get_info returning Result: Linux 5.4.0-94-generic (rc = 1)
+2022-01-26 21:11:12,409 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: os Value: Linux 5.4.0-94-generic RC: 1
+2022-01-26 21:11:12,409 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 21:11:12.409741', 'Linux 5.4.0-94-generic', 'os' ); 
+2022-01-26 21:11:12,432 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:12,432 - Check_Targets - DEBUG - get_info with check=pwd, handler=ssh
+2022-01-26 21:11:12,433 - Check_Targets - DEBUG - get_OS_info with check = pwd
+2022-01-26 21:11:12,436 - Check_Targets - INFO - Running pwd 
+2022-01-26 21:11:12,452 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:12.452937
+2022-01-26 21:11:12,455 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:12.454933
+2022-01-26 21:11:12,456 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:12,456 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 2 (closed) -> <paramiko.Transport at 0x1071b9e8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:12,457 - Check_Targets - INFO - Returning result from OS command: /home/codify
+2022-01-26 21:11:12,458 - Check_Targets - DEBUG - get_info returning Result: /home/codify (rc = 1)
+2022-01-26 21:11:12,459 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: codify_home Value: /home/codify RC: 1
+2022-01-26 21:11:12,459 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 21:11:12.459932', '/home/codify', 'codify_home' ); 
+2022-01-26 21:11:12,477 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:12,477 - Check_Targets - DEBUG - get_info with check=dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}', handler=ssh
+2022-01-26 21:11:12,479 - Check_Targets - DEBUG - get_OS_info with check = dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}'
+2022-01-26 21:11:12,482 - Check_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-01-26 21:11:12,521 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:12.521774
+2022-01-26 21:11:12,525 - Check_Targets - DEBUG - OS result length : 1 
+2022-01-26 21:11:12,525 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 3 (closed) -> <paramiko.Transport at 0x1071b9e8 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:12,527 - Check_Targets - INFO - Returning result from OS command: 
+2022-01-26 21:11:12,527 - Check_Targets - DEBUG - get_info returning Result:  (rc = 1)
+2022-01-26 21:11:12,528 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: hosttype Value:  RC: 1
+2022-01-26 21:11:12,529 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 21:11:12.529772', '', 'hosttype' ); 
+2022-01-26 21:11:12,549 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:12,550 - Check_Targets - INFO - Completed running check_targets.py with target_type=Server vendor=Linux frequency=HOURLY check_type=OS
+2022-01-26 21:11:12,551 - Check_Targets - INFO - ====================================================================================
+2022-01-26 21:11:53,147 - Check_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-01-26 21:11:53,148 - Check_Targets - INFO - Running check_targets.py with TARGETTYPE=Server VENDOR=% FREQUENCY=HOURLY CHECKTYPE=OS
+2022-01-26 21:11:53,149 - Check_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 21:11:53,150 - Check_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 21:11:53,151 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, sub_type, vendor from targets where decommissioned is null  and target_type = 'Server' order by inventory_id
+2022-01-26 21:11:53,168 - Check_Targets - DEBUG - Query result: [(7, 'Tolkien', 'codify', None, '192.168.10.33', 'Server', None, 'Linux'), (8, 'Saphira', 'codify', None, '192.168.10.85', 'Server', None, 'Linux')]
+2022-01-26 21:11:53,170 - Check_Targets - DEBUG - # of Targets: 2
+2022-01-26 21:11:53,170 - Check_Targets - DEBUG - Scale: ALL, Inventory Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1  and vendor != 'ORACLE' and check_type = 'OS' and frequency = 'HOURLY'  order by handler, priority
+2022-01-26 21:11:53,200 - Check_Targets - DEBUG - Query result: [("uptime | awk '{print $(NF-2)}'\tuptime\t7", 'OS', 'uptime', 'ssh', None, 'Linux'), ('uname -rs', 'OS', 'os', 'ssh', None, 'Linux'), ('pwd', 'OS', 'codify_home', 'ssh', None, 'Linux'), ('dmesg | grep "Hardware name:" | head -n 1 | awk -F":" \'{print $2}\'', 'OS', 'hosttype', 'ssh', None, 'Linux')]
+2022-01-26 21:11:53,201 - Check_Targets - INFO - All Checks: [("uptime | awk '{print $(NF-2)}'\tuptime\t7", 'OS', 'uptime', 'ssh', None, 'Linux'), ('uname -rs', 'OS', 'os', 'ssh', None, 'Linux'), ('pwd', 'OS', 'codify_home', 'ssh', None, 'Linux'), ('dmesg | grep "Hardware name:" | head -n 1 | awk -F":" \'{print $2}\'', 'OS', 'hosttype', 'ssh', None, 'Linux')]
+2022-01-26 21:11:53,202 - Check_Targets - DEBUG - inventory_id: 7 instance_name: Tolkien owner: codify home_dir: None hostname: 192.168.10.33 target_type: Server target_sub_type: None
+2022-01-26 21:11:53,203 - Check_Targets - DEBUG - Connecting to: 192.168.10.33 with ssh as codify
+2022-01-26 21:11:53,335 - Check_Targets - DEBUG - Connected to: 192.168.10.33 with ssh 
+2022-01-26 21:11:53,340 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-26 21:11:53,343 - Check_Targets - DEBUG - get_info with check=uptime | awk '{print $(NF-2)}'	uptime	7, handler=ssh
+2022-01-26 21:11:53,345 - Check_Targets - DEBUG - get_OS_info with check = uptime | awk '{print $(NF-2)}'	uptime	7
+2022-01-26 21:11:53,348 - Check_Targets - INFO - Running uptime | awk '{print $(NF-2)}'	uptime	7 
+2022-01-26 21:11:53,997 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:53.997036
+2022-01-26 21:11:53,998 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:53,999 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 0 (closed) -> <paramiko.Transport at 0xc4edcb00 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:54,001 - Check_Targets - INFO - Returning result from OS command: awk: fatal: cannot open file `uptime' for reading (No such file or directory)
+2022-01-26 21:11:54,001 - Check_Targets - DEBUG - get_info returning Result: awk: fatal: cannot open file `uptime' for reading (No such file or directory) (rc = 2)
+2022-01-26 21:11:54,002 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: uptime Value: awk: fatal: cannot open file `uptime' for reading (No such file or directory) RC: 2
+2022-01-26 21:11:54,003 - Check_Targets - DEBUG - get_info with check=uname -rs, handler=ssh
+2022-01-26 21:11:54,003 - Check_Targets - DEBUG - get_OS_info with check = uname -rs
+2022-01-26 21:11:54,005 - Check_Targets - INFO - Running uname -rs 
+2022-01-26 21:11:54,059 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.058448
+2022-01-26 21:11:54,061 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:54,062 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 1 (closed) -> <paramiko.Transport at 0xc4edcb00 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:54,063 - Check_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-01-26 21:11:54,064 - Check_Targets - DEBUG - get_info returning Result: Linux 5.4.0-94-generic (rc = 1)
+2022-01-26 21:11:54,065 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: os Value: Linux 5.4.0-94-generic RC: 1
+2022-01-26 21:11:54,065 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 21:11:54.065385', 'Linux 5.4.0-94-generic', 'os' ); 
+2022-01-26 21:11:54,096 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:54,097 - Check_Targets - DEBUG - get_info with check=pwd, handler=ssh
+2022-01-26 21:11:54,098 - Check_Targets - DEBUG - get_OS_info with check = pwd
+2022-01-26 21:11:54,100 - Check_Targets - INFO - Running pwd 
+2022-01-26 21:11:54,121 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.121387
+2022-01-26 21:11:54,123 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:54,124 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 2 (closed) -> <paramiko.Transport at 0xc4edcb00 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:54,125 - Check_Targets - INFO - Returning result from OS command: /home/codify
+2022-01-26 21:11:54,125 - Check_Targets - DEBUG - get_info returning Result: /home/codify (rc = 1)
+2022-01-26 21:11:54,126 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: codify_home Value: /home/codify RC: 1
+2022-01-26 21:11:54,127 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 21:11:54.127387', '/home/codify', 'codify_home' ); 
+2022-01-26 21:11:54,146 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:54,147 - Check_Targets - DEBUG - get_info with check=dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}', handler=ssh
+2022-01-26 21:11:54,148 - Check_Targets - DEBUG - get_OS_info with check = dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}'
+2022-01-26 21:11:54,151 - Check_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-01-26 21:11:54,193 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.193275
+2022-01-26 21:11:54,195 - Check_Targets - DEBUG - OS result length : 1 
+2022-01-26 21:11:54,196 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 3 (closed) -> <paramiko.Transport at 0xc4edcb00 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:54,197 - Check_Targets - INFO - Returning result from OS command: 
+2022-01-26 21:11:54,198 - Check_Targets - DEBUG - get_info returning Result:  (rc = 1)
+2022-01-26 21:11:54,199 - Check_Targets - DEBUG - Inventory ID: 7 Attribute: hosttype Value:  RC: 1
+2022-01-26 21:11:54,200 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 7, '2022-01-26 21:11:54.200275', '', 'hosttype' ); 
+2022-01-26 21:11:54,216 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:54,216 - Check_Targets - DEBUG - inventory_id: 8 instance_name: Saphira owner: codify home_dir: None hostname: 192.168.10.85 target_type: Server target_sub_type: None
+2022-01-26 21:11:54,217 - Check_Targets - DEBUG - Connecting to: 192.168.10.85 with ssh as codify
+2022-01-26 21:11:54,580 - Check_Targets - DEBUG - Connected to: 192.168.10.85 with ssh 
+2022-01-26 21:11:54,586 - Check_Targets - DEBUG - Connection rc: 1
+2022-01-26 21:11:54,588 - Check_Targets - DEBUG - get_info with check=uptime | awk '{print $(NF-2)}'	uptime	7, handler=ssh
+2022-01-26 21:11:54,589 - Check_Targets - DEBUG - get_OS_info with check = uptime | awk '{print $(NF-2)}'	uptime	7
+2022-01-26 21:11:54,593 - Check_Targets - INFO - Running uptime | awk '{print $(NF-2)}'	uptime	7 
+2022-01-26 21:11:54,663 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.663806
+2022-01-26 21:11:54,665 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.665809
+2022-01-26 21:11:54,751 - Check_Targets - DEBUG - OS result length : 3 
+2022-01-26 21:11:54,752 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 0 (closed) -> <paramiko.Transport at 0xc4f2d470 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:54,753 - Check_Targets - INFO - Returning result from OS command: awk: fatal: cannot open file `uptime' for reading (No such file or directory)
+2022-01-26 21:11:54,754 - Check_Targets - DEBUG - get_info returning Result: awk: fatal: cannot open file `uptime' for reading (No such file or directory) (rc = 2)
+2022-01-26 21:11:54,755 - Check_Targets - DEBUG - Inventory ID: 8 Attribute: uptime Value: awk: fatal: cannot open file `uptime' for reading (No such file or directory) RC: 2
+2022-01-26 21:11:54,755 - Check_Targets - DEBUG - get_info with check=uname -rs, handler=ssh
+2022-01-26 21:11:54,756 - Check_Targets - DEBUG - get_OS_info with check = uname -rs
+2022-01-26 21:11:54,759 - Check_Targets - INFO - Running uname -rs 
+2022-01-26 21:11:54,804 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.804695
+2022-01-26 21:11:54,843 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.843908
+2022-01-26 21:11:54,847 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:54,847 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 1 (closed) -> <paramiko.Transport at 0xc4f2d470 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:54,848 - Check_Targets - INFO - Returning result from OS command: Linux 4.4.180+
+2022-01-26 21:11:54,849 - Check_Targets - DEBUG - get_info returning Result: Linux 4.4.180+ (rc = 1)
+2022-01-26 21:11:54,850 - Check_Targets - DEBUG - Inventory ID: 8 Attribute: os Value: Linux 4.4.180+ RC: 1
+2022-01-26 21:11:54,850 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 8, '2022-01-26 21:11:54.850757', 'Linux 4.4.180+', 'os' ); 
+2022-01-26 21:11:54,885 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:54,885 - Check_Targets - DEBUG - get_info with check=pwd, handler=ssh
+2022-01-26 21:11:54,886 - Check_Targets - DEBUG - get_OS_info with check = pwd
+2022-01-26 21:11:54,890 - Check_Targets - INFO - Running pwd 
+2022-01-26 21:11:54,905 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.905410
+2022-01-26 21:11:54,908 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.908753
+2022-01-26 21:11:54,911 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:54,911 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 2 (closed) -> <paramiko.Transport at 0xc4f2d470 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:54,913 - Check_Targets - INFO - Returning result from OS command: /
+2022-01-26 21:11:54,914 - Check_Targets - DEBUG - get_info returning Result: / (rc = 1)
+2022-01-26 21:11:54,915 - Check_Targets - DEBUG - Inventory ID: 8 Attribute: codify_home Value: / RC: 1
+2022-01-26 21:11:54,916 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 8, '2022-01-26 21:11:54.915919', '/', 'codify_home' ); 
+2022-01-26 21:11:54,943 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:54,944 - Check_Targets - DEBUG - get_info with check=dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}', handler=ssh
+2022-01-26 21:11:54,946 - Check_Targets - DEBUG - get_OS_info with check = dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}'
+2022-01-26 21:11:54,949 - Check_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-01-26 21:11:54,963 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.963526
+2022-01-26 21:11:54,965 - Check_Targets - DEBUG - Reading stdout at: 2022-01-26 21:11:54.965258
+2022-01-26 21:11:54,986 - Check_Targets - DEBUG - OS result length : 2 
+2022-01-26 21:11:54,987 - Check_Targets - ERROR - OS Check Errors: <paramiko.ChannelFile from <paramiko.Channel 3 (closed) -> <paramiko.Transport at 0xc4f2d470 (cipher aes128-ctr, 128 bits) (active; 0 open channel(s))>>> 
+2022-01-26 21:11:54,987 - Check_Targets - INFO - Returning result from OS command: Could not chdir to home directory /var/services/homes/codify: No such file or directory
+2022-01-26 21:11:54,988 - Check_Targets - DEBUG - get_info returning Result: Could not chdir to home directory /var/services/homes/codify: No such file or directory (rc = 1)
+2022-01-26 21:11:54,989 - Check_Targets - DEBUG - Inventory ID: 8 Attribute: hosttype Value: Could not chdir to home directory /var/services/homes/codify: No such file or directory RC: 1
+2022-01-26 21:11:54,989 - Check_Targets - DEBUG - Scale: EXEC, Inventory Query: INSERT INTO check_results (inventory_id, check_date, check_result, check_column)                           VALUES ( 8, '2022-01-26 21:11:54.989890', 'Could not chdir to home directory /var/services/homes/codify: No such file or directory', 'hosttype' ); 
+2022-01-26 21:11:55,004 - Check_Targets - DEBUG - Query result: 1
+2022-01-26 21:11:55,006 - Check_Targets - INFO - Completed running check_targets.py with target_type=Server vendor=Linux frequency=HOURLY check_type=OS
+2022-01-26 21:11:55,006 - Check_Targets - INFO - ====================================================================================
