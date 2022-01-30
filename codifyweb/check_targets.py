@@ -106,19 +106,20 @@ def main(argv):
     # Get ALL the checks to perform on these targets
     RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)  
     target_logger.info("All Checks: %s", all_checks)
-    
-    # Build the set of handlers required 
-    handlers=set()
-    for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
-        handlers.add(handler)
-
-    handler_list=list(handlers)
 
     for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type, vendor in all_targets:
         target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
                             inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
 
-        connection = [''] * len(handler_list)  # initiallize array of connections
+        # Build the set of handlers required for this target
+        handlers=set()
+        for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
+            if ( check_vendor == vendor ) or ( check_vendor == 'ALL' ) :
+                handlers.add(handler)
+
+        handler_list=list(handlers)
+
+        connection = [''] * len(handler_list)  # dictionary of connections
         x = 0
         for handler in handler_list :
             rc, connection[x] = targets.connect(hostname, instance_name, owner, handler, target_logger)
