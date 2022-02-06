@@ -23,7 +23,8 @@ TNS_ADMIN     = config('TNS_ADMIN')
 LOG_DIR       = config('LOG_DIR')
 GLOBAL_LOG_NAME = "Notifications"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
-GLOBAL_LOG_LEVEL = 'INFO'
+GLOBAL_LOG_LEVEL = 'DEBUG'
+GLOBAL_LOG_TO_CONSOLE = 'NO'
 
 # ============================================================================
 # ============================================================================
@@ -39,7 +40,7 @@ def main(argv):
 
     check_query = 'select threshold, result_column from notifications where 1=1 '
     target_prefix = '''select hostname, instance_name, cast(check_date as text), check_result "ALERT"
-                       from targets a, check_results b
+                       from public.target a, check_results b
                       where a.inventory_id = b.inventory_id and check_column = '''
     target_suffix = ''
 
@@ -81,6 +82,7 @@ def main(argv):
 
     # Get ALL the checks to perform on these targets
     RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
+    print(all_checks)
 
     target_logger.debug("# of Checks: %s" , len(all_checks))
     target_logger.debug("All Checks: %s" , all_checks)
@@ -131,5 +133,5 @@ Subject: %s
 # ============================================================================
 
 if __name__ == "__main__":
-    target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)    # Log to File
+    target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
     main(sys.argv[1:])
