@@ -1,0 +1,9 @@
+2022-01-28 07:22:17,787 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-01-28 07:22:17,788 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-01-28 07:22:17,789 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-01-28 07:23:15,420 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-01-28 07:23:15,422 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-01-28 07:23:15,423 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-01-28 07:23:28,273 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-01-28 07:23:28,274 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-01-28 07:23:28,275 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
