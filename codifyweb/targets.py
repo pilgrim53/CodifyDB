@@ -27,7 +27,7 @@ CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 import inventory
 
-def connect(hostname, instance_name, owner, handler, target_logger):
+def connect(hostname, instance_name, owner, handler, target_logger, call_timeout=2000):
     """
     Connects to a target using the specified handler.
     :param hostname:
@@ -45,27 +45,27 @@ def connect(hostname, instance_name, owner, handler, target_logger):
     try:
         if handler == 'Oracle' or handler == 'PLSQL':
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
-            curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+            curr_connection.callTimeout = call_timeout  # Connection timeout is milliseconds 
         elif handler == 'ssh':
             curr_connection = paramiko.SSHClient()
             curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             if PKEY != 'NONE' :
                 private_key = paramiko.RSAKey.from_private_key_file(PKEY)
-                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
+                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=call_timeout, \
                                         banner_timeout=10, auth_timeout=10, pkey=private_key)
             else :
-                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=15, \
+                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=call_timeout, \
                                         password=DBC_PWD, banner_timeout=10, auth_timeout=10)
         elif handler == 'OMS':
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
-            curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+            curr_connection.callTimeout = call_timeout  # Oracle Connection timeout is milliseconds  - allow 35 seconds
         elif handler == 'ASM':
             if instance_name == '+ASM':
                 curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn, mode=cx_Oracle.SYSASM)
-                curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+                curr_connection.callTimeout = call_timeout  # Oracle Connection timeout is milliseconds  - allow 35 seconds
         elif handler == 'SYSDBA':
             curr_connection = cx_Oracle.connect(SYS_USER, SYS_PWD, my_dsn, mode=cx_Oracle.SYSDBA)
-            curr_connection.callTimeout = 2000  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+            curr_connection.callTimeout = call_timeout  # Oracle Connection timeout is milliseconds  - allow 35 seconds
         elif handler == 'Postgres':
             my_dsn = "dbname=" + instance_name + " user=" + DBC_USER + " password=" + DBC_PWD + " host=" + hostname
             curr_connection = psycopg2.connect(my_dsn)
@@ -73,7 +73,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
         # Still here means connected
         rc = 1
         target_logger.debug("Connected to: %s with %s ", hostname, handler)
-        timer = threading.Timer(15, curr_connection.close)
+        timer = threading.Timer(call_timeout, curr_connection.close)
         timer.start()  # start counting right before connecting - wait longer than the longest ssh timeout value
 
 
@@ -110,7 +110,7 @@ def connect(hostname, instance_name, owner, handler, target_logger):
 
 # END connect
 
-def get_info(check, handler, connection, target_logger):
+def get_info(check, handler, connection, target_logger, call_timeout=2000):
     """
     Checks the target database for a single specific key attribute
     :param check:
@@ -126,12 +126,12 @@ def get_info(check, handler, connection, target_logger):
 
     if connection != '':
         if handler == 'ssh':
-            rc, result = get_OS_info(check, connection, target_logger)
+            rc, result = get_OS_info(check, connection, target_logger, call_timeout)
         elif handler == 'PLSQL':
-            rc, result = get_PLSQL_info(check, connection, target_logger)
+            rc, result = get_PLSQL_info(check, connection, target_logger, call_timeout)
         else :
             #  handler == 'Oracle' or handler == 'ASM' or handler == 'OMS':
-            rc, result = get_oracle_info(check, connection, target_logger)
+            rc, result = get_oracle_info(check, connection, target_logger, call_timeout)
 
     target_logger.debug('get_info returning Result: %s (rc = %s)', str(result), str(rc))
     return rc, result
@@ -139,7 +139,7 @@ def get_info(check, handler, connection, target_logger):
 # END get_info
 
 
-def get_oracle_info(check, connection, target_logger):
+def get_oracle_info(check, connection, target_logger, call_timeout):
     """
     Checks the target database for a single specific key attribute
     :param check:
@@ -153,7 +153,7 @@ def get_oracle_info(check, connection, target_logger):
     value = ''
 
     try:
-        timer = threading.Timer(145, connection.cancel())
+        timer = threading.Timer(call_timeout, connection.cancel())
         db_info_cursor = connection.cursor()
         timer.start()  # start counting right before connecting to the database
         db_info_cursor.execute(check)
@@ -186,7 +186,7 @@ def get_oracle_info(check, connection, target_logger):
 # END get_oracle_info
 
 
-def get_PLSQL_info(check, connection, target_logger):
+def get_PLSQL_info(check, connection, target_logger, call_timeout):
     """
     Checks the target database for a single specific key attribute
     :param check:
@@ -239,7 +239,7 @@ def get_PLSQL_info(check, connection, target_logger):
 # END get_PLSQL_info
 
 
-def get_OS_info(check, connection, target_logger):
+def get_OS_info(check, connection, target_logger, call_timeout):
     """
     Takes a target and an OS check and first obtains the FID and home_dir for the call to the check_os_target routine
     :param check:
@@ -251,13 +251,13 @@ def get_OS_info(check, connection, target_logger):
     target_logger.debug('get_OS_info with check = %s', check)
     result = ''
     rc = 0
-    timer = threading.Timer(15, connection.close)
+    timer = threading.Timer(call_timeout, connection.close)
     timer.start()  # start counting right before connecting to the target
 
     try:
 
         target_logger.info("Running %s ", check)
-        stdin, stdout, stderr = connection.exec_command(check, timeout=15, get_pty=True)
+        stdin, stdout, stderr = connection.exec_command(check, timeout=call_timeout, get_pty=True)
 
         # get the shared channel for stdout/stderr/stdin
         channel = stdout.channel
@@ -275,7 +275,7 @@ def get_OS_info(check, connection, target_logger):
         while not channel.closed or channel.recv_ready() or channel.recv_stderr_ready():
             # stop if channel was closed prematurely, and there is no data in the buffers.
             target_logger.debug('Reading stdout at: %s', str(datetime.now()))
-            timeout = 15
+            timeout = call_timeout / 10
             got_chunk = False
             read_q, _, _ = select.select([stdout.channel], [], [], timeout)
             for c in read_q:
