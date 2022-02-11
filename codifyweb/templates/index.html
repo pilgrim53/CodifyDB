@@ -1,75 +1,35 @@
-{% extends "base.html" %}
-
+{% block title %}
+<h1>DBC Inventory Options Menu</h3>
+<h3>Select an option</h3>
+{% endblock %}
+ 
 {% block content %}
-
-    {% load static %}
-    <img src="{% static 'images/logo.png' %}" alt="CodifyDB">
-
-    <h2 class = "heading">Add or Update Targets</h2>
-    <div class="option-box">
-        <label class="pick-list" for="target-type">Target Type: </label>
-        <select name="target-type" id="target-type">
-            <option value="Database">Database</option>
-            <option value="Server">Server</option>
-        </select>
-        
-        <label class="pick-list" for="action">Action: </label>
-        <select name="action" id="action">
-            <option value="Add">Add</option>
-            <option value="Update">Update</option>
-            <option value="Discover">Discover</option>
-        </select>
-        <form class = "btn" method="post" action="add_target">
-            {% csrf_token %}
-            <input type="submit" value="ADD / UPDATE">
-        </form>
-    </div>
-    
-    <h2 class = "heading">Check Targets</h2>
-    <div class="option-box">
-        <label class="pick-list" for="target-type">Target Type: </label>
-        <select name="target-type" id="target-type">
-            <option value="Database">Database</option>
-            <option value="Server">Server</option>
-        </select>
-        
-        <label class="pick-list" for="frequency">Frequency: </label>
-        <select name="frequency" id="frequency">
-            <option value="Hourly">Hourly</option>
-            <option value="Daily">Daily</option>
-            <option value="Weekly">Weekly</option>
-            <option value="Monthly">Monthly</option>
-        </select>
-
-        <form class = "btn" method="post" action="check_target">
-            {% csrf_token %}
-        <input type="submit" value="CHECK">
-        </form>
-    </div>
-    
-    <h2 class = "heading">Alerts</h2>
-    <div class="option-box">
-        <label class="pick-list" for="target-type">Target Type: </label>
-        <select name="target-type" id="target-type">
-            <option value="Database">Database</option>
-            <option value="Server">Server</option>
-        </select>
-        <form class = "btn" method="GET" action="export_target">
-            {{ form.as_p }}
+	<br>
+    <form method="post" action="add_target">
         {% csrf_token %}
-        <input type="submit" value="RUN REPORT">
-        </form>
-    </div>
-    
-    
-<!--
+    <input type="submit" value="ADD">
+    </form>
+
     <br>
     <form method="GET" action="scan_target">
         {{ form.as_p }}
     {% csrf_token %}
     <input type="submit" value="SCAN">
     </form>
--->
+
+    <br>
+    <form method="post" action="check_target">
+        {% csrf_token %}
+    <input type="submit" value="CHECK">
+    </form>
+
+    <br>
+    <form method="GET" action="export_target">
+        {{ form.as_p }}
+    {% csrf_token %}
+    <input type="submit" value="GENERATE LIST">
+    </form>
+
 
 {% endblock %}
 

@@ -34,12 +34,41 @@ VENDORS = (
         ('SunOS','SunOS'),
 )
 
-
-
 TARGET_TYPES = (
         ('Database', 'Database'),
         ('Server','Server'),
 )
+
+ACTION_TYPES = (
+    ('Add', 'Add'),
+    ('Update', 'Update'),
+)
+
+CHECK_FREQUENCIES = (
+    ('HOURLY','Hourly'),
+    ('DAILY','Daily'),
+    ('WEEKLY','Weekly'),
+    ('MONTHLY','Monthly'),
+)
+
+INTERVALS = (
+    ('1', 1),
+    ('6', 6),
+    ('12', 12),
+    ('24', 24),
+)
+
+class AddOrUpdateForm(forms.Form):
+    target_type = forms.ChoiceField(choices=TARGET_TYPES)
+    action = forms.ChoiceField(choices=ACTION_TYPES)
+
+class CheckTargetsForm(forms.Form):
+    target_type = forms.ChoiceField(choices=TARGET_TYPES)
+    frequencies = forms.ChoiceField(choices=CHECK_FREQUENCIES)
+
+class AlertsForm(forms.Form):
+    target_type = forms.ChoiceField(choices=TARGET_TYPES)
+    interval = forms.ChoiceField(choices=INTERVALS)
 
 class ScanForm(forms.Form): 
     target_type = forms.ChoiceField(choices=TARGET_TYPES)
