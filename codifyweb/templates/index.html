@@ -1,35 +1,105 @@
-{% block title %}
-<h1>DBC Inventory Options Menu</h3>
-<h3>Select an option</h3>
-{% endblock %}
- 
+{% extends "base.html" %}
+
+{% block title %} DBC Inventory Management Tools {% endblock%}
+
 {% block content %}
-	<br>
-    <form method="post" action="add_target">
-        {% csrf_token %}
-    <input type="submit" value="ADD">
-    </form>
 
-    <br>
-    <form method="GET" action="scan_target">
-        {{ form.as_p }}
-    {% csrf_token %}
-    <input type="submit" value="SCAN">
-    </form>
-
-    <br>
-    <form method="post" action="check_target">
-        {% csrf_token %}
-    <input type="submit" value="CHECK">
-    </form>
-
-    <br>
-    <form method="GET" action="export_target">
-        {{ form.as_p }}
-    {% csrf_token %}
-    <input type="submit" value="GENERATE LIST">
-    </form>
-
+<div class='input-fields'>
+    <div class='forms-display border-bottom border-dark'>
+        <h2>Add or Update Targets</h2>
+        <form method="post" action="add_update">
+            {% csrf_token %}
+            <div class="form-fields">
+                <div class="form-fields">
+                    {{ forms.add_form.target_type.errors }}
+                    {{ forms.add_form.target_type.label_tag }}
+                </div>
+                <div class="form-fields">
+                    {{ forms.add_form.target_type }}
+                </div>
+            </div>
+            <div class="form-fields">
+                <div class="form-fields">
+                    {{ forms.add_form.action.errors }}
+                    {{ forms.add_form.action.label_tag }}
+                </div>
+                <div class="form-fields">
+                    {{ forms.add_form.action }}
+                </div>
+            </div>
+            
+            <div class="form-fields">
+                <div class="form-fields">
+                    {{ forms.add_form.vendor.errors }}
+                    {{ forms.add_form.vendor.label_tag }}
+                </div>
+                <div class="form-fields">
+                    {{ forms.add_form.vendor }}
+                </div>
+            </div>
+            
+            <div class="form-fields">
+                <input type="submit" value="ADD / UPDATE" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+    
+    <div class='forms-display border-bottom border-dark'>
+        <h2>Check Targets</h2>
+        <form method="post" action="check_target">
+            {% csrf_token %}
+            <div class="form-fields">
+                <div class="form-fields">
+                    {{ forms.check_form.target_type.errors }}
+                    {{ forms.check_form.target_type.label_tag }}
+                </div>
+                <div class="form-fields">    
+                    {{ forms.check_form.target_type }}
+                </div>
+            </div>
+            <div class="form-fields">
+                <div class="form-fields">
+                    {{ forms.check_form.frequency.errors }}
+                    {{ forms.check_form.frequency.label_tag }}
+                </div>
+                <div class="form-fields">
+                    {{ forms.check_form.frequency }}
+                </div>
+            </div>
+            <div class="form-fields">
+                <input type="submit" value="CHECK" class="btn btn-primary input-btn">
+            </div>
+        </form>
+    </div>
+    
+    <div class='forms-display border-bottom border-dark'>
+        <h2>Alerts</h2>
+        <form method="post" action="run_report">
+            {% csrf_token %}
+            <div class="form-fields">
+                <div class="form-fields">
+                    {{ forms.alerts_form.target_type.errors }}
+                    {{ forms.alerts_form.target_type.label_tag }}
+                </div>
+                <div class="form-fields">
+                    {{ forms.alerts_form.target_type }}
+                </div>
+            </div>
+            <div class="form-fields">
+                <div class="form-fields">
+                    {{ forms.alerts_form.interval.errors }}
+                    {{ forms.alerts_form.interval.label_tag }}
+                </div>
+                <div class="form-fields">
+                    {{ forms.alerts_form.interval }}
+                </div>
+            </div>
+            <div class="form-fields">
+                <input type="submit" value="RUN REPORT" class="btn btn-primary input-btn">
+            </div>
+        </form>
+    </div>
+</div>
 
 {% endblock %}
 
