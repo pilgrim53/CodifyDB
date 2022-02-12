@@ -11,7 +11,8 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "-t", "Server"
+                "-t", "Server",
+                "-i", "1 Month"
             ]
         }
     ]

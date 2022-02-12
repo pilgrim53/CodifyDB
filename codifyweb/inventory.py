@@ -80,7 +80,8 @@ def exec_sql(inventory_query, scale, target_logger):
     :return: value: 1 list or an array of lists.   RC=1
     :RC:            1 = Success, 0 = Fail
     """
-    RC=1 
+    RC=0
+    query_result = ''
     target_logger.debug("Scale: %s, Inventory Query: %s", scale, inventory_query)
 
     # Connect to the Inventory DB
@@ -98,17 +99,12 @@ def exec_sql(inventory_query, scale, target_logger):
             inventory_conn.commit()
             query_result = 1
 
-    except cx_Oracle.DatabaseError as exc:
-        error, = exc.args
-        target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
-        RC=0
-
-    finally: 
         inventory_conn.close()
 
-    if not query_result : 
-        RC=0
+        target_logger.debug("Query result: %s", query_result)
 
-    target_logger.debug("Query result: %s", query_result)
-
+    except psycopg2.OperationalError as exc : 
+        error, = exc.args
+        target_logger.error("psycopg2.OperationalError: %s", error)
+        
     return RC, query_result
