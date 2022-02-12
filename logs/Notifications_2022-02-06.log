@@ -1,0 +1,86 @@
+2022-02-06 21:58:47,140 - Notifications - DEBUG - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-02-06 21:58:47,140 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=24 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 21:58:47,140 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 21:58:47,146 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:02:15,941 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:02:15,943 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:02:15,944 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:02:15,946 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:06:31,743 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:06:31,743 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:06:31,743 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:06:31,743 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:07:52,422 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:07:52,424 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:07:52,424 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:07:52,425 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:07:56,498 - Notifications - ERROR - psycopg2.OperationalError: could not connect to server: Connection refused (0x0000274D/10061)
+	Is the server running on host "localhost" (::1) and accepting
+	TCP/IP connections on port 5432?
+could not connect to server: Connection refused (0x0000274D/10061)
+	Is the server running on host "localhost" (127.0.0.1) and accepting
+	TCP/IP connections on port 5432?
+
+2022-02-06 22:13:17,231 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:13:17,233 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:13:17,233 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:13:17,233 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:13:21,327 - Notifications - ERROR - psycopg2.OperationalError: could not connect to server: Connection refused (0x0000274D/10061)
+	Is the server running on host "localhost" (::1) and accepting
+	TCP/IP connections on port 5432?
+could not connect to server: Connection refused (0x0000274D/10061)
+	Is the server running on host "localhost" (127.0.0.1) and accepting
+	TCP/IP connections on port 5432?
+
+2022-02-06 22:17:01,662 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:17:01,662 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:17:01,662 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:17:01,668 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:17:05,789 - Notifications - ERROR - psycopg2.OperationalError: could not connect to server: Connection refused (0x0000274D/10061)
+	Is the server running on host "localhost" (::1) and accepting
+	TCP/IP connections on port 5432?
+could not connect to server: Connection refused (0x0000274D/10061)
+	Is the server running on host "localhost" (127.0.0.1) and accepting
+	TCP/IP connections on port 5432?
+
+2022-02-06 22:17:05,789 - Notifications - DEBUG - # of Checks: 0
+2022-02-06 22:17:05,789 - Notifications - DEBUG - All Checks: 
+2022-02-06 22:17:05,789 - Notifications - INFO - No Alerts Found for  Server in the last 1 Month 
+2022-02-06 22:22:01,708 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:22:01,708 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:22:01,708 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:22:01,716 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:27:06,128 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:27:06,130 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:27:06,130 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:27:06,130 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:27:06,147 - Notifications - DEBUG - Query result: []
+2022-02-06 22:27:06,148 - Notifications - DEBUG - # of Checks: 0
+2022-02-06 22:27:06,149 - Notifications - DEBUG - All Checks: []
+2022-02-06 22:27:06,149 - Notifications - INFO - No Alerts Found for  Server in the last 1 Month 
+2022-02-06 22:29:18,794 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:29:18,794 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:29:18,794 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:29:18,809 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:29:18,851 - Notifications - DEBUG - Query result: []
+2022-02-06 22:29:18,852 - Notifications - DEBUG - # of Checks: 0
+2022-02-06 22:29:18,853 - Notifications - DEBUG - All Checks: []
+2022-02-06 22:29:18,853 - Notifications - INFO - No Alerts Found for  Server in the last 1 Month 
+2022-02-06 22:30:06,095 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:30:06,095 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:30:06,095 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:30:06,099 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:30:06,141 - Notifications - DEBUG - Query result: []
+2022-02-06 22:30:06,142 - Notifications - DEBUG - # of Checks: 0
+2022-02-06 22:30:06,143 - Notifications - DEBUG - All Checks: []
+2022-02-06 22:30:06,143 - Notifications - INFO - No Alerts Found for  Server in the last 1 Month 
+2022-02-06 22:31:48,622 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1 Month')]  Arguments: [] 
+2022-02-06 22:31:48,623 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:31:48,623 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:31:48,624 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-06 22:31:48,642 - Notifications - DEBUG - Query result: []
+2022-02-06 22:31:48,643 - Notifications - DEBUG - # of Checks: 0
+2022-02-06 22:31:48,643 - Notifications - DEBUG - All Checks: []
+2022-02-06 22:31:48,644 - Notifications - INFO - No Alerts Found for  Server in the last 1 Month 
+2022-02-06 22:31:48,644 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Server INTERVAL=1 Month FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-06 22:31:48,644 - Notifications - INFO - ====================================================================================
