@@ -11,7 +11,7 @@ from .forms import ExportForm
 from decouple import config  # Allows us to read .env
 from datetime import datetime
 from datetime import date
-from .scan_target import main as scan
+from .scan_targets import main as scan
 from .check_targets import main as check
 
 from .targets import add
