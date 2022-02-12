@@ -18,11 +18,11 @@ GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
 GLOBAL_LOG_TO_CONSOLE = "OFF"
 
-def main(argv):    
+def main(argv):
     """
 # ============================================================================
 # Name:         check_targets.py
-# Description:  Monitors IT targets currently stored in the Codify "TARGETS" 
+# Description:  Monitors IT targets currently stored in the Codify "TARGETS"
 #               check results are stored and viewable in "CHECK_RESULTS"
 #
 # Input Files:  TARGETS Table
@@ -89,7 +89,7 @@ def main(argv):
     check_query += ' and check_type = \'' + target_type + '\''
     target_query += ' and target_type = \'' + target_type + '\''
 
-    check_query += ' and frequency = \'' + frequency + '\'  order by handler, priority'
+    check_query += ' and frequency = \'' + frequency + '\'  order by priority'
     target_query += ' order by inventory_id '
 
     target_logger.info("Running check_targets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", target_type,
@@ -102,10 +102,8 @@ def main(argv):
     target_logger.debug("# of Targets: %s", len(all_targets))
 
     # Get ALL the checks to perform on these targets
-    RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)  
+    RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
     target_logger.info("All Checks: %s", all_checks)
-    
-
 
     for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type, vendor in all_targets:
         target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
@@ -136,7 +134,7 @@ def main(argv):
                 if handler == 'OMS':  # Need to do this here because we need hostname and instance_name
                     # remove_digits = str.maketrans('', '', digits)
                     # instance_name = instance_name.translate(remove_digits)   # Strip the numeral off the end if exists
-                    check = f"{check.format(hostname, instance_name)}"  
+                    check = f"{check.format(hostname, instance_name)}"
 
                 info_rc, result = targets.get_info(check, handler, connection[handler_list.index(handler)], target_logger)
                 target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
