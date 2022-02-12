@@ -25,8 +25,13 @@ def set_sql_for_field(field, sql):
         return wrapper
     return decorator
 
+class Notification(models.Model):
+    id = models.IntegerField(primary_key=True) 
+    threshold = models.TextField(blank=True, null=True)
+    result_column = models.TextField(blank=False, null=False)
 
-
+    class Meta:
+      db_table = 'notifications'
 
 class CheckList(models.Model):
     id = models.IntegerField(primary_key=True) 

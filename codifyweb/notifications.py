@@ -15,11 +15,7 @@ import inventory
 # ============================================================================
 # Set  Environment and Global Variables
 # ============================================================================
-DBC_USER      = config('DBC_USER')
-DBC_PWD       = config('DBC_PWD')
-ORACLE_BASE   = config('ORACLE_BASE')
-ORACLE_HOME   = config('ORACLE_HOME')
-TNS_ADMIN     = config('TNS_ADMIN')
+SERVER        = config('SERVER')
 LOG_DIR       = config('LOG_DIR')
 GLOBAL_LOG_NAME = "Notifications"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
@@ -37,6 +33,7 @@ def main(argv):
     interval = '24'
     support_tier = 'ALL'
     target_type = 'Database'  # Default to Database right now for development
+    notifications = 0
 
     check_query = 'select threshold, result_column from notifications where 1=1 '
     target_prefix = '''select hostname, instance_name, cast(check_date as text), check_result "ALERT"
@@ -96,33 +93,36 @@ def main(argv):
         RC, targets=inventory.exec_sql(target_query, 'ALL', target_logger)
 
         for hostname, instance_name, date_time, result in targets :
+            notifications += 1 
             target_logger.info("%s ALERT: %s value: %s", result_column.upper(), instance_name, result )
-            TEXT += result_column.upper() + ' = ' + result + ' on ' + instance_name + '_' + hostname + ' at ' + date_time
-            TEXT += '\n'
-            TEXT += '\n'
+            TEXT += result_column.upper() + ' = ' + result + ' on ' + instance_name + '_' + hostname + ' at ' + date_time + """
+            """
 
+    if notifications == 0 :
+        target_logger.info("No Alerts Found for  %s in the last %s ", target_type, interval )
+    else:
+ 
+        # All Done, let's send the email
+        # email options
+        # SERVER = "app-mail.bell.corp.bce.ca"
+        FROM = "orac4i@caddld-590.belldev.dev.bce.ca"
+        TO = ["BellITCloudDBC@bell.ca"]
+        SUBJECT = frequency + " DBC Alerts from the last " + interval + " hours"
 
-    # All Done, let's send the email
-    # email options
-    SERVER = "app-mail.bell.corp.bce.ca"
-    FROM = "orac4i@caddld-590.belldev.dev.bce.ca"
-    TO = ["BellITCloudDBC@bell.ca"]
-    SUBJECT = frequency + " DBC Alerts from the last " + interval + " hours"
-
-    message = """From: %s
+        message = """From: %s
 To: %s
 Subject: %s
 
 %s
 """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
 
-    try:
-        server = smtplib.SMTP(SERVER)
-        server.set_debuglevel(3)
-        server.sendmail(FROM, TO, message)
-        server.quit()
-    except smtplib.SMTPException:
-        target_logger.error( "Error: unable to send email")
+        try:
+            server = smtplib.SMTP(SERVER)
+            server.set_debuglevel(3)
+            server.sendmail(FROM, TO, message)
+            server.quit()
+        except smtplib.SMTPException:
+            target_logger.error( "Error: unable to send email")
 
     target_logger.info("Completed notifications.py with TARGETTYPE=%s INTERVAL=%s FREQUENCY=%s SUPPORT_TIER=%s", target_type,
                         interval, frequency, support_tier)
