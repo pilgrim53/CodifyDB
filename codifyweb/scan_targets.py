@@ -30,7 +30,7 @@ def main(argv):
     check_type = 'UPDATE'  # Default to scan / update existing known Targets
     target_type = 'Database'  # Default to database targets
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor \
-                      from targets where decommissioned is null '
+                      from public.target where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv, ":t:v:adh")
@@ -62,7 +62,7 @@ def main(argv):
 
     target_query += ' order by inventory_id '
 
-    check_query = "select check_command, check_type, result_column, handler, vendor from checklist \
+    check_query = "select check_command, check_type, result_column, handler, vendor from public.checklist \
                     where frequency='" + target_type + "' order by handler, priority"
 
     target_logger.info("Running scan_target.py with target_type=%s check_type=%s", target_type, check_type)
@@ -308,6 +308,7 @@ def main(argv):
     target_logger.info("====================================================================================")
                                
 # END main program
+
 
 if __name__ == "__main__":
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File

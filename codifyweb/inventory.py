@@ -34,10 +34,10 @@ def get_id(host, instance_name, target_logger):
     target_logger.debug("get_id with host = %s, instance_name = %s", host, instance_name)
     inventory_id = 0
 
-    select_stmt = 'select coalesce(inventory_id,0) from targets where hostname=\'' \
+    select_stmt = 'select coalesce(inventory_id,0) from public.target where hostname=\'' \
                   + host + '\' and instance_name=\'' + instance_name + '\' order by inventory_id '
 
-    result = inventory.exec_sql(select_stmt, 'ONE', target_logger)
+    RC, result = inventory.exec_sql(select_stmt, 'ONE', target_logger)
     target_logger.info('Check %s %s returned: ''%s''', host, instance_name, result)
     if result is None:
         inventory_id = 0
@@ -61,8 +61,8 @@ def get_attribute(inventory_id, target, column, target_logger):
     """
 
     target_logger.debug("get_attribute with inventory_id=%s, target=%s, column=%s", inventory_id, target, column)
-    query = 'select ' + column + ' from targets where inventory_id=' + str(inventory_id) + ''
-    value = inventory.exec_sql(query, 'ONE', target_logger)
+    query = 'select ' + column + ' from public.target where inventory_id=' + str(inventory_id) + ''
+    RC, value = inventory.exec_sql(query, 'ONE', target_logger)
 
     target_logger.debug("get_attribute returning value = %s", value)
     return value
@@ -105,6 +105,9 @@ def exec_sql(inventory_query, scale, target_logger):
 
     finally: 
         inventory_conn.close()
+
+    if not query_result : 
+        RC=0
 
     target_logger.debug("Query result: %s", query_result)
 
