@@ -39,8 +39,10 @@ def main(argv):
         print('scan_targets.py [ -a (ADD) -t Database|Server -v Vendor  ] | -h (help) ')
         sys.exit(2)
 
-    target_logger.debug("All Options passed: {}".format(opts))
-    target_logger.debug("All arguments passed: {}".format(args))
+    try: target_logger.debug("All Options passed: {}".format(opts))
+    except NameError: 
+        target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
+        target_logger.debug("All arguments passed: {}".format(args))
 
     for opt, arg in opts:
         target_logger.debug("Option: {} Argument: {}".format(opt, arg))

@@ -48,7 +48,10 @@ def main(argv):
         print ('python notifications.py [ -t Database|Server -i <interval in HOURS>  -f [HOURLY|DAILY|WEEKLY] -s [GOLD|SILVER|BRONZE] ]')
         sys.exit(2)
 
-    target_logger.debug('Command Options: %s  Arguments: %s ', opts, args)
+    try: target_logger.debug('Command Options: %s  Arguments: %s ', opts, args)
+    except: 
+        target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
+        target_logger.debug('Command Options: %s  Arguments: %s ', opts, args)
 
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt,arg))

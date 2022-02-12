@@ -58,10 +58,7 @@ def add_update(request):
             if action == 'Add':
                 args_string.append('-a')
 
-            args_string.append('-t')
-            args_string.append(target_type)
-            args_string.append('-v')
-            args_string.append(vendor)
+            args_string.append(['-t',target_type,'-v',vendor])
             scan(args_string)
         
     else:
@@ -77,13 +74,7 @@ def run_report(request):
         if form.is_valid():
             target_type = form.cleaned_data.get('target_type')
             interval = form.cleaned_data.get('interval')
-            args_string = []
-
-            args_string.append('-t')
-            args_string.append(target_type)
-            args_string.append('-i')
-            args_string.append(interval)
-            print(args_string)
+            args_string = ['-t',target_type,'-i',interval]
             notify(args_string)
     else:
         form = AlertsForm()
@@ -102,13 +93,7 @@ def check_target(request):
             target_type = form.cleaned_data.get('target_type')
             frequency = form.cleaned_data.get('frequency')
             vendor = form.cleaned_data.get('vendor')
-            args_string = []
-
-            args_string.append('-t')
-            args_string.append(target_type)
-            args_string.append('-f')
-            args_string.append(frequency)
-            print(args_string)
+            args_string = ['-t',target_type,'-f',frequency]
             check(args_string)
 
     # if a GET (or any other method) we'll create a blank form

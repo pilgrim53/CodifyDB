@@ -58,20 +58,19 @@ INTERVALS = (
     ('24', 24),
 )
 
-class AddOrUpdateForm(forms.Form):
-    target_type = forms.ChoiceField(choices=TARGET_TYPES)
-    action = forms.ChoiceField(choices=ACTION_TYPES)
+class ScanForm(forms.Form):
+    target_type = forms.ChoiceField(choices=TARGET_TYPES,widget=forms.Select(attrs={'class':'form-select'}))
+    action = forms.ChoiceField(choices=ACTION_TYPES,widget=forms.Select(attrs={'class':'form-select'}))
+    vendor = forms.ChoiceField(choices=VENDORS,widget=forms.Select(attrs={'class':'form-select'}))
 
 class CheckTargetsForm(forms.Form):
-    target_type = forms.ChoiceField(choices=TARGET_TYPES)
-    frequencies = forms.ChoiceField(choices=CHECK_FREQUENCIES)
+    target_type = forms.ChoiceField(choices=TARGET_TYPES,widget=forms.Select(attrs={'class':'form-select'}))
+    vendor = forms.ChoiceField(choices=VENDORS,widget=forms.Select(attrs={'class':'form-select'}))
+    frequency = forms.ChoiceField(choices=CHECK_FREQUENCIES,widget=forms.Select(attrs={'class':'form-select'}))
 
 class AlertsForm(forms.Form):
-    target_type = forms.ChoiceField(choices=TARGET_TYPES)
-    interval = forms.ChoiceField(choices=INTERVALS)
-
-class ScanForm(forms.Form): 
-    target_type = forms.ChoiceField(choices=TARGET_TYPES)
+    target_type = forms.ChoiceField(choices=TARGET_TYPES,widget=forms.Select(attrs={'class':'form-select'}))
+    interval = forms.ChoiceField(choices=INTERVALS,widget=forms.Select(attrs={'class':'form-select'}))
 
 class ExportForm(forms.Form): 
     target_type = forms.ChoiceField(choices=TARGET_TYPES)
