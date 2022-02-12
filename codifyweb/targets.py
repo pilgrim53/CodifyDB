@@ -352,7 +352,7 @@ def update_column(inventory_id, column_name, value, target_logger):
         # and update the inventory only if anything has changed about the target
         # ============================================================================
 
-        target_query = 'select ' + column_name + ' from target where inventory_id = \'' + str(
+        target_query = 'select ' + column_name + ' from targets where inventory_id = \'' + str(
             inventory_id) + '\''
 
         curr_value = inventory.exec_sql(target_query, 'ONE', target_logger)
@@ -369,10 +369,10 @@ def update_column(inventory_id, column_name, value, target_logger):
             target_logger.info('No change in Target Info')
         else:
             if column_name == 'blocksize' or column_name == 'port':
-                insert_stmt = 'update target set ' + column_name + '=' + str(
+                insert_stmt = 'update targets set ' + column_name + '=' + str(
                     value) + ' where inventory_id=' + str(inventory_id)
             else:
-                insert_stmt = 'update target set ' + column_name + '=\'' + str(
+                insert_stmt = 'update targets set ' + column_name + '=\'' + str(
                     value) + '\' where inventory_id=' + str(inventory_id)
 
             result = inventory.exec_sql(insert_stmt, 'EXEC', target_logger)
@@ -424,13 +424,13 @@ def add(host, instance, container, DBID, owner, home_dir, status, port, target_t
     :param host, instance, etc...
     :return: the target ID
     """
-    target_logger.debug("Adding entry in target table with host: %s instance name: %s container: %s DBID: %s"
+    target_logger.debug("Adding entry in targets table with host: %s instance name: %s container: %s DBID: %s"
                         " owner: %s home_dir: %s status: %s port: %s target_type: %s",
                         host, instance, container, DBID, owner, home_dir, status, port, target_type)
 
     result = inventory.get_id(host, instance, target_logger)
     if result < 1:
-        insert_stmt = """INSERT INTO target
+        insert_stmt = """INSERT INTO targets
                        (Inventory_Create, Target_Type, HostName, Instance_Name, Container, Serial_Number, owner, home_dir, Vendor, Status, Port)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
 
