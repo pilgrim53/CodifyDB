@@ -27,7 +27,7 @@ CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 import inventory
 
-def connect(hostname, instance_name, owner, handler, target_logger, call_timeout=2000):
+def connect(hostname, instance_name, owner, handler, target_logger, call_timeout=10000):
     """
     Connects to a target using the specified handler.
     :param hostname:
@@ -45,24 +45,24 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
     try:
         if handler == 'Oracle' or handler == 'PLSQL':
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn)
-            curr_connection.callTimeout = call_timeout  # Connection timeout is milliseconds 
+            curr_connection.callTimeout = call_timeout  # Connection timeout is milliseconds
         elif handler == 'ssh':
             curr_connection = paramiko.SSHClient()
             curr_connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             if PKEY != 'NONE' :
                 private_key = paramiko.RSAKey.from_private_key_file(PKEY)
-                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=call_timeout, \
+                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=call_timeout/100, \
                                         banner_timeout=10, auth_timeout=10, pkey=private_key)
             else :
-                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=call_timeout, \
+                curr_connection.connect(hostname=hostname, port=22, username=owner, timeout=call_timeout/100, \
                                         password=DBC_PWD, banner_timeout=10, auth_timeout=10)
         elif handler == 'OMS':
             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, 'DVOMS_caddld-593')
-            curr_connection.callTimeout = call_timeout  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+            curr_connection.callTimeout = call_timeout  # Oracle Connection timeout is milliseconds
         elif handler == 'ASM':
             if instance_name == '+ASM':
                 curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, my_dsn, mode=cx_Oracle.SYSASM)
-                curr_connection.callTimeout = call_timeout  # Oracle Connection timeout is milliseconds  - allow 35 seconds
+                curr_connection.callTimeout = call_timeout  # Oracle Connection timeout is milliseconds
         elif handler == 'SYSDBA':
             curr_connection = cx_Oracle.connect(SYS_USER, SYS_PWD, my_dsn, mode=cx_Oracle.SYSDBA)
             curr_connection.callTimeout = call_timeout  # Oracle Connection timeout is milliseconds  - allow 35 seconds
@@ -139,7 +139,7 @@ def get_info(check, handler, connection, target_logger, call_timeout=2000):
 # END get_info
 
 
-def get_oracle_info(check, connection, target_logger, call_timeout):
+def get_oracle_info(check, connection, target_logger, call_timeout=6000):
     """
     Checks the target database for a single specific key attribute
     :param check:
@@ -239,7 +239,7 @@ def get_PLSQL_info(check, connection, target_logger, call_timeout):
 # END get_PLSQL_info
 
 
-def get_OS_info(check, connection, target_logger, call_timeout):
+def get_OS_info(check, connection, target_logger, call_timeout=2000):
     """
     Takes a target and an OS check and first obtains the FID and home_dir for the call to the check_os_target routine
     :param check:
@@ -251,7 +251,7 @@ def get_OS_info(check, connection, target_logger, call_timeout):
     target_logger.debug('get_OS_info with check = %s', check)
     result = ''
     rc = 0
-    timer = threading.Timer(call_timeout, connection.close)
+    timer = threading.Timer(call_timeout/100, connection.close)
     timer.start()  # start counting right before connecting to the target
 
     try:
@@ -275,7 +275,7 @@ def get_OS_info(check, connection, target_logger, call_timeout):
         while not channel.closed or channel.recv_ready() or channel.recv_stderr_ready():
             # stop if channel was closed prematurely, and there is no data in the buffers.
             target_logger.debug('Reading stdout at: %s', str(datetime.now()))
-            timeout = call_timeout / 10
+            timeout = call_timeout / 100
             got_chunk = False
             read_q, _, _ = select.select([stdout.channel], [], [], timeout)
             for c in read_q:
@@ -349,10 +349,10 @@ def update_column(inventory_id, column_name, value, target_logger):
     if value != '' and value != 'UNKNOWN':
         # ============================================================================
         # Get the old (current) value of the attribute in the inventory
-        # and update the inventory only if anything has changed about the target 
+        # and update the inventory only if anything has changed about the target
         # ============================================================================
 
-        target_query = 'select ' + column_name + ' from targets where inventory_id = \'' + str(
+        target_query = 'select ' + column_name + ' from target where inventory_id = \'' + str(
             inventory_id) + '\''
 
         curr_value = inventory.exec_sql(target_query, 'ONE', target_logger)
@@ -369,10 +369,10 @@ def update_column(inventory_id, column_name, value, target_logger):
             target_logger.info('No change in Target Info')
         else:
             if column_name == 'blocksize' or column_name == 'port':
-                insert_stmt = 'update targets set ' + column_name + '=' + str(
+                insert_stmt = 'update target set ' + column_name + '=' + str(
                     value) + ' where inventory_id=' + str(inventory_id)
             else:
-                insert_stmt = 'update targets set ' + column_name + '=\'' + str(
+                insert_stmt = 'update target set ' + column_name + '=\'' + str(
                     value) + '\' where inventory_id=' + str(inventory_id)
 
             result = inventory.exec_sql(insert_stmt, 'EXEC', target_logger)
@@ -407,7 +407,7 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
 
     insert_stmt = f"{insert_stmt.format(date.today(), host, instance, vendor, status, owner, home_dir, important_notes)}"
 
-    curr_value = inventory.exec_sql((insert_stmt,date.today(), host, instance, vendor, status, 
+    curr_value = inventory.exec_sql((insert_stmt,date.today(), host, instance, vendor, status,
                                          owner, home_dir, important_notes) ,'ONE', target_logger)
 
     target_logger.debug('Target Reject Result: %s', result)
@@ -430,11 +430,11 @@ def add(host, instance, container, DBID, owner, home_dir, status, port, target_t
 
     result = inventory.get_id(host, instance, target_logger)
     if result < 1:
-        insert_stmt = """INSERT INTO targets
+        insert_stmt = """INSERT INTO target
                        (Inventory_Create, Target_Type, HostName, Instance_Name, Container, Serial_Number, owner, home_dir, Vendor, Status, Port)
                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
 
-        RC = inventory.exec_sql((insert_stmt, (date.today(), target_type, host, instance, container, 
+        RC = inventory.exec_sql((insert_stmt, (date.today(), target_type, host, instance, container,
                                              DBID, owner, home_dir, 'ORACLE', status, port)), 'ONE', target_logger)
 
         result = inventory.get_id(host, instance, target_logger)
