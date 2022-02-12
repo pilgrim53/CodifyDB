@@ -1,0 +1,26 @@
+h1 {
+    color: red;
+}
+.option-box{
+    border-style: solid;
+    width: 480px;
+}
+
+.heading{
+    color: blue;
+    margin-bottom: 0;
+}
+
+.btn {
+    padding: 20px;
+}
+
+select {
+    padding: 0;
+    margin: 20px;
+    margin-bottom: 0;
+}
+
+.pick-list {
+    padding-left: 20px;
+}
