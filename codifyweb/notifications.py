@@ -37,7 +37,7 @@ def main(argv):
 
     check_query = 'select threshold, result_column from notifications where 1=1 '
     target_prefix = '''select hostname, instance_name, cast(check_date as text), check_result "ALERT"
-                       from public.target a, check_results b
+                       from public.targets a, check_results b
                       where a.inventory_id = b.inventory_id and check_column = '''
     target_suffix = ''
 

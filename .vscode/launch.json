@@ -12,7 +12,6 @@
             "console": "integratedTerminal",
             "args": [
                 "-t", "Server",
-                "-i", "1 Month"
             ]
         }
     ]

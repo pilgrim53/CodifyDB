@@ -53,7 +53,7 @@ def main(argv):
 
     check_query = 'select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1 '
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname,' \
-                   ' target_type, sub_type, vendor from public.target where decommissioned is null '
+                   ' target_type, sub_type, vendor from public.targets where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv,":t:c:v:f:s:h")

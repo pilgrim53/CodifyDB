@@ -1,0 +1,94 @@
+2022-02-13 10:31:28,735 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-13 10:31:28,736 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-13 10:31:28,738 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-13 10:31:28,776 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-13 10:31:28,778 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-13 10:31:28,793 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-02-13 10:31:28,794 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-02-13 10:31:28,808 - Scan_Targets - INFO - Check localhost XE returned: (4,)
+2022-02-13 10:31:28,809 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 4 
+2022-02-13 10:31:28,821 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (5,)
+2022-02-13 10:31:28,822 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 5 
+2022-02-13 10:31:28,836 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-02-13 10:31:28,837 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:33:45,793 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=DISCOVER
+2022-02-13 10:33:45,794 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-13 10:33:45,795 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-13 10:33:45,891 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=DISCOVER
+2022-02-13 10:33:45,892 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:34:13,951 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=DISCOVER
+2022-02-13 10:34:13,952 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-13 10:34:13,953 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-02-13 10:34:14,024 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=DISCOVER
+2022-02-13 10:34:14,025 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:35:23,186 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=DISCOVER
+2022-02-13 10:35:23,187 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-13 10:35:23,188 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-02-13 10:35:23,296 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=DISCOVER
+2022-02-13 10:35:23,297 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:35:45,389 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:35:45,390 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-13 10:35:45,391 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-02-13 10:35:45,427 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:35:45,428 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:40:40,902 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:40:40,903 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-13 10:40:40,904 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  order by inventory_id 
+2022-02-13 10:40:40,941 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:40:40,942 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:42:28,943 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:42:28,944 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Database' order by handler, priority
+2022-02-13 10:42:28,945 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  order by inventory_id 
+2022-02-13 10:42:28,992 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:42:28,993 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:44:06,388 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:44:06,389 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Database' order by handler, priority
+2022-02-13 10:44:06,390 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  where target_type= + target_type +  order by inventory_id 
+2022-02-13 10:44:33,357 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:44:33,358 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Database' order by handler, priority
+2022-02-13 10:44:33,359 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type= + target_type +  order by inventory_id 
+2022-02-13 10:47:32,287 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:47:32,288 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Database' order by handler, priority
+2022-02-13 10:47:32,289 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-02-13 10:47:32,332 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:47:32,333 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:50:14,004 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:50:14,006 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Database' order by handler, priority
+2022-02-13 10:50:14,007 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-02-13 10:50:14,049 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:50:14,050 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:51:38,686 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-02-13 10:51:38,686 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-02-13 10:51:38,688 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-02-13 10:51:42,869 - Scan_Targets - ERROR - General Exception in os command: [Errno None] Unable to connect to port 22 on 127.0.0.1 or ::1 
+2022-02-13 10:51:42,922 - Scan_Targets - ERROR - DatabaseError-Code: 0 DPI-1047: Cannot locate a 64-bit Oracle Client library: "The specified module could not be found". See https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html for help 
+2022-02-13 10:51:47,145 - Scan_Targets - ERROR - General Exception in os command: [Errno None] Unable to connect to port 22 on 127.0.0.1 or ::1 
+2022-02-13 10:51:51,326 - Scan_Targets - ERROR - General Exception in os command: [Errno None] Unable to connect to port 22 on 127.0.0.1 or ::1 
+2022-02-13 10:51:51,364 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=Server
+2022-02-13 10:51:51,365 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:53:24,316 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-02-13 10:53:24,317 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-02-13 10:53:24,318 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-13 10:53:24,563 - Scan_Targets - INFO - Running uname -rs 
+2022-02-13 10:53:25,220 - Scan_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-02-13 10:53:25,488 - Scan_Targets - INFO - Running uname -rs 
+2022-02-13 10:53:25,573 - Scan_Targets - INFO - Returning result from OS command: Could not chdir to home directory /var/services/homes/codify: No such file or directory Linux 4.4.180+
+2022-02-13 10:53:25,606 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=Server
+2022-02-13 10:53:25,607 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 10:55:16,297 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-02-13 10:55:16,298 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-02-13 10:55:16,300 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-13 10:55:16,497 - Scan_Targets - INFO - Running uname -rs 
+2022-02-13 10:55:17,125 - Scan_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-02-13 10:55:17,329 - Scan_Targets - INFO - Running uname -rs 
+2022-02-13 10:55:17,393 - Scan_Targets - INFO - Returning result from OS command: Linux 4.4.180+
+2022-02-13 10:55:17,410 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=Server
+2022-02-13 10:55:17,411 - Scan_Targets - INFO - ====================================================================================

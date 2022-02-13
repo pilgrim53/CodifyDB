@@ -34,18 +34,17 @@ def get_id(host, instance_name, target_logger):
     target_logger.debug("get_id with host = %s, instance_name = %s", host, instance_name)
     inventory_id = 0
 
-    select_stmt = 'select coalesce(inventory_id,0) from public.target where hostname=\'' \
+    select_stmt = 'select coalesce(inventory_id,0) from targets where hostname=\'' \
                   + host + '\' and instance_name=\'' + instance_name + '\' order by inventory_id '
 
     RC, result = inventory.exec_sql(select_stmt, 'ONE', target_logger)
     target_logger.info('Check %s %s returned: ''%s''', host, instance_name, result)
     if result is None:
-        inventory_id = 0
+        target_logger.debug("get_id returning inventory_id = 0")
+        return 0
     else:
-        inventory_id = result[0]
-
-    target_logger.debug("get_id returning inventory_id = %s", inventory_id)
-    return inventory_id
+        target_logger.debug("get_id returning inventory_id = %s", str(result[0]))
+        return result[0]
 
 # END get_id
 
