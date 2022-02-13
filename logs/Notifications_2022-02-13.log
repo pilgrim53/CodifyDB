@@ -1,0 +1,388 @@
+2022-02-13 11:51:36,863 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 11:51:36,864 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 11:51:36,864 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 11:51:36,864 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 11:51:36,889 - Notifications - DEBUG - Query result: []
+2022-02-13 11:51:36,890 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 11:51:36,890 - Notifications - DEBUG - All Checks: []
+2022-02-13 11:51:36,890 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 11:51:36,890 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 11:51:36,890 - Notifications - INFO - ====================================================================================
+2022-02-13 11:51:58,753 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 11:51:58,753 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 11:51:58,754 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 11:51:58,754 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 11:51:58,754 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 11:51:58,754 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 11:51:58,754 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 11:51:58,754 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 11:51:58,790 - Notifications - DEBUG - Query result: []
+2022-02-13 11:51:58,790 - Notifications - DEBUG - Query result: []
+2022-02-13 11:51:58,791 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 11:51:58,791 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 11:51:58,791 - Notifications - DEBUG - All Checks: []
+2022-02-13 11:51:58,791 - Notifications - DEBUG - All Checks: []
+2022-02-13 11:51:58,791 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 11:51:58,791 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 11:51:58,791 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 11:51:58,791 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 11:51:58,791 - Notifications - INFO - ====================================================================================
+2022-02-13 11:51:58,791 - Notifications - INFO - ====================================================================================
+2022-02-13 11:56:24,465 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 11:56:24,465 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 11:56:24,465 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:02:52,097 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:02:52,097 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:02:52,097 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:02:52,100 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:02:52,100 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:02:52,100 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:02:52,104 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:02:52,104 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:02:52,104 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:02:52,121 - Notifications - DEBUG - Query result: []
+2022-02-13 12:02:52,121 - Notifications - DEBUG - Query result: []
+2022-02-13 12:02:52,121 - Notifications - DEBUG - Query result: []
+2022-02-13 12:02:52,123 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 12:02:52,123 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 12:02:52,123 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 12:02:52,124 - Notifications - DEBUG - All Checks: []
+2022-02-13 12:02:52,124 - Notifications - DEBUG - All Checks: []
+2022-02-13 12:02:52,124 - Notifications - DEBUG - All Checks: []
+2022-02-13 12:02:52,125 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 12:02:52,125 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 12:02:52,125 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 12:02:52,130 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:02:52,130 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:02:52,130 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:02:52,131 - Notifications - INFO - ====================================================================================
+2022-02-13 12:02:52,131 - Notifications - INFO - ====================================================================================
+2022-02-13 12:02:52,131 - Notifications - INFO - ====================================================================================
+2022-02-13 12:03:50,140 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:03:50,141 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:03:50,141 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:03:50,141 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:03:50,167 - Notifications - DEBUG - Query result: []
+2022-02-13 12:03:50,168 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 12:03:50,168 - Notifications - DEBUG - All Checks: []
+2022-02-13 12:03:50,168 - Notifications - INFO - No Alerts Found for  Server in the last 1 
+2022-02-13 12:03:50,168 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Server INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:03:50,168 - Notifications - INFO - ====================================================================================
+2022-02-13 12:05:00,318 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:05:00,318 - Notifications - DEBUG - Command Options: [('-t', 'Server'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:05:00,319 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:05:00,319 - Notifications - INFO - Running notifications.py with TARGETTYPE=Server INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:05:00,319 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:05:00,319 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:05:00,320 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:05:00,320 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:05:00,354 - Notifications - DEBUG - Query result: []
+2022-02-13 12:05:00,354 - Notifications - DEBUG - Query result: []
+2022-02-13 12:05:00,354 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 12:05:00,354 - Notifications - DEBUG - # of Checks: 0
+2022-02-13 12:05:00,354 - Notifications - DEBUG - All Checks: []
+2022-02-13 12:05:00,354 - Notifications - DEBUG - All Checks: []
+2022-02-13 12:05:00,354 - Notifications - INFO - No Alerts Found for  Server in the last 1 
+2022-02-13 12:05:00,354 - Notifications - INFO - No Alerts Found for  Server in the last 1 
+2022-02-13 12:05:00,354 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Server INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:05:00,354 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Server INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:05:00,355 - Notifications - INFO - ====================================================================================
+2022-02-13 12:05:00,355 - Notifications - INFO - ====================================================================================
+2022-02-13 12:06:35,262 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:06:35,262 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:06:35,262 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:06:35,263 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:06:35,263 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:06:35,263 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:06:35,264 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:06:35,264 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:06:35,264 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:06:35,264 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:06:35,264 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:06:35,264 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:06:35,295 - Notifications - DEBUG - Query result: [("= 'ssh:1'", 'access')]
+2022-02-13 12:06:35,295 - Notifications - DEBUG - Query result: [("= 'ssh:1'", 'access')]
+2022-02-13 12:06:35,295 - Notifications - DEBUG - Query result: [("= 'ssh:1'", 'access')]
+2022-02-13 12:06:35,295 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:06:35,295 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:06:35,295 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:06:35,295 - Notifications - DEBUG - All Checks: [("= 'ssh:1'", 'access')]
+2022-02-13 12:06:35,295 - Notifications - DEBUG - All Checks: [("= 'ssh:1'", 'access')]
+2022-02-13 12:06:35,295 - Notifications - DEBUG - All Checks: [("= 'ssh:1'", 'access')]
+2022-02-13 12:06:35,295 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 'ssh:1' and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:06:35,295 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 'ssh:1' and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:06:35,295 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 'ssh:1' and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:10,963 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:10,963 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:10,963 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:10,963 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:10,964 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:10,964 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:10,964 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:10,964 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:10,965 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:10,965 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:10,965 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:10,965 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:10,965 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:10,965 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:10,965 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:10,965 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:11,001 - Notifications - DEBUG - Query result: [('1', 'access')]
+2022-02-13 12:07:11,001 - Notifications - DEBUG - Query result: [('1', 'access')]
+2022-02-13 12:07:11,001 - Notifications - DEBUG - Query result: [('1', 'access')]
+2022-02-13 12:07:11,001 - Notifications - DEBUG - Query result: [('1', 'access')]
+2022-02-13 12:07:11,001 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:11,001 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:11,001 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:11,001 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:11,002 - Notifications - DEBUG - All Checks: [('1', 'access')]
+2022-02-13 12:07:11,002 - Notifications - DEBUG - All Checks: [('1', 'access')]
+2022-02-13 12:07:11,002 - Notifications - DEBUG - All Checks: [('1', 'access')]
+2022-02-13 12:07:11,002 - Notifications - DEBUG - All Checks: [('1', 'access')]
+2022-02-13 12:07:11,002 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:11,002 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:11,002 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:11,002 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:48,471 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:48,471 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:48,471 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:48,471 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:48,471 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-02-13 12:07:48,472 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,472 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,472 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,472 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,472 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,472 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,472 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,472 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,472 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,472 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,473 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,473 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,473 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,473 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,473 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:07:48,498 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:48,498 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:48,498 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:48,498 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:48,498 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:07:48,498 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:07:48,498 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:07:48,499 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:48,499 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:48,499 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:48,499 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:48,499 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '1 HOURS ' ) 
+2022-02-13 12:07:48,533 - Notifications - DEBUG - Query result: []
+2022-02-13 12:07:48,533 - Notifications - DEBUG - Query result: []
+2022-02-13 12:07:48,533 - Notifications - DEBUG - Query result: []
+2022-02-13 12:07:48,533 - Notifications - DEBUG - Query result: []
+2022-02-13 12:07:48,533 - Notifications - DEBUG - Query result: []
+2022-02-13 12:07:48,534 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 12:07:48,534 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 12:07:48,534 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 12:07:48,534 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 12:07:48,534 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-02-13 12:07:48,534 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,534 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,534 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,534 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,534 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:07:48,534 - Notifications - INFO - ====================================================================================
+2022-02-13 12:07:48,534 - Notifications - INFO - ====================================================================================
+2022-02-13 12:07:48,534 - Notifications - INFO - ====================================================================================
+2022-02-13 12:07:48,534 - Notifications - INFO - ====================================================================================
+2022-02-13 12:07:48,534 - Notifications - INFO - ====================================================================================
+2022-02-13 12:08:11,115 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '24')]  Arguments: [] 
+2022-02-13 12:08:11,115 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '24')]  Arguments: [] 
+2022-02-13 12:08:11,115 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '24')]  Arguments: [] 
+2022-02-13 12:08:11,115 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '24')]  Arguments: [] 
+2022-02-13 12:08:11,115 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '24')]  Arguments: [] 
+2022-02-13 12:08:11,115 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '24')]  Arguments: [] 
+2022-02-13 12:08:11,116 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=24 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:11,116 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=24 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:11,116 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=24 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:11,116 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=24 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:11,116 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=24 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:11,116 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=24 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:11,116 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,116 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,116 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,116 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,116 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,116 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,117 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,117 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,117 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,117 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,117 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,117 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:11,140 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:11,140 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:11,140 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:11,140 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:11,140 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:11,140 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:11,141 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:11,141 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:11,141 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:11,141 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:11,141 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:11,141 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:11,141 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:11,141 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:11,141 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:11,141 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:11,141 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:11,141 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:11,142 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '24 HOURS ' ) 
+2022-02-13 12:08:11,142 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '24 HOURS ' ) 
+2022-02-13 12:08:11,142 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '24 HOURS ' ) 
+2022-02-13 12:08:11,142 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '24 HOURS ' ) 
+2022-02-13 12:08:11,142 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '24 HOURS ' ) 
+2022-02-13 12:08:11,142 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '24 HOURS ' ) 
+2022-02-13 12:08:28,137 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 12:08:28,137 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 12:08:28,137 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 12:08:28,137 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 12:08:28,137 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 12:08:28,137 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 12:08:28,137 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '6')]  Arguments: [] 
+2022-02-13 12:08:28,138 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,138 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,138 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,138 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,138 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,138 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,138 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,139 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-02-13 12:08:28,175 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:28,175 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:28,175 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:28,175 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:28,175 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:28,175 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:28,175 - Notifications - DEBUG - Query result: [('= 1', 'access')]
+2022-02-13 12:08:28,176 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:28,176 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:28,176 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:28,176 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:28,176 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:28,176 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:28,176 - Notifications - DEBUG - # of Checks: 1
+2022-02-13 12:08:28,176 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:28,176 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:28,176 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:28,176 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:28,176 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:28,176 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:28,176 - Notifications - DEBUG - All Checks: [('= 1', 'access')]
+2022-02-13 12:08:28,177 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '6 HOURS ' ) 
+2022-02-13 12:08:28,177 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '6 HOURS ' ) 
+2022-02-13 12:08:28,177 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '6 HOURS ' ) 
+2022-02-13 12:08:28,177 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '6 HOURS ' ) 
+2022-02-13 12:08:28,177 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '6 HOURS ' ) 
+2022-02-13 12:08:28,177 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '6 HOURS ' ) 
+2022-02-13 12:08:28,177 - Notifications - DEBUG - Scale: ALL, Inventory Query: select hostname, instance_name, cast(check_date as text), check_result "ALERT"
+                       from public.targets a, check_results b
+                      where a.inventory_id = b.inventory_id and check_column = 'access' and check_result::bigint = 1 and target_type = 'Database' and check_date > ( NOW() - INTERVAL '6 HOURS ' ) 
+2022-02-13 12:08:28,206 - Notifications - DEBUG - Query result: []
+2022-02-13 12:08:28,206 - Notifications - DEBUG - Query result: []
+2022-02-13 12:08:28,206 - Notifications - DEBUG - Query result: []
+2022-02-13 12:08:28,206 - Notifications - DEBUG - Query result: []
+2022-02-13 12:08:28,206 - Notifications - DEBUG - Query result: []
+2022-02-13 12:08:28,206 - Notifications - DEBUG - Query result: []
+2022-02-13 12:08:28,206 - Notifications - DEBUG - Query result: []
+2022-02-13 12:08:28,206 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 12:08:28,206 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 12:08:28,206 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 12:08:28,206 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 12:08:28,206 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 12:08:28,206 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 12:08:28,206 - Notifications - INFO - No Alerts Found for  Database in the last 6 
+2022-02-13 12:08:28,207 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,207 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,207 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,207 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,207 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,207 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,207 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=6 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-02-13 12:08:28,207 - Notifications - INFO - ====================================================================================
+2022-02-13 12:08:28,207 - Notifications - INFO - ====================================================================================
+2022-02-13 12:08:28,207 - Notifications - INFO - ====================================================================================
+2022-02-13 12:08:28,207 - Notifications - INFO - ====================================================================================
+2022-02-13 12:08:28,207 - Notifications - INFO - ====================================================================================
+2022-02-13 12:08:28,207 - Notifications - INFO - ====================================================================================
+2022-02-13 12:08:28,207 - Notifications - INFO - ====================================================================================

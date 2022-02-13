@@ -92,3 +92,28 @@
 2022-02-13 10:55:17,393 - Scan_Targets - INFO - Returning result from OS command: Linux 4.4.180+
 2022-02-13 10:55:17,410 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=Server
 2022-02-13 10:55:17,411 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 16:25:01,474 - Scan_Targets - INFO - Command Options: [('-t', 'Server'), ('-a', '')]  Arguments: [] 
+2022-02-13 16:25:01,476 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-13 16:25:01,477 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-02-13 16:25:01,478 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-13 16:32:46,804 - Scan_Targets - INFO - Command Options: [('-t', 'Server'), ('-a', '')]  Arguments: [] 
+2022-02-13 16:32:46,805 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-13 16:32:46,805 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-02-13 16:32:46,806 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-13 16:32:46,852 - Scan_Targets - ERROR - discovery.txt file is missing.   Terminating processing.
+2022-02-13 16:32:47,247 - Scan_Targets - INFO - Running uname -rs 
+2022-02-13 16:32:48,047 - Scan_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-02-13 16:32:48,399 - Scan_Targets - INFO - Running uname -rs 
+2022-02-13 16:32:48,525 - Scan_Targets - INFO - Returning result from OS command: Linux 4.4.180+
+2022-02-13 16:32:48,545 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=Server
+2022-02-13 16:32:48,546 - Scan_Targets - INFO - ====================================================================================
+2022-02-13 16:40:48,141 - Scan_Targets - INFO - Command Options: [('-t', 'Server'), ('-a', '')]  Arguments: [] 
+2022-02-13 16:40:48,142 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-13 16:40:48,143 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-02-13 16:40:48,144 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-13 16:40:48,505 - Scan_Targets - INFO - Running uname -rs 
+2022-02-13 16:40:49,321 - Scan_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-02-13 16:40:49,665 - Scan_Targets - INFO - Running uname -rs 
+2022-02-13 16:40:49,752 - Scan_Targets - INFO - Returning result from OS command: Linux 4.4.180+
+2022-02-13 16:40:49,772 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=Server
+2022-02-13 16:40:49,773 - Scan_Targets - INFO - ====================================================================================

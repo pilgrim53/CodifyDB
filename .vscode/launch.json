@@ -12,6 +12,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-t", "Server",
+                "-a"
             ]
         }
     ]
