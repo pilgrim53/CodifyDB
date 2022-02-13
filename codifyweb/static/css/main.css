@@ -1,26 +1,64 @@
-h1 {
-    color: red;
-}
-.option-box{
-    border-style: solid;
-    width: 480px;
+body {
+    font-family: 'Poppins';
 }
 
-.heading{
-    color: blue;
-    margin-bottom: 0;
+label {
+    font-family: inherit;
+    font-weight: 400;
 }
 
-.btn {
-    padding: 20px;
+h2 {
+    color: #0078ff;
+    margin-bottom: 1%;
+    font-family: 'Roboto';
+    font-size: 1.5rem;
 }
 
-select {
-    padding: 0;
-    margin: 20px;
-    margin-bottom: 0;
+/* Logo Image */
+
+.logo {
+    margin-right: 5px;
 }
 
-.pick-list {
-    padding-left: 20px;
+/* Navigation Bar */
+
+.navbar {
+    background-color: black;
+}
+
+.nav-item {
+    padding: 0 10px;
+    font-family: 'Roboto';
+}
+
+.brand {
+    font-family: 'Roboto';
+    font-size: 1.5rem;
+    margin-left: 3%;
+}
+
+.nav-link {
+    font-size: 1.2rem;
+    font-weight: 300;;
+    font-family: 'Roboto';
+}
+
+/* Add or Update */
+
+.forms-display {
+    margin-bottom: 20px;
+    padding:  5px 5px 20px 5px;
+}
+
+.form-fields {
+    display: inline-block;
+    margin-left: 5px;
+    width: max-content;
+}
+
+/* Positioning */
+
+.input-fields {
+    margin: 3% 3%;
+    width: fit-content;
 }

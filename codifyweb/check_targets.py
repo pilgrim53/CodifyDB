@@ -62,7 +62,10 @@ def main(argv):
         print('check_targets.py [ -t Database|Server -v <vendor> -f <frequency> -s <sub_type> ]')
         sys.exit(2)
 
-    target_logger.info('Command Options: %s  Arguments: %s ', opts, args)
+    try: target_logger.info('Command Options: %s  Arguments: %s ', opts, args)
+    except: 
+        target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
+        target_logger.info('Command Options: %s  Arguments: %s ', opts, args)
 
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt, arg))
