@@ -30,7 +30,7 @@ def main(argv):
     check_type = 'UPDATE'  # Default to scan / update existing known Targets
     target_type = 'Database'  # Default to database targets
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor \
-                      from public.target where decommissioned is null '
+                      from targets where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv, ":t:v:adh")
@@ -50,20 +50,18 @@ def main(argv):
 
         elif opt == "-a":
             check_type = 'ADD'
+
         elif opt == "-d":
             check_type = 'DISCOVER'
                 
         elif opt == "-t":
             target_type = arg
-            target_query += ' and target_type = \'' + target_type + '\''
-        elif opt == "-v":
-            vendor = arg
-            target_query += ' and vendor = \'' + vendor + '\''
 
-    target_query += ' order by inventory_id '
+    target_query += ' and target_type = \'' + target_type + '\' order by inventory_id '
 
-    check_query = "select check_command, check_type, result_column, handler, vendor from public.checklist \
-                    where frequency='" + target_type + "' order by handler, priority"
+    check_query = "select check_command, check_type, result_column, handler, sub_type, vendor from checklist \
+                    where frequency=\'TARGET\' order by handler, priority"
+    #                where frequency='" + target_type + "' order by handler, priority"
 
     target_logger.info("Running scan_target.py with target_type=%s check_type=%s", target_type, check_type)
     target_logger.info("Check Query: %s", check_query)
@@ -77,29 +75,42 @@ def main(argv):
         # Record Format: hostname, instance_name, owner, home_dir, target_type, vendor
         with open(TARGET_FILE) as tf:
             for entry in tf :
-                for hostname, instance_name, owner, home_dir, target_type, vendor in tf:
-                    inventory_id = targets.add(hostname.upper().strip(), instance_name.upper().strip(), 'TBD', '0', \
-                                        owner.lower().strip(), home_dir.strip(), 'ADD', 0, target_type, target_logger)
-                if inventory_id > 0:
-                    target_logger.info('Added new:  hostname: %s instance_name: %s inventory_id: %s ',
+                list_entry=list(entry.split(','))
+                print('Entry: %s' , str(entry) )
+                if entry.find('#') == 0 :
+                    target_logger.info('Comment Only %s ', entry)
+                elif len(list_entry) != 6 :
+                    target_logger.error('Entry incomplete: %s Only %s ', entry, str(len(list_entry)))
+                elif len(list_entry) == 6:
+                    # hostname, instance_name, owner, home_dir, target_type, vendor = entry.split(',')
+                    hostname = list_entry[0]
+                    instance_name = list_entry[1]
+                    owner = list_entry[2]
+                    home_dir = list_entry[3]
+                    target_type = list_entry[4]
+                    vendor = list_entry[5]
+                    target_logger.debug('Adding: %s %s %s %s %s %s ', hostname, instance_name, owner, home_dir, target_type, vendor)
+                    inventory_id = targets.add(hostname, instance_name, 'TBD', '0', owner, home_dir, 'ADD', 0, target_type, target_logger)
+                  
+                    if inventory_id > 0:
+                        target_logger.info('Added new:  hostname: %s instance_name: %s inventory_id: %s ',
                                 hostname, instance_name, inventory_id)
-                else:
-                    result = targets.reject(hostname, vendor, instance_name, 'REJECT', owner, home_dir, 'Failed to Add',target_type, target_logger)
-                    target_logger.info('Rejecting:  hostname: %s instance_name: %s inventory_id: %s results: %s ',
-                                hostname, instance_name, inventory_id, result)
+                    else:
+                        result = targets.reject(hostname, vendor, instance_name, 'REJECT', owner, home_dir, 'Failed to Add',target_type, target_logger)
+                        target_logger.info('Rejecting:  hostname: %s instance_name: %s inventory_id: %s results: %s ', hostname, instance_name, inventory_id, result)
 
     # Get newly discovered databases and add them
     elif check_type == 'DISCOVER':
         # Read through the monitoring results for new host and instance combinations
         # Get the delta from what is already known in the inventory
         # DB Record Format: 1) host_instance 2) instance_1 instance_2 ..... instance_n
-        discover_query="""select distinct a.hostname, upper(b.check_result)
-                          from target a, check_results b
-                           and (( check_column = 'pmon') or ( check_column = 'pdbs'))
-                           and check_date > ( SELECT NOW() - INTERVAL '7 DAYS')
-                           and check_result not like '%near line 1%'
-                           and check_result not like ''
-                  except select hostname, instance_name from target;  """
+        discover_query="""select distinct a.hostname, upper(b.check_result) 
+                          from targets a, check_results b 
+                           where (( check_column = 'pmon') or ( check_column = 'pdbs')) 
+                           and check_date > ( SELECT NOW() - INTERVAL '7 DAYS') 
+                           and check_result not like '%near line 1%' 
+                           and check_result not like '' 
+                  except select hostname, instance_name from targets;  """
 
         rc, all_targets=inventory.exec_sql(discover_query, 'ALL', target_logger)
 
@@ -124,16 +135,16 @@ def main(argv):
 
     # Get ALL the active targets from the inventory now that Add and Discover are completed.
     rc, all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
-
+    print(all_targets)
     # Main Loop of all in-scope Targets - check each one database by database
-    for inventory_id, instance, owner, home_dir, hostname, TargetType, target_vendor in all_targets:
+    for inventory_id, instance_name, owner, home_dir, hostname, TargetType, target_vendor in all_targets:
         target_logger.debug("inventory_id: %s instance: %s owner: %s home_dir: %s hostname: %s TargetType: %s",
-                            inventory_id, instance, owner, home_dir, hostname, TargetType)
+                            inventory_id, instance_name, owner, home_dir, hostname, TargetType)
 
         # Build the set of handlers required for this target
         handlers=set()
         for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
-            if ( check_vendor == vendor ) or ( check_vendor == 'ALL' ) :
+            if ( check_vendor == target_vendor ) or ( check_vendor == 'ALL' ) :
                 handlers.add(handler)
 
         handler_list=list(handlers)
@@ -147,9 +158,9 @@ def main(argv):
 
         # Sub Loop to perform all Checks for the Target
         for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
-          if (check_vendor == 'ALL' ) or ( check_vendor == vendor ):
+          if (check_vendor == 'ALL' ) or ( check_vendor == target_vendor ):
             result = ''
-
+            print(check)
             if connection[handler_list.index(handler)] != '' :
                 # if check_sub_type == "" or ( check_sub_type == target_sub_type) :
                 if handler == 'OMS':  # Need to do this here because we need hostname and instance_name
@@ -172,7 +183,6 @@ def main(argv):
     target_logger.info("====================================================================================")
                                
 # END main program
-
 
 if __name__ == "__main__":
     target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File

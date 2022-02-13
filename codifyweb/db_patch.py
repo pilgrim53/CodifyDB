@@ -79,7 +79,7 @@ def main(argv):
 
     target_logger.info("Running db_patch.py with HOSTNAME=%s INSTANCE=%s CONFLICTS_ONLY=%s ", hostname, instance_name, conflicts_only)
 
-    target_query = 'select hostname, instance_name, version, os, owner, home_dir from public.target a where a.hostname = \''
+    target_query = 'select hostname, instance_name, version, os, owner, home_dir from public.targets a where a.hostname = \''
     target_query += hostname + '\' and instance_name = \'' + instance_name + '\';'
 
     # Get ALL the checks to perform on these targets

@@ -352,8 +352,7 @@ def update_column(inventory_id, column_name, value, target_logger):
         # and update the inventory only if anything has changed about the target
         # ============================================================================
 
-        target_query = 'select ' + column_name + ' from targets where inventory_id = \'' + str(
-            inventory_id) + '\''
+        target_query = 'select ' + column_name + ' from targets where inventory_id = \'' + str(inventory_id) + '\''
 
         curr_value = inventory.exec_sql(target_query, 'ONE', target_logger)
 
@@ -407,8 +406,7 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
 
     insert_stmt = f"{insert_stmt.format(date.today(), host, instance, vendor, status, owner, home_dir, important_notes)}"
 
-    curr_value = inventory.exec_sql((insert_stmt,date.today(), host, instance, vendor, status,
-                                         owner, home_dir, important_notes) ,'ONE', target_logger)
+    curr_value = inventory.exec_sql(insert_stmt,'EXEC', target_logger)
 
     target_logger.debug('Target Reject Result: %s', result)
 
@@ -430,12 +428,13 @@ def add(host, instance, container, DBID, owner, home_dir, status, port, target_t
 
     result = inventory.get_id(host, instance, target_logger)
     if result < 1:
-        insert_stmt = """INSERT INTO targets
+        insert_stmt = """INSERT INTO targets 
                        (Inventory_Create, Target_Type, HostName, Instance_Name, Container, Serial_Number, owner, home_dir, Vendor, Status, Port)
-                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
+                       VALUES (\'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\'); """
 
-        RC = inventory.exec_sql((insert_stmt, (date.today(), target_type, host, instance, container,
-                                             DBID, owner, home_dir, 'ORACLE', status, port)), 'ONE', target_logger)
+        insert_stmt = f"{insert_stmt.format(date.today(), target_type, host, instance, container, DBID, owner, home_dir, 'ORACLE', status, port)}"
+
+        RC = inventory.exec_sql(insert_stmt, 'EXEC', target_logger)
 
         result = inventory.get_id(host, instance, target_logger)
 

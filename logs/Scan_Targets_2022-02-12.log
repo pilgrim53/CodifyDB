@@ -1,0 +1,622 @@
+2022-02-12 16:10:06,655 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-02-12 16:10:06,656 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, vendor from public.checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:10:06,657 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from public.target where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:11:15,656 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-02-12 16:11:15,657 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:11:15,658 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:12:56,808 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-02-12 16:12:56,809 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:12:56,810 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:13:42,178 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-02-12 16:13:42,179 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:13:42,180 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:15:08,326 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-02-12 16:15:08,327 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:15:08,328 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:15:08,550 - Scan_Targets - INFO - Running uname -rs 
+2022-02-12 16:15:09,571 - Scan_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-02-12 16:15:43,329 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-02-12 16:15:43,330 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:15:43,331 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:15:43,575 - Scan_Targets - INFO - Running uname -rs 
+2022-02-12 16:15:44,178 - Scan_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-02-12 16:15:44,217 - Scan_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-02-12 16:15:44,245 - Scan_Targets - INFO - Returning result from OS command: 
+2022-02-12 16:15:44,972 - Scan_Targets - INFO - Running uname -rs 
+2022-02-12 16:15:44,992 - Scan_Targets - INFO - Returning result from OS command: Linux 4.4.180+
+2022-02-12 16:15:45,022 - Scan_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-02-12 16:15:45,062 - Scan_Targets - INFO - Returning result from OS command: Could not chdir to home directory /var/services/homes/codify: No such file or directory
+2022-02-12 16:15:45,097 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=Server
+2022-02-12 16:15:45,097 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 16:17:55,393 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=DISCOVER
+2022-02-12 16:17:55,394 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:17:55,395 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:22:02,160 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=DISCOVER
+2022-02-12 16:22:02,161 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:22:02,161 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:22:38,706 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=DISCOVER
+2022-02-12 16:22:38,706 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:22:38,708 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:23:13,817 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=DISCOVER
+2022-02-12 16:23:13,818 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:23:13,819 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:23:14,094 - Scan_Targets - INFO - Running uname -rs 
+2022-02-12 16:23:14,893 - Scan_Targets - INFO - Returning result from OS command: Linux 5.4.0-94-generic
+2022-02-12 16:23:14,915 - Scan_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-02-12 16:23:14,958 - Scan_Targets - INFO - Returning result from OS command: 
+2022-02-12 16:23:15,835 - Scan_Targets - INFO - Running uname -rs 
+2022-02-12 16:23:15,971 - Scan_Targets - INFO - Returning result from OS command: Linux 4.4.180+
+2022-02-12 16:23:15,997 - Scan_Targets - INFO - Running dmesg | grep "Hardware name:" | head -n 1 | awk -F":" '{print $2}' 
+2022-02-12 16:23:16,123 - Scan_Targets - INFO - Returning result from OS command: Could not chdir to home directory /var/services/homes/codify: No such file or directory
+2022-02-12 16:23:16,153 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=Server
+2022-02-12 16:23:16,154 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 16:23:44,953 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 16:23:44,955 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='Server' order by handler, priority
+2022-02-12 16:23:44,956 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 16:35:40,093 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 16:35:40,094 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 16:35:40,095 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 19:55:01,806 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 19:55:01,807 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 19:55:01,808 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 19:55:48,223 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 19:55:48,225 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 19:55:48,226 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 19:55:48,294 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 19:55:48,295 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 19:59:25,945 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 19:59:25,946 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 19:59:25,947 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 19:59:25,998 - Scan_Targets - ERROR - Entry incomplete: localhostXE_localhost
+ 
+2022-02-12 19:59:25,999 - Scan_Targets - ERROR - Entry incomplete: XEPDB1_localhost
+ 
+2022-02-12 19:59:26,000 - Scan_Targets - ERROR - Entry incomplete: XE_70a51126e296
+ 
+2022-02-12 19:59:26,029 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 19:59:26,030 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:05:48,536 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:05:48,537 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:05:48,538 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:05:48,580 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ 
+2022-02-12 20:05:48,581 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:05:48,583 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ 
+2022-02-12 20:05:48,584 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ 
+2022-02-12 20:05:48,584 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ 
+2022-02-12 20:05:48,599 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:05:48,600 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:06:27,489 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:06:27,490 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:06:27,491 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:06:27,532 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ 
+2022-02-12 20:06:27,534 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:06:27,535 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ 
+2022-02-12 20:06:27,536 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ 
+2022-02-12 20:06:27,536 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ 
+2022-02-12 20:06:27,551 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:06:27,551 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:07:01,168 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:07:01,169 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:07:01,170 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:07:01,216 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ Only 16 
+2022-02-12 20:07:01,217 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ Only 64 
+2022-02-12 20:07:01,218 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 44 
+2022-02-12 20:07:01,219 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 48 
+2022-02-12 20:07:01,220 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 52 
+2022-02-12 20:07:01,259 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:07:01,261 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:08:09,752 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:08:09,753 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:08:09,754 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:08:09,774 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ Only 16 
+2022-02-12 20:08:09,774 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ Only 64 
+2022-02-12 20:08:09,775 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 44 
+2022-02-12 20:08:09,776 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 48 
+2022-02-12 20:08:09,777 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 52 
+2022-02-12 20:08:09,804 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:08:09,804 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:08:42,705 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:08:42,706 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:08:42,706 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:08:42,742 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ Only 16 
+2022-02-12 20:08:42,743 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ Only 64 
+2022-02-12 20:08:42,744 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 44 
+2022-02-12 20:08:42,746 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 48 
+2022-02-12 20:08:42,747 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 52 
+2022-02-12 20:08:42,771 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:08:42,772 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:09:19,898 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:09:19,899 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:09:19,900 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:09:19,935 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ Only 16 
+2022-02-12 20:09:19,936 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ Only 64 
+2022-02-12 20:09:19,938 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 44 
+2022-02-12 20:09:19,940 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 48 
+2022-02-12 20:09:19,941 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 52 
+2022-02-12 20:09:19,968 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:09:19,969 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:11:23,743 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:11:23,744 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:11:23,745 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:11:23,765 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ Only 16 
+2022-02-12 20:11:23,765 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ Only 64 
+2022-02-12 20:11:23,766 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 44 
+2022-02-12 20:11:23,767 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 48 
+2022-02-12 20:11:23,768 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 52 
+2022-02-12 20:11:23,782 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:11:23,782 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:11:42,343 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:11:42,344 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:11:42,345 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:11:42,364 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ Only 21 
+2022-02-12 20:11:42,365 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ Only 84 
+2022-02-12 20:11:42,366 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 64 
+2022-02-12 20:11:42,367 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 68 
+2022-02-12 20:11:42,368 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 72 
+2022-02-12 20:11:42,383 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:11:42,384 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:12:22,737 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:12:22,738 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:12:22,739 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:12:22,759 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ Only 1 
+2022-02-12 20:12:22,760 - Scan_Targets - ERROR - Entry incomplete: # hostname, instance_name, owner, home_dir, target_type, vendor
+ Only 6 
+2022-02-12 20:12:22,760 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 6 
+2022-02-12 20:12:22,761 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 6 
+2022-02-12 20:12:22,762 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 6 
+2022-02-12 20:12:22,777 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:12:22,777 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:15:39,538 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:15:39,539 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:15:39,540 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:15:39,563 - Scan_Targets - ERROR - Comment Only # Field Layout:
+ 
+2022-02-12 20:15:39,564 - Scan_Targets - ERROR - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:15:39,565 - Scan_Targets - ERROR - Comment Only localhost, XE, martin, c:, database, ORACLE
+ 
+2022-02-12 20:15:39,566 - Scan_Targets - ERROR - Comment Only localhost, XEPDB1, martin, c:, database, ORACLE
+ 
+2022-02-12 20:15:39,567 - Scan_Targets - ERROR - Comment Only localhost, codifydb, codify, c:, database, POSTGRES
+ 
+2022-02-12 20:15:39,590 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:15:39,591 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:16:47,380 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:16:47,381 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:16:47,383 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:16:47,403 - Scan_Targets - ERROR - Entry incomplete: # Field Layout:
+ Only 1 
+2022-02-12 20:17:03,537 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:17:03,538 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:17:03,539 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:17:03,579 - Scan_Targets - ERROR - Comment Only # Field Layout:
+ 
+2022-02-12 20:17:03,580 - Scan_Targets - ERROR - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:18:41,627 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:18:41,628 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:18:41,629 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:18:41,666 - Scan_Targets - ERROR - Comment Only # Field Layout:
+ 
+2022-02-12 20:18:41,667 - Scan_Targets - ERROR - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:20:26,684 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:20:26,684 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:20:26,686 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:20:26,704 - Scan_Targets - ERROR - Comment Only # Field Layout:
+ 
+2022-02-12 20:20:26,705 - Scan_Targets - ERROR - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:20:26,706 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 6 
+2022-02-12 20:20:26,707 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 6 
+2022-02-12 20:20:26,708 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 6 
+2022-02-12 20:20:26,725 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:20:26,726 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:26:03,343 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:26:03,344 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:26:03,345 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:26:03,387 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:26:03,388 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:26:03,389 - Scan_Targets - ERROR - Entry incomplete: localhost, XE, martin, c:, database, ORACLE
+ Only 6 
+2022-02-12 20:26:03,390 - Scan_Targets - ERROR - Entry incomplete: localhost, XEPDB1, martin, c:, database, ORACLE
+ Only 6 
+2022-02-12 20:26:03,391 - Scan_Targets - ERROR - Entry incomplete: localhost, codifydb, codify, c:, database, POSTGRES
+ Only 6 
+2022-02-12 20:26:03,405 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:26:03,406 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 20:27:12,229 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:27:12,230 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:27:12,231 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:27:12,266 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:27:12,267 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:28:04,701 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:28:04,702 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:28:04,703 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:28:04,724 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:28:04,724 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:29:15,594 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:29:15,595 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:29:15,596 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:29:15,638 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:29:15,639 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:32:58,094 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:32:58,095 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:32:58,096 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:32:58,139 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:32:58,141 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:34:31,386 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:34:31,387 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:34:31,387 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:34:31,408 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:34:31,409 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:35:03,702 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:35:03,703 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:35:03,704 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:35:03,724 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:35:03,726 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:36:25,057 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:36:25,058 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:36:25,059 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:36:25,094 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:36:25,095 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:38:04,821 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:38:04,822 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:38:04,823 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:38:04,843 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:38:04,844 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:38:04,879 - Scan_Targets - INFO - Check LOCALHOST, XE, returned: None
+2022-02-12 20:45:18,115 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:45:18,116 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:45:18,117 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:45:18,161 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:45:18,162 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:45:18,191 - Scan_Targets - INFO - Check LOCALHOST, XE, returned: None
+2022-02-12 20:47:47,393 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:47:47,394 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:47:47,395 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:47:47,437 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:47:47,438 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:47:47,469 - Scan_Targets - INFO - Check LOCALHOST XE returned: None
+2022-02-12 20:49:10,411 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:49:10,412 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:49:10,413 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:49:10,448 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:49:10,449 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:49:10,464 - Scan_Targets - INFO - Check localhost  XE returned: None
+2022-02-12 20:51:38,539 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:51:38,540 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:51:38,541 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:51:38,561 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 20:51:38,563 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 20:56:52,044 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:56:52,045 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:56:52,047 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:57:42,498 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:57:42,499 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:57:42,501 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:58:11,812 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:58:11,814 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:58:11,815 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 20:59:05,956 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 20:59:05,958 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 20:59:05,959 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:00:17,895 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:00:17,896 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:00:17,897 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:03:06,863 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:03:06,864 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:03:06,865 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:06:30,788 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:06:30,789 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:06:30,790 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:06:30,827 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:07:02,697 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:07:02,698 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:07:02,699 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:07:02,728 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:07:02,730 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:08:38,795 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:08:38,796 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:08:38,797 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:08:38,820 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:08:38,822 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:09:27,114 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:09:27,115 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:09:27,116 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:09:27,134 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:09:27,135 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:09:27,149 - Scan_Targets - INFO - Check localhost  XE returned: None
+2022-02-12 21:19:23,009 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:19:23,010 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:19:23,011 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:19:23,049 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:19:23,052 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:19:23,096 - Scan_Targets - INFO - Check localhost  XE returned: None
+2022-02-12 21:20:04,831 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:20:04,833 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:20:04,833 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:20:04,854 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:20:04,856 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:20:04,872 - Scan_Targets - INFO - Check a  XE returned: None
+2022-02-12 21:20:35,396 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:20:35,397 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:20:35,398 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:20:35,446 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:20:35,448 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:20:35,486 - Scan_Targets - INFO - Check a b returned: None
+2022-02-12 21:20:57,998 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:20:57,999 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:20:58,000 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:20:58,045 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:20:58,047 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:20:58,075 - Scan_Targets - INFO - Check a b returned: None
+2022-02-12 21:21:21,631 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:21:21,632 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:21:21,633 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:21:21,654 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:21:21,656 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:21:21,687 - Scan_Targets - INFO - Check a b returned: None
+2022-02-12 21:21:33,837 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:21:33,838 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:21:33,840 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:21:33,885 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:21:33,886 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:21:33,913 - Scan_Targets - INFO - Check a b returned: None
+2022-02-12 21:21:46,438 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:21:46,439 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:21:46,440 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:21:46,473 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:21:46,475 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:21:46,499 - Scan_Targets - INFO - Check a b returned: None
+2022-02-12 21:27:12,880 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:27:12,881 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:27:12,882 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:27:12,925 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:27:12,926 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:27:41,418 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:27:41,420 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:27:41,421 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:27:41,472 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:27:41,475 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:27:41,511 - Scan_Targets - INFO - Check localhost  XE returned: None
+2022-02-12 21:30:28,671 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:30:28,672 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:30:28,673 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:30:28,694 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:30:28,696 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:30:28,736 - Scan_Targets - INFO - Check localhost  XE returned: None
+2022-02-12 21:37:08,010 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:37:08,011 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:37:08,013 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:37:08,038 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:37:08,040 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:37:08,065 - Scan_Targets - INFO - Check localhost XE returned: None
+2022-02-12 21:44:24,294 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:44:24,295 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:44:24,297 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:44:24,318 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:44:24,319 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:44:24,334 - Scan_Targets - INFO - Check localhost XE returned: None
+2022-02-12 21:47:10,926 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:47:10,927 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:47:10,928 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:47:10,971 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:47:10,973 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:47:10,999 - Scan_Targets - INFO - Check localhost XE returned: None
+2022-02-12 21:48:09,791 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:48:09,792 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:48:09,793 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:48:09,825 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:48:09,827 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:48:09,842 - Scan_Targets - INFO - Check localhost XE returned: None
+2022-02-12 21:50:30,693 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:50:30,695 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:50:30,697 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:50:30,745 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:50:30,748 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:50:30,783 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-02-12 21:50:30,784 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-02-12 21:50:30,814 - Scan_Targets - INFO - Check localhost XE returned: None
+2022-02-12 21:57:06,997 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:57:06,998 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:57:06,999 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:57:07,044 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:57:07,046 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:57:07,073 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-02-12 21:57:07,073 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-02-12 21:57:07,090 - Scan_Targets - INFO - Check localhost XE returned: None
+2022-02-12 21:57:07,149 - Scan_Targets - INFO - Check localhost XE returned: (4,)
+2022-02-12 21:57:07,150 - Scan_Targets - INFO - Add target Result InventoryID: 4
+2022-02-12 21:57:07,151 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 4 
+2022-02-12 21:57:07,171 - Scan_Targets - INFO - Check localhost XEPDB1 returned: None
+2022-02-12 21:57:07,217 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (5,)
+2022-02-12 21:57:07,217 - Scan_Targets - INFO - Add target Result InventoryID: 5
+2022-02-12 21:57:07,218 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 5 
+2022-02-12 21:57:07,244 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-02-12 21:57:07,245 - Scan_Targets - INFO - ====================================================================================
+2022-02-12 21:57:53,772 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-02-12 21:57:53,773 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist 
+                    where frequency='" + target_type + "' order by handler, priority
+2022-02-12 21:57:53,775 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-02-12 21:57:53,794 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-02-12 21:57:53,796 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-02-12 21:57:53,823 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-02-12 21:57:53,824 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-02-12 21:57:53,852 - Scan_Targets - INFO - Check localhost XE returned: (4,)
+2022-02-12 21:57:53,853 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 4 
+2022-02-12 21:57:53,883 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (5,)
+2022-02-12 21:57:53,883 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 5 
+2022-02-12 21:57:53,921 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-02-12 21:57:53,922 - Scan_Targets - INFO - ====================================================================================
