@@ -1,3 +1,4 @@
+
 import os           # Allows us to run os commands from within the script
 import subprocess
 import smtplib      # Allows us to send an email with the status
@@ -229,11 +230,11 @@ def main(argv):
 
 
         # Run OraDBPatch.ksh
-        # print("Transferring OraDBPatch.ksh to: ", home_dir + '/../../DBTools' )
-        # command = 'scp /BellDBC/Bell-ora-staging/DBTools/OraDBPatch.ksh ' + owner+'@'+hostname + ':' + home_dir + '/../../DBTools/'
-        # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-        # process.wait()
-        # rc1 = process.returncode
+        print("Transferring OraDBPatch.ksh to: ", home_dir + '/../../DBTools' )
+        command = 'scp /BellDBC/Bell-ora-staging/DBTools/OraDBPatch.ksh ' + owner+'@'+hostname + ':' + home_dir + '/../../DBTools/'
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        process.wait()
+        rc1 = process.returncode
 
         check = home_dir + '/../../DBTools/OraDBPatch.ksh ' +instance_name+ ' ' +sw_dir+'/' +patch_num+ ' ' +APPLY
         rc, patch_apply = targets.get_info(check, handler, connection, target_logger, TIMEOUT_MAX)
