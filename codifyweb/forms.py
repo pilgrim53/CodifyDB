@@ -61,7 +61,6 @@ INTERVALS = (
 class ScanForm(forms.Form):
     target_type = forms.ChoiceField(choices=TARGET_TYPES,widget=forms.Select(attrs={'class':'form-select'}))
     action = forms.ChoiceField(choices=ACTION_TYPES,widget=forms.Select(attrs={'class':'form-select'}))
-    vendor = forms.ChoiceField(choices=VENDORS,widget=forms.Select(attrs={'class':'form-select'}))
 
 class CheckTargetsForm(forms.Form):
     target_type = forms.ChoiceField(choices=TARGET_TYPES,widget=forms.Select(attrs={'class':'form-select'}))
