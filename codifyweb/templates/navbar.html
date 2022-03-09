@@ -1,0 +1,25 @@
+<div>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand brand" href="{{ site_url }}">
+            {% load static %}
+            <img src="{% static 'images/logo-icon.png' %}" width="30" height="30" class="d-inline-block align-top logo" alt="">
+            codifyDB
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="true" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggler">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+            <a class="nav-link" href=".">Tools</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="codifyweb/target/">Targets</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="codifyweb/checklist">Check lists</a>
+            </li>
+        </ul>
+        </div>
+    </nav>
+</div>

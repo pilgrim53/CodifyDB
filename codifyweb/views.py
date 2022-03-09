@@ -52,13 +52,13 @@ def add_update(request):
         if form.is_valid():
             target_type = form.cleaned_data.get('target_type')
             action = form.cleaned_data.get('action')
-            vendor = form.cleaned_data.get('vendor')
             args_string = []
 
             if action == 'Add':
                 args_string.append('-a')
 
-            args_string.append(['-t',target_type,'-v',vendor])
+            args_string.extend(['-t',target_type])
+            print(args_string)
             scan(args_string)
         
     else:
@@ -121,34 +121,3 @@ def export_target(request):
         form = ExportForm()
 
     return HttpResponseRedirect(reverse('index') )
-
-def add_target(request):
-    target_instance = Target()
-
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        # return HttpResponseRedirect('/codify_app/add_target')
-        # create a form instance and populate it with data from the request:
-        form = TargetForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            inventory_id = form.cleaned_data['inventory_id']
-            hostname = form.cleaned_data['hostname']
-            instance_name = form.cleaned_data['instance_name']
-            owner = form.cleaned_data['owner']
-            container = form.cleaned_data['container']
-            DBID = form.cleaned_data['DBID']
-            home_dir = form.cleaned_data['home_dir']
-            status = form.cleaned_data['status']
-            port = form.cleaned_data['port']
-            target_type = form.cleaned_data['target_type']
-            #target_instance.save() 
-            inventory_id=add(hostname, instance_name, container, DBID, owner, home_dir, status, port, target_type, target_logger)
-
-            return HttpResponseRedirect(reverse('index') )
-
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = TargetForm()
-
-    return render(request, 'target.html', {'form': form})
