@@ -39,10 +39,7 @@ def main(argv):
         print('scan_targets.py [ -a (ADD) -t Database|Server -v Vendor  ] | -h (help) ')
         sys.exit(2)
 
-    try: target_logger.debug("All Options passed: {}".format(opts))
-    except NameError: 
-        target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
-        target_logger.debug("All arguments passed: {}".format(args))
+    target_logger.info('Command Options: %s  Arguments: %s ', opts, args)
 
     for opt, arg in opts:
         target_logger.debug("Option: {} Argument: {}".format(opt, arg))
@@ -75,31 +72,36 @@ def main(argv):
     if check_type == 'ADD':
         # Read through the target_file record by record
         # Record Format: hostname, instance_name, owner, home_dir, target_type, vendor
-        with open(TARGET_FILE) as tf:
-            for entry in tf :
-                list_entry=list(entry.split(','))
-                print('Entry: %s' , str(entry) )
-                if entry.find('#') == 0 :
-                    target_logger.info('Comment Only %s ', entry)
-                elif len(list_entry) != 6 :
-                    target_logger.error('Entry incomplete: %s Only %s ', entry, str(len(list_entry)))
-                elif len(list_entry) == 6:
-                    # hostname, instance_name, owner, home_dir, target_type, vendor = entry.split(',')
-                    hostname = list_entry[0]
-                    instance_name = list_entry[1]
-                    owner = list_entry[2]
-                    home_dir = list_entry[3]
-                    target_type = list_entry[4]
-                    vendor = list_entry[5]
-                    target_logger.debug('Adding: %s %s %s %s %s %s ', hostname, instance_name, owner, home_dir, target_type, vendor)
-                    inventory_id = targets.add(hostname, instance_name, 'TBD', '0', owner, home_dir, 'ADD', 0, target_type, target_logger)
-                  
-                    if inventory_id > 0:
-                        target_logger.info('Added new:  hostname: %s instance_name: %s inventory_id: %s ',
-                                hostname, instance_name, inventory_id)
-                    else:
-                        result = targets.reject(hostname, vendor, instance_name, 'REJECT', owner, home_dir, 'Failed to Add',target_type, target_logger)
-                        target_logger.info('Rejecting:  hostname: %s instance_name: %s inventory_id: %s results: %s ', hostname, instance_name, inventory_id, result)
+        try: 
+            with open(TARGET_FILE) as tf:
+                for entry in tf :
+                    list_entry=list(entry.split(','))
+                    print('Entry: %s' , str(entry) )
+                    if entry.find('#') == 0 :
+                        target_logger.info('Comment Only %s ', entry)
+                    elif len(list_entry) != 6 :
+                        target_logger.error('Entry incomplete: %s Only %s ', entry, str(len(list_entry)))
+                    elif len(list_entry) == 6:
+                        # hostname, instance_name, owner, home_dir, target_type, vendor = entry.split(',')
+                        hostname = list_entry[0]
+                        instance_name = list_entry[1]
+                        owner = list_entry[2]
+                        home_dir = list_entry[3]
+                        target_type = list_entry[4]
+                        vendor = list_entry[5]
+                        target_logger.debug('Adding: %s %s %s %s %s %s ', hostname, instance_name, owner, home_dir, target_type, vendor)
+                        inventory_id = targets.add(hostname, instance_name, 'TBD', '0', owner, home_dir, 'ADD', 0, target_type, target_logger)
+                    
+                        if inventory_id > 0:
+                            target_logger.info('Added new:  hostname: %s instance_name: %s inventory_id: %s ',
+                                    hostname, instance_name, inventory_id)
+                        else:
+                            result = targets.reject(hostname, vendor, instance_name, 'REJECT', owner, home_dir, 'Failed to Add',target_type, target_logger)
+                            target_logger.info('Rejecting:  hostname: %s instance_name: %s inventory_id: %s results: %s ', hostname, instance_name, inventory_id, result)
+        except:
+            target_logger.error('discovery.txt file is missing.   Terminating processing.')
+  
+
 
     # Get newly discovered databases and add them
     elif check_type == 'DISCOVER':
