@@ -1,4 +1,4 @@
-\connect
+\connect $APP_DB_NAME  $APP_DB_USER 
 
 DO
 $do$
@@ -29,19 +29,9 @@ SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
---
--- Name: checklist; Type: TABLE; Schema: public; Owner: postgres
---
 \connect
 
-ALTER TABLE codify.checklist
-    OWNER to codify;
 
-INSERT INTO public.checklist(
-	id, vendor, frequency, check_type, description, check_command, result_column, priority, handler, sub_type)
-	VALUES ('1','ORACLE', 'WEEKLY', 'DB', 'SGA', 'show sga', 'sga', '1', 'oracle', '' );
-
---
 -- Name: checkresults; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -95,27 +85,6 @@ CREATE SEQUENCE inventory_id
 
 ALTER sequence inventory_id OWNER TO codify;
 
---
--- Name: targets; Type: TABLE; Schema: public; Owner: postgres
---
-
-
-ALTER TABLE targets
-    OWNER to codify;
-
-GRANT ALL ON TABLE targets TO postgres;
-
-CREATE INDEX inv_inst
-    ON targets USING btree
-    (inventory_id ASC NULLS LAST, instance_name COLLATE pg_catalog."default" ASC NULLS LAST, hostname COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
-
---
--- Name: COLUMN targets.target_type; Type: COMMENT; Schema: public; Owner: postgres
---
-
-COMMENT ON COLUMN targets.target_type
-    IS 'Database,  Server, Other';
 
 --
 -- Name: target_rejects; Type: TABLE; Schema: public; Owner: postgres
@@ -248,3 +217,39 @@ ALTER TABLE servers
 --
 -- PostgreSQL database dump complete
 --
+
+
+-- This section should be completed in Django
+--
+-- Name: checklist; Type: TABLE; Schema: public; Owner: postgres 
+--
+
+ALTER TABLE codify.checklist
+    OWNER to codify;
+
+INSERT INTO public.checklist(
+	id, vendor, frequency, check_type, description, check_command, result_column, priority, handler, sub_type)
+	VALUES ('1','ORACLE', 'WEEKLY', 'DB', 'SGA', 'show sga', 'sga', '1', 'oracle', '' );
+
+--
+--
+-- Name: targets; Type: TABLE; Schema: public; Owner: postgres
+--
+
+
+ALTER TABLE targets
+    OWNER to codify;
+
+GRANT ALL ON TABLE targets TO postgres;
+
+CREATE INDEX inv_inst
+    ON targets USING btree
+    (inventory_id ASC NULLS LAST, instance_name COLLATE pg_catalog."default" ASC NULLS LAST, hostname COLLATE pg_catalog."default" ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+--
+-- Name: COLUMN targets.target_type; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN targets.target_type
+    IS 'Database,  Server, Other';
