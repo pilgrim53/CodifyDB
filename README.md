@@ -73,6 +73,12 @@ cd ..
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser  # one time only
+python manage.py runserver
+
+
+# ===========================
+# Runs up to here 
+# ===========================
 cd CodifyWeb 
 docker-compose exec db bash
 su postgres
@@ -83,7 +89,9 @@ psql -d codifydb -U codify
 exit # postgres user
 exit # root user
 cd ..
-python manage.py runserver
+# =============================
+
+
 ```	
 
 ## Install as a Docker Container
