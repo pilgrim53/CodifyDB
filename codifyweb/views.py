@@ -28,7 +28,6 @@ target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME
         
 def index(request):
     context = {}
-    
     add_form = ScanForm
     check_form = CheckTargetsForm
     alerts_form = AlertsForm

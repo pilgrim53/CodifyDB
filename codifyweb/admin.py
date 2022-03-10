@@ -4,10 +4,14 @@ from django.db import models
 from codifyweb.models import CheckList
 from codifyweb.models import Target
 
-class ListAdmin(admin.ModelAdmin):
+class ListAdmin(admin.ModelAdmin):    
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':'20'})},
-        models.TextField: {'widget': Textarea(attrs={'rows':1, 'cols':20})},
+        models.TextField: {'widget': Textarea(attrs={
+            'rows':1,
+            'cols':20,
+            'oninput':'this.style.height = "";this.style.height = this.scrollHeight + 3 + "px"',
+            })},
     }
 
     list_display = ('id', 'vendor', 'frequency', 'priority','check_type','handler','result_column',
