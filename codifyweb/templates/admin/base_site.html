@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+{% if title == "Select target to change"%}
+Targets
+{% elif title == "Select check list to change"%}
+Check lists
+{% elif title == "Site administration" %}
+Admin Tools
+{% else %}
+{{ title }}
+{% endif %}
+{% endblock %}
+
+{% block branding %}
+{% include "navbar.html"%}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
