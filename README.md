@@ -73,6 +73,12 @@ cd ..
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser  # one time only
+python manage.py runserver
+
+
+# ===========================
+# Runs up to here 
+# ===========================
 cd CodifyWeb 
 docker-compose exec db bash
 su postgres
@@ -80,10 +86,12 @@ cd /code/postgresdb
 psql -d codifydb -U codify
 \i /code/postgresdb/Init_CodifyDB.sql
 \q
-exit # postrges user
+exit # postgres user
 exit # root user
 cd ..
-python manage.py runserver
+# =============================
+
+
 ```	
 
 ## Install as a Docker Container
@@ -91,9 +99,6 @@ python manage.py runserver
 - [ ] complete all post install steps  ex)    https://docs.docker.com/engine/install/linux-postinstall/
 - [ ] install from GitHub (above) 
 
-```
-docker-compose up -d --build
-```
 
 ## Configure your instance
  - set postgres password

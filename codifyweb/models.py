@@ -44,6 +44,7 @@ class CheckList(models.Model):
     result_column = models.TextField(blank=False, null=False)
     priority = models.IntegerField(blank=True, null=True,  default=1)
     handler = models.TextField(blank=False, null=False)
+    enabled = models.TextField(blank=False, null=True,  default='Y')
 
     class Meta:
       db_table = 'checklist'

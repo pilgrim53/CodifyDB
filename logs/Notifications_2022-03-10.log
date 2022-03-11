@@ -1,0 +1,10 @@
+2022-03-10 14:47:11,329 - Notifications - DEBUG - Command Options: [('-t', 'Database'), ('-i', '1')]  Arguments: [] 
+2022-03-10 14:47:11,330 - Notifications - INFO - Running notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-03-10 14:47:11,330 - Notifications - DEBUG - Check Query: select threshold, result_column from notifications where 1=1 
+2022-03-10 14:47:11,330 - Notifications - DEBUG - Scale: ALL, Inventory Query: select threshold, result_column from notifications where 1=1 
+2022-03-10 14:47:11,375 - Notifications - DEBUG - Query result: []
+2022-03-10 14:47:11,376 - Notifications - DEBUG - # of Checks: 0
+2022-03-10 14:47:11,376 - Notifications - DEBUG - All Checks: []
+2022-03-10 14:47:11,376 - Notifications - INFO - No Alerts Found for  Database in the last 1 
+2022-03-10 14:47:11,376 - Notifications - INFO - Completed notifications.py with TARGETTYPE=Database INTERVAL=1 FREQUENCY=HOURLY SUPPORT_TIER=ALL
+2022-03-10 14:47:11,376 - Notifications - INFO - ====================================================================================

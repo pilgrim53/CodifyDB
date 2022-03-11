@@ -92,5 +92,7 @@ ALTER TABLE target_rejects
     OWNER to $APP_DB_USER;
 
 
+
+
 \q
 EOSQL
