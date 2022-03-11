@@ -146,24 +146,6 @@ CREATE VIEW servers AS
   WHERE ((id.decommissioned IS NULL) AND (id.target_type = 'Server'::text))
   ORDER BY id.inventory_id;
 
-
-ALTER TABLE servers OWNER TO codify;
-
-
-ALTER TABLE servers
-    OWNER TO codify;
-
-
-
--- This section should be completed in Django
---
--- Name: checklist; Type: TABLE; Schema: public; Owner: postgres 
---
-
-ALTER TABLE codify.checklist
-    OWNER to codify;
-
-
 --
 --
 -- Name: targets; Type: TABLE; Schema: public; Owner: postgres
@@ -180,16 +162,15 @@ CREATE INDEX inv_inst
 COMMENT ON COLUMN targets.target_type
     IS 'Database,  Server, Other';
 
-COPY codify.notifications (id, threshold, result_column, frequency) FROM stdin;
-1        < 1000 system_free     HOURLY
-2        < 1000 sysaux_free     HOURLY
-3       != 0    pdb_violations  HOURLY
-4       > 5     pdb_count       HOURLY
-5       >1      closed_wallet   HOURLY
+COPY notifications (id, threshold, result_column, frequency) FROM stdin;
+1	< 1000	system_free	HOURLY
+2	< 1000	sysaux_free	HOURLY
+3	!= 0	pdb_violations	HOURLY
+4	> 5	pdb_count	HOURLY
+5	> 1	closed_wallet	HOURLY
 \.
 
-
-Copy codify.checklist from stdin;
+Copy checklist from stdin;
 1	ORACLE	HOURLY	DB	Start Time	select startup_time from v$instance	started	1	Oracle	None	Y
 2	ORACLE	DAILY	OMS	in OMS?	select case when exists ( select 1 from oms_targets where upper(host) = '{}' and upper(target) = '{}' )  then 'Y' else 'N' end as rec_exists from dual	inoms	9	OMS	None	Y
 3	ORACLE	DAILY	DB	Description	select open_mode from v$database	openmode	1	Oracle	None	Y
@@ -231,34 +212,6 @@ Copy codify.checklist from stdin;
 39	ORACLE	WEEKLY	DB	SGA	show sga	sga	8	Oracle	None	Y
 40	ALL	HOURLY	OS	uptime / load average	uptime | awk '{print $(NF-2)}'	uptime	7	ssh	None	Y
 \.
-
-
-
-CREATE OR REPLACE VIEW servers
- AS
- SELECT id.inventory_id AS inventoryid,
-    id.hostname,
-    id.vendor,
-    id.os,
-    id.db_created_date AS created,
-    id.serial_number AS serialnumber,
-    id.owner,
-    id.host_type AS hosttype,
-    a.check_result AS started,
-    b.check_result AS osaccess
-   FROM ((targets id
-     LEFT JOIN check_results a ON (((id.inventory_id = a.inventory_id) AND (a.check_date = ( SELECT max(a1.check_date) AS max
-           FROM check_results a1
-          WHERE ((a1.inventory_id = id.inventory_id) AND (a1.check_column = 'started'::text)))) AND (a.check_column = 'started'::text))))
-     LEFT JOIN check_results b ON (((id.inventory_id = b.inventory_id) AND (b.check_date = ( SELECT max(b1.check_date) AS max
-           FROM check_results b1
-          WHERE ((b1.inventory_id = id.inventory_id) AND (b1.check_column = 'osaccess'::text)))) AND (b.check_column = 'osaccess'::text))))
-  WHERE ((id.decommissioned IS NULL) AND (id.target_type = 'Server'::text))
-  ORDER BY id.inventory_id;
-
-ALTER TABLE servers
-    OWNER TO codify;
-
 
     \q
 EOSQL
