@@ -29,6 +29,7 @@ class Notification(models.Model):
     id = models.IntegerField(primary_key=True) 
     threshold = models.TextField(blank=True, null=True)
     result_column = models.TextField(blank=False, null=False)
+    frequency = models.TextField(blank=False, null=False, default="HOURLY")
 
     class Meta:
       db_table = 'notifications'
