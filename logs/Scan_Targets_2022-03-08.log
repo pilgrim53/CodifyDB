@@ -1,0 +1,6 @@
+2022-03-08 21:07:46,758 - Scan_Targets - INFO - Command Options: [('-t', 'Server'), ('-a', '')]  Arguments: [] 
+2022-03-08 21:07:46,759 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-03-08 21:07:46,760 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-08 21:07:46,761 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-03-08 21:07:46,834 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=ADD
+2022-03-08 21:07:46,835 - Scan_Targets - INFO - ====================================================================================
