@@ -21,6 +21,8 @@ ORACLE_BASE = config('ORACLE_BASE')
 ORACLE_HOME = config('ORACLE_HOME')
 TNS_ADMIN = "/u01/app/oracle/DBTools/"
 
+target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
+
 # ---------------------------   MAIN PROGRAM   -------------------------------
 # Evaluate target info and look for changes to targets. Then insert new or update existing records in Targets table
 # Input:  -a (ADD) -t Database|Server -v Vendor

@@ -51,20 +51,6 @@ CREATE INDEX check_inv
     ON check_results USING btree
     (inventory_id ASC NULLS LAST)
     TABLESPACE pg_default;
---
--- Name: inventory_id; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE inventory_id
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER sequence inventory_id OWNER TO $APP_DB_USER;
-
 
 --
 -- Name: target_rejects; Type: TABLE; Schema: public; Owner: $APP_DB_USER
