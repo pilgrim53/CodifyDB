@@ -88,6 +88,10 @@ cd ..
 # =============================
 ```	
 
+# Populate some targets
+python scan_targets.py -t Database -a 
+# Alternatively go to http://localhost:8000/   and hit the "Add"  button
+
 ## Install as a Docker Container
 - [ ] install Docker for your monitoring server ex)  https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04 
 - [ ] complete all post install steps  ex)    https://docs.docker.com/engine/install/linux-postinstall/
