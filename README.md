@@ -79,8 +79,7 @@ python manage.py runserver
 # Add Indices and data
 # ===========================
 cd CodifyWeb 
-docker-compose exec db /bin/sh
-su - postgres
+docker-compose exec db /bin/bash
 cd /code/postgresdb
 ./1_Init_CodifyDB.sh
 exit # postgres user
