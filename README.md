@@ -82,7 +82,7 @@ cd CodifyWeb
 docker-compose exec db /bin/sh
 su - postgres
 cd /code/postgresdb
-1_Init_CodifyDB.sh
+./1_Init_CodifyDB.sh
 exit # postgres user
 exit # root user
 cd ..
