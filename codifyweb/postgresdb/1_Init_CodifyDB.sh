@@ -162,6 +162,15 @@ CREATE INDEX inv_inst
 COMMENT ON COLUMN targets.target_type
     IS 'Database,  Server, Other';
 
+ CREATE SEQUENCE targets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER sequence targets_id_seq OWNER TO $APP_DB_USER;
+   
 COPY notifications (id, threshold, result_column, frequency) FROM stdin;
 1	< 1000	system_free	HOURLY
 2	< 1000	sysaux_free	HOURLY
