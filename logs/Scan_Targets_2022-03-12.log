@@ -1,0 +1,142 @@
+2022-03-12 14:28:04,864 - Scan_Targets - INFO - Command Options: [('-a', ''), ('-t', 'Database')]  Arguments: [] 
+2022-03-12 14:28:04,865 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=ADD
+2022-03-12 14:28:04,866 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 14:28:04,866 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-03-12 14:28:04,901 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-03-12 14:28:04,903 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-03-12 14:28:04,924 - Scan_Targets - INFO - Check localhost codifydb returned: None
+2022-03-12 14:28:04,989 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-03-12 14:28:04,990 - Scan_Targets - INFO - Add target Result InventoryID: 1
+2022-03-12 14:28:04,991 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-03-12 14:28:05,027 - Scan_Targets - INFO - Check localhost XE returned: None
+2022-03-12 14:28:05,085 - Scan_Targets - INFO - Check localhost XE returned: (2,)
+2022-03-12 14:28:05,086 - Scan_Targets - INFO - Add target Result InventoryID: 2
+2022-03-12 14:28:05,087 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 2 
+2022-03-12 14:28:05,124 - Scan_Targets - INFO - Check localhost XEPDB1 returned: None
+2022-03-12 14:28:05,166 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (3,)
+2022-03-12 14:28:05,166 - Scan_Targets - INFO - Add target Result InventoryID: 3
+2022-03-12 14:28:05,167 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 3 
+2022-03-12 14:28:05,189 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-03-12 14:28:05,189 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 14:28:07,197 - Scan_Targets - INFO - Command Options: [('-a', ''), ('-t', 'Database')]  Arguments: [] 
+2022-03-12 14:28:07,199 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=ADD
+2022-03-12 14:28:07,201 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 14:28:07,202 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-03-12 14:28:07,222 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-03-12 14:28:07,224 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-03-12 14:28:07,251 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-03-12 14:28:07,252 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-03-12 14:28:07,289 - Scan_Targets - INFO - Check localhost XE returned: (2,)
+2022-03-12 14:28:07,290 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 2 
+2022-03-12 14:28:07,313 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (3,)
+2022-03-12 14:28:07,314 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 3 
+2022-03-12 14:28:07,335 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-03-12 14:28:07,337 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:23:36,214 - Scan_Targets - INFO - Command Options: []  Arguments: [] 
+2022-03-12 15:23:36,214 - Scan_Targets - INFO - Command Options: []  Arguments: [] 
+2022-03-12 15:23:36,216 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-03-12 15:23:36,216 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=UPDATE
+2022-03-12 15:23:36,217 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:23:36,217 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:23:36,219 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-03-12 15:23:36,219 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-03-12 15:23:36,268 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2022-03-12 15:23:36,268 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Database check_type=UPDATE
+2022-03-12 15:23:36,270 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:23:36,270 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:40:28,557 - Scan_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-03-12 15:40:28,557 - Scan_Targets - INFO - Command Options: [('-t', 'Server')]  Arguments: [] 
+2022-03-12 15:40:28,562 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-03-12 15:40:28,562 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=UPDATE
+2022-03-12 15:40:28,564 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:40:28,564 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:40:28,566 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-03-12 15:40:28,566 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-03-12 15:40:28,681 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=UPDATE
+2022-03-12 15:40:28,681 - Scan_Targets - INFO - Completed running scan_target.py with target_type=Server check_type=UPDATE
+2022-03-12 15:40:28,683 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:40:28,683 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:44:06,089 - Scan_Targets - INFO - Command Options: [('-t', 'Server'), ('-a', '')]  Arguments: [] 
+2022-03-12 15:44:06,089 - Scan_Targets - INFO - Command Options: [('-t', 'Server'), ('-a', '')]  Arguments: [] 
+2022-03-12 15:44:06,091 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-03-12 15:44:06,091 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-03-12 15:44:06,092 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:44:06,092 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:44:06,095 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-03-12 15:44:06,095 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-03-12 15:44:06,124 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-03-12 15:44:06,124 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-03-12 15:44:06,127 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-03-12 15:44:06,127 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-03-12 15:44:06,181 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-03-12 15:44:06,181 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-03-12 15:44:06,185 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-03-12 15:44:06,185 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-03-12 15:44:06,247 - Scan_Targets - INFO - Check localhost XE returned: (2,)
+2022-03-12 15:44:06,247 - Scan_Targets - INFO - Check localhost XE returned: (2,)
+2022-03-12 15:44:06,250 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 2 
+2022-03-12 15:44:06,250 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 2 
+2022-03-12 15:44:06,298 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (3,)
+2022-03-12 15:44:06,298 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (3,)
+2022-03-12 15:44:06,301 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 3 
+2022-03-12 15:44:06,301 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 3 
+2022-03-12 15:44:06,348 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-03-12 15:44:06,348 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-03-12 15:44:06,352 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:44:06,352 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:44:33,001 - Scan_Targets - INFO - Command Options: [('-t', 'Server'), ('-a', '')]  Arguments: [] 
+2022-03-12 15:44:33,001 - Scan_Targets - INFO - Command Options: [('-t', 'Server'), ('-a', '')]  Arguments: [] 
+2022-03-12 15:44:33,005 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-03-12 15:44:33,005 - Scan_Targets - INFO - Running scan_target.py with target_type=Server check_type=ADD
+2022-03-12 15:44:33,007 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:44:33,007 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:44:33,011 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-03-12 15:44:33,011 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Server' order by inventory_id 
+2022-03-12 15:44:33,050 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-03-12 15:44:33,050 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-03-12 15:44:33,052 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-03-12 15:44:33,052 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-03-12 15:44:33,116 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-03-12 15:44:33,116 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-03-12 15:44:33,119 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-03-12 15:44:33,119 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-03-12 15:44:33,161 - Scan_Targets - INFO - Check localhost XE returned: (2,)
+2022-03-12 15:44:33,161 - Scan_Targets - INFO - Check localhost XE returned: (2,)
+2022-03-12 15:44:33,162 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 2 
+2022-03-12 15:44:33,162 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 2 
+2022-03-12 15:44:33,217 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (3,)
+2022-03-12 15:44:33,217 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (3,)
+2022-03-12 15:44:33,219 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 3 
+2022-03-12 15:44:33,219 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 3 
+2022-03-12 15:44:33,269 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-03-12 15:44:33,269 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-03-12 15:44:33,271 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:44:33,271 - Scan_Targets - INFO - ====================================================================================
+2022-03-12 15:44:50,745 - Scan_Targets - INFO - Command Options: [('-a', ''), ('-t', 'Database')]  Arguments: [] 
+2022-03-12 15:44:50,745 - Scan_Targets - INFO - Running scan_target.py with target_type=Database check_type=ADD
+2022-03-12 15:44:50,745 - Scan_Targets - INFO - Check Query: select check_command, check_type, result_column, handler, sub_type, vendor from checklist                     where frequency='TARGET' order by handler, priority
+2022-03-12 15:44:50,746 - Scan_Targets - INFO - Target Query: select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor                       from targets where decommissioned is null  and target_type = 'Database' order by inventory_id 
+2022-03-12 15:44:50,787 - Scan_Targets - INFO - Comment Only # Field Layout:
+ 
+2022-03-12 15:44:50,792 - Scan_Targets - INFO - Comment Only # hostname, instance_name, owner, home_dir, target_type, vendor
+ 
+2022-03-12 15:44:50,831 - Scan_Targets - INFO - Check localhost codifydb returned: (1,)
+2022-03-12 15:44:50,831 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: codifydb inventory_id: 1 
+2022-03-12 15:44:50,889 - Scan_Targets - INFO - Check localhost XE returned: (2,)
+2022-03-12 15:44:50,890 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XE inventory_id: 2 
+2022-03-12 15:44:50,942 - Scan_Targets - INFO - Check localhost XEPDB1 returned: (3,)
+2022-03-12 15:44:50,943 - Scan_Targets - INFO - Added new:  hostname: localhost instance_name: XEPDB1 inventory_id: 3 
+2022-03-12 15:44:51,005 - Scan_Targets - INFO - Completed running scan_target.py with target_type=database check_type=ADD
+2022-03-12 15:44:51,011 - Scan_Targets - INFO - ====================================================================================

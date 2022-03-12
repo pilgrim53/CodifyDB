@@ -1,0 +1,5 @@
+# Field Layout:
+# hostname, instance_name, owner, home_dir, target_type, vendor
+localhost,codifydb,codify,c:,database,POSTGRES
+localhost,XE,martin,c:,database,ORACLE
+localhost,XEPDB1,martin,c:,database,ORACLE
