@@ -50,8 +50,6 @@ class CheckList(models.Model):
     class Meta:
       db_table = 'checklist'
 
-
-
 # This is the Target class for objects you want to inventory and monitor 
 class Target(models.Model):
     inventory_id = models.IntegerField(primary_key=True) 
@@ -90,3 +88,30 @@ class Target(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
+class TargetReject(models.Model):
+    inventory_id = models.IntegerField(blank=True, null=True)
+    inventory_create = models.DateField(blank=True, null=True)
+    last_check_date = models.DateTimeField(blank=True, null=True)
+    vendor = models.CharField(max_length=50, blank=True, null=True)
+    instance_name = models.CharField(max_length=50, blank=True, null=True)
+    hostname = models.CharField(max_length=50, blank=True, null=True)
+    home_directory = models.CharField(max_length=255, blank=True, null=True)
+    owner = models.CharField(max_length=50, blank=True, null=True)
+    port = models.IntegerField(blank=True, null=True)
+    status = models.CharField(max_length=255, blank=True, null=True)
+    database_type = models.CharField(max_length=50, blank=True, null=True)
+    important_notes = models.CharField(max_length=1000, blank=True, null=True)
+
+    class Meta:
+        db_table = 'target_rejects'
+
+class CheckResult(models.Model):
+    inventory_id = models.IntegerField(blank=True, null=True)
+    check_date = models.DateTimeField(blank=True, null=True)
+    check_result = models.TextField(blank=True, null=True)
+    check_column = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'check_results'

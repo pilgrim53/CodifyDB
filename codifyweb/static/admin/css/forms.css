@@ -282,7 +282,7 @@ body.popup .submit-row {
     background: var(--delete-button-bg);
     border-radius: 4px;
     padding: 10px 15px;
-    height: 15px;
+    height: 35px;
     line-height: 15px;
     color: var(--button-fg);
 }
