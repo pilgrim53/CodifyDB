@@ -15,14 +15,14 @@ import inventory
 LOG_DIR = config('LOG_DIR')
 GLOBAL_LOG_NAME = "Check_Targets"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
-GLOBAL_LOG_LEVEL = 'DEBUG'
+GLOBAL_LOG_LEVEL = 'INFO'
 GLOBAL_LOG_TO_CONSOLE = "OFF"
 
-def main(argv):
+def main(argv):    
     """
 # ============================================================================
 # Name:         check_targets.py
-# Description:  Monitors IT targets currently stored in the Codify "TARGETS"
+# Description:  Monitors IT targets currently stored in the Codify "TARGETS" 
 #               check results are stored and viewable in "CHECK_RESULTS"
 #
 # Input Files:  TARGETS Table
@@ -53,7 +53,7 @@ def main(argv):
 
     check_query = 'select check_command, check_type, result_column, handler, sub_type, vendor from checklist where 1=1 '
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname,' \
-                   ' target_type, sub_type, vendor from public.targets where decommissioned is null '
+                   ' target_type, sub_type, vendor from targets where decommissioned is null '
 
     try:
         opts, args = getopt.getopt(argv,":t:c:v:f:s:h")
@@ -62,10 +62,7 @@ def main(argv):
         print('check_targets.py [ -t Database|Server -v <vendor> -f <frequency> -s <sub_type> ]')
         sys.exit(2)
 
-    try: target_logger.info('Command Options: %s  Arguments: %s ', opts, args)
-    except: 
-        target_logger = start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
-        target_logger.info('Command Options: %s  Arguments: %s ', opts, args)
+    target_logger.info('Command Options: %s  Arguments: %s ', opts, args)
 
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt, arg))
@@ -78,22 +75,22 @@ def main(argv):
 
         elif opt == "-v":
             vendor = arg
-            check_query += ' and vendor = \'' + vendor + '\''
-            target_query += ' and vendor =  \'' + vendor + '\''
+            check_query += ' and upper(vendor) = \'' + vendor.upper() + '\''
+            target_query += ' and upper(vendor) =  \'' + vendor.upper() + '\''
 
         elif opt == "-s":
             sub_type = arg
-            target_query += ' and sub_type =  \'' + sub_type + '\''
-            check_query += ' and sub_type = \'' + sub_type + '\''
+            target_query += ' and upper(sub_type) =  \'' + sub_type + '\''
+            check_query += ' and upper(sub_type) = \'' + sub_type + '\''
 
         elif opt == "-f":
             frequency = arg
 
-    check_query += ' and check_type = \'' + target_type + '\''
-    target_query += ' and target_type = \'' + target_type + '\''
+    check_query += ' and upper(check_type) = \'' + target_type.upper() + '\''
+    target_query += ' and upper(target_type) = \'' + target_type.upper() + '\''
 
-    check_query += ' and frequency = \'' + frequency + '\'  order by priority'
-    target_query += ' order by inventory_id '
+    check_query += ' and upper(frequency) = \'' + frequency.upper() + '\'  order by priority'
+    target_query += ' order by inventory_id desc '
 
     target_logger.info("Running check_targets.py with TARGETTYPE=%s VENDOR=%s FREQUENCY=%s CHECKTYPE=%s", target_type,
                        vendor, frequency, check_type)
@@ -105,9 +102,9 @@ def main(argv):
     target_logger.debug("# of Targets: %s", len(all_targets))
 
     # Get ALL the checks to perform on these targets
-    RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)
+    RC, all_checks=inventory.exec_sql(check_query, 'ALL', target_logger)  
     target_logger.info("All Checks: %s", all_checks)
-
+    
     for inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type, vendor in all_targets:
         target_logger.debug("inventory_id: %s instance_name: %s owner: %s home_dir: %s hostname: %s target_type: %s target_sub_type: %s",
                             inventory_id, instance_name, owner, home_dir, hostname, target_type, target_sub_type)
@@ -137,7 +134,7 @@ def main(argv):
                 if handler == 'OMS':  # Need to do this here because we need hostname and instance_name
                     # remove_digits = str.maketrans('', '', digits)
                     # instance_name = instance_name.translate(remove_digits)   # Strip the numeral off the end if exists
-                    check = f"{check.format(hostname, instance_name)}"
+                    check = f"{check.format(hostname, instance_name)}"  
 
                 info_rc, result = targets.get_info(check, handler, connection[handler_list.index(handler)], target_logger)
                 target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
