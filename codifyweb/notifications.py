@@ -15,12 +15,16 @@ import inventory
 # ============================================================================
 # Set  Environment and Global Variables
 # ============================================================================
-SERVER        = config('SERVER')
+DBC_USER      = config('DBC_USER')
+DBC_PWD       = config('DBC_PWD')
+ORACLE_BASE   = config('ORACLE_BASE')
+ORACLE_HOME   = config('ORACLE_HOME')
+TNS_ADMIN     = config('TNS_ADMIN')
 LOG_DIR       = config('LOG_DIR')
 GLOBAL_LOG_NAME = "Notifications"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
-GLOBAL_LOG_TO_CONSOLE = 'NO'
+GLOBAL_LOG_TO_CONSOLE = 'ON'
 
 # ============================================================================
 # ============================================================================
@@ -33,11 +37,10 @@ def main(argv):
     interval = '24'
     support_tier = 'ALL'
     target_type = 'Database'  # Default to Database right now for development
-    notifications = 0
 
     check_query = 'select threshold, result_column from notifications where 1=1 '
-    target_prefix = '''select hostname, instance_name, cast(check_date as text), check_result "ALERT"
-                       from public.targets a, check_results b
+    target_prefix = '''select hostname, instance_name, check_date, check_result "ALERT"
+                       from targets a, check_results b
                       where a.inventory_id = b.inventory_id and check_column = '''
     target_suffix = ''
 
@@ -48,10 +51,7 @@ def main(argv):
         print ('python notifications.py [ -t Database|Server -i <interval in HOURS>  -f [HOURLY|DAILY|WEEKLY] -s [GOLD|SILVER|BRONZE] ]')
         sys.exit(2)
 
-    try: target_logger.debug('Command Options: %s  Arguments: %s ', opts, args)
-    except: 
-        target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
-        target_logger.debug('Command Options: %s  Arguments: %s ', opts, args)
+    target_logger.debug('Command Options: %s  Arguments: %s ', opts, args)
 
     for opt, arg in opts:
         print("Option: {} Argument: {}".format(opt,arg))
@@ -61,20 +61,21 @@ def main(argv):
 
         elif opt == "-t" :
             target_type = arg
-            target_suffix += ' and target_type = \'' + target_type + '\''
+            target_suffix += ' and upper(target_type) = \'' + target_type.upper() + '\''
 
         elif opt == "-i":
             interval = arg
-            target_suffix += ' and check_date > ( NOW() - INTERVAL \'' + interval + ' HOURS \' ) '
+            # target_suffix += ' and check_date > ( sysdate - ' + interval +  ' / 24)  '
+            target_suffix += ' and to_timestamp(check_date,\'YYYY-MM-DD HH24:MI:SS.FF\') > ( sysdate - 1 )  '
 
         elif opt =="-f":
             frequency = arg
-            check_query += ' and frequency = \'' + frequency + '\'  order by id'
+            check_query += ' and upper(frequency) = \'' + frequency.upper() + '\'  order by id'
 
         elif opt =="-s":
             support_tier = arg
-            check_query += ' and support_tier = \'' + support_tier + '\'  order by id'
-            target_suffix += ' and support_tier = \'' + support_tier + '\'  order by check_date desc'
+            check_query += ' and upper(support_tier) = \'' + support_tier.upper() + '\'  order by id'
+            target_suffix += ' and upper(support_tier) = \'' + support_tier.upper() + '\'  order by check_date desc'
 
     target_logger.info("Running notifications.py with TARGETTYPE=%s INTERVAL=%s FREQUENCY=%s SUPPORT_TIER=%s", target_type,
                         interval, frequency, support_tier)
@@ -92,40 +93,37 @@ def main(argv):
     ######################################################
     TEXT = ''
     for threshold, result_column in all_checks:
-        target_query = target_prefix + '\'' + result_column + '\' and check_result::bigint ' + threshold + target_suffix;
+        target_query = target_prefix + '\'' + result_column + '\' and to_number(check_result) ' + threshold + target_suffix;
         RC, targets=inventory.exec_sql(target_query, 'ALL', target_logger)
 
         for hostname, instance_name, date_time, result in targets :
-            notifications += 1 
             target_logger.info("%s ALERT: %s value: %s", result_column.upper(), instance_name, result )
-            TEXT += result_column.upper() + ' = ' + result + ' on ' + instance_name + '_' + hostname + ' at ' + date_time + """
-            """
+            TEXT += result_column.upper() + ' = ' + result + ' on ' + instance_name + '_' + hostname + ' at ' + date_time
+            TEXT += '\n'
+            TEXT += '\n'
 
-    if notifications == 0 :
-        target_logger.info("No Alerts Found for  %s in the last %s ", target_type, interval )
-    else:
- 
-        # All Done, let's send the email
-        # email options
-        # SERVER = "app-mail.bell.corp.bce.ca"
-        FROM = "orac4i@caddld-590.belldev.dev.bce.ca"
-        TO = ["BellITCloudDBC@bell.ca"]
-        SUBJECT = frequency + " DBC Alerts from the last " + interval + " hours"
 
-        message = """From: %s
+    # All Done, let's send the email
+    # email options
+    SERVER = "app-mail.bell.corp.bce.ca"
+    FROM = "orac4i@caddld-590.belldev.dev.bce.ca"
+    TO = ["BellITCloudDBC@bell.ca"]
+    SUBJECT = frequency + " DBC Alerts from the last " + interval + " hours"
+
+    message = """From: %s
 To: %s
 Subject: %s
 
 %s
 """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
 
-        try:
-            server = smtplib.SMTP(SERVER)
-            server.set_debuglevel(3)
-            server.sendmail(FROM, TO, message)
-            server.quit()
-        except smtplib.SMTPException:
-            target_logger.error( "Error: unable to send email")
+    try:
+        server = smtplib.SMTP(SERVER)
+        server.set_debuglevel(3)
+        server.sendmail(FROM, TO, message)
+        server.quit()
+    except smtplib.SMTPException:
+        target_logger.error( "Error: unable to send email")
 
     target_logger.info("Completed notifications.py with TARGETTYPE=%s INTERVAL=%s FREQUENCY=%s SUPPORT_TIER=%s", target_type,
                         interval, frequency, support_tier)

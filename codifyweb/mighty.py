@@ -23,6 +23,7 @@ LOG_DIR       = config('LOG_DIR')
 GLOBAL_LOG_NAME = "Mighty_List"
 GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
+GLOBAL_LOG_TO_CONSOLE = 'NO'
 
 # ============================================================================
 # ============================================================================
@@ -44,10 +45,10 @@ def main(argv):
 
 
     query_stmt = """
-              select a.inventory_id, hostname, a.instance_name, owner, version, home_dir, 
+              select a.inventory_id, hostname, a.instance_name, owner, version, coalesce(home_dir,''), 
                      clustered as "RAC", sub_type as "CDB/PDB"
                 from targets a
-               where target_type='Database' and decommissioned is null
+               where lower(target_type)='database' and decommissioned is null
             order by hostname, instance_name; """
 
     try:
@@ -91,6 +92,6 @@ def main(argv):
 # ============================================================================
 #
 if __name__ == "__main__":
-    target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME)    # Log to File
+    target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
     main(sys.argv[1:])
 

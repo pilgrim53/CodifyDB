@@ -5,6 +5,7 @@ import psycopg2.extras  # This gives access to the psycopg2 error messages
 import sys  # for some reason this is not included by default
 import threading  # Allows us to time and kill hung db connections
 import select
+import pyodbc   # Allows us to connect to MS Sql Server
 # from numpy import asarray # convert sql result tuples to python arrays
 from datetime import date, datetime  # for some reason this is not included by default
 from decouple import config  # Allows us to read .env
@@ -24,10 +25,30 @@ LOG_DIR = config('LOG_DIR')
 PKEY = config('PKEY')
 NOT_EXIST = [1034, 12154, 12521, 12545, 12541, 12543, 12514, 12505, 12547, 28860]
 NO_ACCESS = [1017, 1033, 1045, 15000, 28000, 28001]
+SQL_DRIVER_NAME='msodbc'
 
 CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 import inventory
+
+def fix_dbc(hostname, instance_name, owner, target_logger) :
+    fix_query='select check_command, handler from checklist where result_column = \'FIX_DBC\''
+    rc, fix_dbc_user=inventory.exec_sql(fix_query, 'ONE', target_logger)
+    fix_command, handler = [ item for item in fix_dbc_user ]
+    target_logger.info("Try DBC Fix on Host: %s Owner: %s Handler: %s ", hostname, owner, handler)
+
+    try:
+        target_logger.info("Try DBC Fix on instance: %s Owner: %s fix_command: %s ", owner, instance_name, fix_command)
+    #     connection=connect(hostname, instance_name, owner, handler, target_logger)
+        rc, result = get_info(fix_command, handler, connection, target_logger)
+        connection.close()
+        
+    except : 
+        target_logger.error("DBC Fix failed, Host: %s Owner: %s Handler", hostname, owner, handler)
+        rc = 0
+        result = 'DBC Fix Failed'
+            
+    return rc, result
 
 
 def connect(hostname, instance_name, owner, handler, target_logger, call_timeout=60):
@@ -49,7 +70,7 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
         user = DBC_USER
         psswd = DBC_PWD
         conn_mode = cx_Oracle.DEFAULT_AUTH
-
+        
         if handler == 'SYSDBA' :
             conn_mode = cx_Oracle.SYSDBA
             user = SYS_USER
@@ -59,11 +80,11 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
         elif handler == 'OMS' :
             user = 'OMS_VIEWER'
             dsn='DVOMS_CADDLD-593'
-
-        try :
+        
+        try : 
             curr_connection = cx_Oracle.connect(user, psswd, dsn, mode=conn_mode)
             curr_connection.callTimeout = call_timeout*1000  # Connection timeout is milliseconds
-
+        
         except cx_Oracle.Error as exc:
             error, = exc.args
             rc = error.code
@@ -72,18 +93,18 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
             # check= error.code in NO_ACCESS
             # print(NO_ACCESS )
             # print('No Access: %s ' ,  str(check) )
-
+        
             if error.code in NOT_EXIST :
-                for PORT in [ '1521','2349', '2350' ] :
+                for PORT in [ '1521','2349', '2350' ] : 
                     new_dsn = '//' + hostname + ':' + PORT + '/' + instance_name
-                    try:
+                    try: 
                         curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, new_dsn)
                         curr_connection.callTimeout = call_timeout*1000  # Connection timeout is milliseconds
                         target_logger.info("Created NEW working DSN: %s ", dsn + '=' + new_dsn)
                         error = ''
                         rc = 1
                         new_line = dsn + '=' + new_dsn + '\n'
-                        with open('/u01/app/oracle/DBTools/tnsnames.ora', 'r+') as file:
+                        with open('/u01/app/oracle/DBTools/tnsnames.ora', 'r+') as file:  
                            content = file.read()
                            file.seek(0)
                            file.write(new_line + content)
@@ -92,12 +113,12 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
                         break
 
                     except cx_Oracle.Error as exc :
-                        error, = exc.args
+                        error, = exc.args 
                         target_logger.error("Port Check Failed: %s Code: %s MSG: %s ", new_dsn, error.code, error.message)
                         rc = error.code
                         if error.code in NO_ACCESS :
                             new_line = dsn + '=' + new_dsn + '\n'
-                            with open('/u01/app/oracle/DBTools/tnsnames.ora', 'r+') as file:
+                            with open('/u01/app/oracle/DBTools/tnsnames.ora', 'r+') as file:  
                                content = file.read()
                                file.seek(0)
                                file.write(new_line + content)
@@ -115,7 +136,7 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
                     rc = 1
 
                 except cx_Oracle.Error as exc :
-                    error, = exc.args
+                    error, = exc.args 
                     target_logger.error("Temp Password Check Failed: %s Code: %s MSG: %s ", dsn, error.code, error.message)
 
 
@@ -123,23 +144,23 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
                     rc, fix_dbc_user=inventory.exec_sql(fix_query, 'ONE', target_logger)
                     fix_command, fix_handler = [ item for item in fix_dbc_user ]
                     target_logger.info("Try DBC Fix on Host: %s Owner: %s Handler: %s ", hostname, owner, handler)
-
+                
                     try:
                         target_logger.info("Try DBC Fix on instance: %s Owner: %s fix_command: %s ", owner, instance_name, fix_command)
                         fix_connection = cx_Oracle.connect(SYS_USER, SYS_PWD, dsn, mode=cx_Oracle.SYSDBA)
                         rc, result = get_info(fix_command, fix_handler, fix_connection, target_logger)
                         fix_connection.close()
-
-                    except :
+        
+                    except : 
                         target_logger.error("DBC Fix failed, Host: %s Owner: %s Handler", hostname, owner, handler)
                         result = 'DBC Fix Failed'
                         rc = -1
 
                     if rc == 1 :
-                        try :
+                        try : 
                             curr_connection = cx_Oracle.connect(DBC_USER, DBC_PWD, dsn)
                             curr_connection.callTimeout = call_timeout*1000  # Connection timeout is milliseconds
-                        except cx_Oracle as exc :
+                        except cx_Oracle as exc : 
                             error, = exc.args
                             target_logger.error("Post DBC Fix Check: %s Code: %s MSG: %s ", dsn, error.code, error.message)
                             rc = error.code
@@ -162,7 +183,7 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
             else :
                 curr_connection.connect(hostname=hostname, port=22, username=user, timeout=call_timeout, \
                                         password=PWD, banner_timeout=10, auth_timeout=10)
-
+        
         except paramiko.ssh_exception.AuthenticationException:
             target_logger.error("Authentication failed, Host: %s    User: %s", hostname, user)
             rc = "AuthenticationException"
@@ -177,12 +198,12 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
             if curr_connection != '':
                 curr_connection.close()
                 curr_connection = ''
-
+    
     elif handler == 'Postgres':
         try :
             my_dsn = "dbname=" + instance_name + " user=" + DBC_USER + " password=" + DBC_PWD + " host=" + hostname
             curr_connection = psycopg2.connect(my_dsn)
-        except psycopg2 as exc :
+        except psycopg2 as exc : 
             error, = exc.args
             target_logger.error("Postgres Connection Error: %s Code: %s MSG: %s ", my_dsn, error.code, error.message)
             rc = error.code
@@ -190,8 +211,33 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
     if curr_connection != '':
         rc = 1
         target_logger.debug("Connected to: %s with %s ", hostname, handler)
-        timer = threading.Timer(call_timeout, curr_connection.close)
-        timer.start()  # start counting on the timeout timer
+        # timer = threading.Timer(call_timeout, curr_connection.close)
+        # timer.start()  # start counting on the timeout timer
+
+
+
+    elif handler == 'MSSQL':
+        try :
+            my_dsn = """ DRIVER={{{SQL_DRIVER_NAME}}};
+                        SERVER={hostname};
+                        DATABASE={instance_name}
+                        uid=SQL_DBC_FID;
+                        pwd=SQL_DBC_PWD; """
+            curr_connection = pyodbc.connect(my_dsn)
+
+        except Exception as exc : 
+            error,  = exc.args
+            target_logger.error("SQL ODBC Connection Error: %s Code: %s MSG: %s ", my_dsn, error.code, error.message)
+            rc = error.code
+
+    if curr_connection != '':
+        rc = 1
+        target_logger.debug("Connected to: %s with %s ", hostname, handler)
+        # timer = threading.Timer(call_timeout, curr_connection.close)
+        # timer.start()  # start counting on the timeout timer
+
+
+
 
     target_logger.debug('Connection rc: %s', str(rc))
 
@@ -340,7 +386,7 @@ def get_OS_info(check, connection, target_logger, call_timeout=20):
     target_logger.debug('get_OS_info with check = %s', check)
     result = ''
     rc = 0
-    timer = threading.Timer(call_timeout/100, connection.close)
+    timer = threading.Timer(call_timeout, connection.close)
     timer.start()  # start counting right before connecting to the target
 
     try:
@@ -438,7 +484,7 @@ def update_column(inventory_id, column_name, value, target_logger):
     if value != '' and value != 'UNKNOWN':
         # ============================================================================
         # Get the old (current) value of the attribute in the inventory
-        # and update the inventory only if anything has changed about the target
+        # and update the inventory only if anything has changed about the target 
         # ============================================================================
 
         target_query = 'select ' + column_name + ' from targets where inventory_id = \'' + str(
@@ -494,10 +540,9 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
                        (Inventory_Create, HostName, Instance_Name, vendor, status, owner, home_directory, important_notes)
                        VALUES (\'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\'); """
 
-    insert_stmt = f"{insert_stmt.format(date.today(), host, instance, vendor, status, owner, home_dir, important_notes)}"
+    insert_stmt = "{insert_stmt.format(date.today(), host, instance, vendor, status, owner, home_dir, important_notes)}"
 
-    curr_value = inventory.exec_sql((insert_stmt,date.today(), host, instance, vendor, status,
-                                         owner, home_dir, important_notes) ,'ONE', target_logger)
+    curr_value = inventory.exec_sql(insert_stmt, 'EXEC', target_logger)
 
     target_logger.debug('Target Reject Result: %s', result)
 
@@ -507,7 +552,7 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
 # END Reject
 
 
-def add(host, instance, container, DBID, owner, home_dir, status, port, target_type, target_logger):
+def add(host, instance, container, DBID, owner, home_dir, status, port, target_type, target_logger, vendor='ORACLE'):
     """
     Creates the initial Target entry in the DBC_Target table
     :param host, instance, etc...
@@ -521,10 +566,15 @@ def add(host, instance, container, DBID, owner, home_dir, status, port, target_t
     if result < 1:
         insert_stmt = """INSERT INTO targets
                        (Inventory_Create, Target_Type, HostName, Instance_Name, Container, Serial_Number, owner, home_dir, Vendor, Status, Port)
-                       VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s); """
+                       VALUES (to_timestamp(\'{}\',\'YYYY-MM-DD HH24:MI:SS.FF\'), \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\') """
 
-        RC = inventory.exec_sql((insert_stmt, (date.today(), target_type, host, instance, container,
-                                             DBID, owner, home_dir, 'ORACLE', status, port)), 'ONE', target_logger)
+        insert_stmt = f"{insert_stmt.format(datetime.now(), target_type, host, instance, container, DBID, owner, home_dir, vendor, status, port)}"
+
+ # to_timestamp(\'' + str(check_date) + '\',\'YYYY-MM-DD HH24:MI:SS.FF\')' 
+
+        # RC = inventory.exec_sql((insert_stmt,date.today(),target_type,host,instance,container,DBID, owner, home_dir, vendor, status, port), 'ONE', target_logger)
+        RC = inventory.exec_sql(insert_stmt, 'EXEC', target_logger)
+        target_logger.debug('Insert: %s', insert_stmt)
 
         result = inventory.get_id(host, instance, target_logger)
 

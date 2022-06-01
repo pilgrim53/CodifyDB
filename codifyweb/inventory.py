@@ -34,17 +34,18 @@ def get_id(host, instance_name, target_logger):
     target_logger.debug("get_id with host = %s, instance_name = %s", host, instance_name)
     inventory_id = 0
 
-    select_stmt = 'select coalesce(inventory_id,0) from targets where hostname=\'' \
+    select_stmt = 'select coalesce(inventory_id,0) from public.target where hostname=\'' \
                   + host + '\' and instance_name=\'' + instance_name + '\' order by inventory_id '
 
     RC, result = inventory.exec_sql(select_stmt, 'ONE', target_logger)
     target_logger.info('Check %s %s returned: ''%s''', host, instance_name, result)
     if result is None:
-        target_logger.debug("get_id returning inventory_id = 0")
-        return 0
+        inventory_id = 0
     else:
-        target_logger.debug("get_id returning inventory_id = %s", str(result[0]))
-        return result[0]
+        inventory_id = result[0]
+
+    target_logger.debug("get_id returning inventory_id = %s", inventory_id)
+    return inventory_id
 
 # END get_id
 
@@ -79,8 +80,7 @@ def exec_sql(inventory_query, scale, target_logger):
     :return: value: 1 list or an array of lists.   RC=1
     :RC:            1 = Success, 0 = Fail
     """
-    RC=0
-    query_result = ''
+    RC=1 
     target_logger.debug("Scale: %s, Inventory Query: %s", scale, inventory_query)
 
     # Connect to the Inventory DB
@@ -100,10 +100,14 @@ def exec_sql(inventory_query, scale, target_logger):
 
         inventory_conn.close()
 
-        target_logger.debug("Query result: %s", query_result)
-
-    except psycopg2.OperationalError as exc : 
+    except cx_Oracle.DatabaseError as exc:
         error, = exc.args
-        target_logger.error("psycopg2.OperationalError: %s", error)
-        
+        target_logger.error("DatabaseError-Code: %s %s ", error.code, error.message)
+        RC=0
+
+    if not query_result : 
+        RC=0
+
+    target_logger.debug("Query result: %s", query_result)
+
     return RC, query_result

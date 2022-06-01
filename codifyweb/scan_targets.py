@@ -2,6 +2,7 @@ from datetime import date, datetime  # not included by default
 from decouple import config  # Allows us to read .env
 import sys, getopt  # Allows us to interact with the o/s
 import cx_Oracle
+import traceback    # Allows us to get detailed exception info
 
 CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
@@ -15,13 +16,11 @@ TARGET_FILE = "./discovery.txt"
 LOG_DIR = config('LOG_DIR')
 LOG_NAME = "Scan_Targets"
 LOG_FILE = LOG_DIR + LOG_NAME + "_" + str(date.today()) + ".log"
-LOG_LEVEL = "INFO"
+LOG_LEVEL = "DEBUG"
 LOG_TO_CONSOLE = "ON"
 ORACLE_BASE = config('ORACLE_BASE')
 ORACLE_HOME = config('ORACLE_HOME')
 TNS_ADMIN = "/u01/app/oracle/DBTools/"
-
-target_logger = start_logging(LOG_LEVEL, LOG_FILE, LOG_NAME, LOG_TO_CONSOLE)  # Log to File
 
 # ---------------------------   MAIN PROGRAM   -------------------------------
 # Evaluate target info and look for changes to targets. Then insert new or update existing records in Targets table
@@ -31,6 +30,7 @@ def main(argv):
     global target_type
     check_type = 'UPDATE'  # Default to scan / update existing known Targets
     target_type = 'Database'  # Default to database targets
+    vendor = 'ORACLE'  # Default to Oracle database targets
     target_query = 'select inventory_id, instance_name, owner, home_dir, hostname, target_type, vendor \
                       from targets where decommissioned is null '
 
@@ -55,14 +55,18 @@ def main(argv):
         elif opt == "-d":
             check_type = 'DISCOVER'
                 
+        elif opt == "-v":
+            vendor = arg
+                
         elif opt == "-t":
             target_type = arg
 
-    target_query += ' and target_type = \'' + target_type + '\' order by inventory_id '
+    target_query += ' and upper(target_type) = \'' + target_type.upper() + '\' order by inventory_id desc'
 
-    check_query = "select check_command, check_type, result_column, handler, sub_type, vendor from checklist \
-                    where frequency=\'TARGET\' order by handler, priority"
-    #                where frequency='" + target_type + "' order by handler, priority"
+    check_query = 'select check_command, check_type, result_column, handler, sub_type, vendor from checklist \
+                   where upper(vendor) = \'' +vendor.upper()+'\' and upper(frequency)=\''+target_type.upper()+'\' order by handler, priority'
+
+
 
     target_logger.info("Running scan_target.py with target_type=%s check_type=%s", target_type, check_type)
     target_logger.info("Check Query: %s", check_query)
@@ -81,18 +85,37 @@ def main(argv):
                     print('Entry: %s' , str(entry) )
                     if entry.find('#') == 0 :
                         target_logger.info('Comment Only %s ', entry)
-                    elif len(list_entry) != 6 :
+                    elif len(list_entry) != 5 :
                         target_logger.error('Entry incomplete: %s Only %s ', entry, str(len(list_entry)))
-                    elif len(list_entry) == 6:
+                    elif len(list_entry) == 5:
+                        """ 
+                        These are the standard extract rules for Oracle Discovery Output
                         # hostname, instance_name, owner, home_dir, target_type, vendor = entry.split(',')
-                        hostname = list_entry[0]
-                        instance_name = list_entry[1]
-                        owner = list_entry[2]
-                        home_dir = list_entry[3]
-                        target_type = list_entry[4]
-                        vendor = list_entry[5]
+                        hostname = strip(list_entry[0])
+                        instance_name = strip(list_entry[1])
+                        owner = strip(list_entry[2])
+                        home_dir = strip(list_entry[3])
+                        target_type = strip(list_entry[4])
+                        vendor = strip(list_entry[5])
+                        """
+                        """ 
+                        These are the SQL Server Discovery format
+                        # hostname, instance_name, owner, home_dir, target_type, vendor = entry.split(',')
+                        # ex) CADDWD-115, 2014 (SP3) (KB4022619), Standard Edition (64-bit) , Windows NT 6.3 <X64> , 1433
+                        """
+                        hostname = list_entry[0][:list_entry[0].find('\\')]
+                        hostname = hostname.strip()
+                        instance_name = list_entry[0]
+                        instance_name = instance_name.strip()
+                        owner = 'BELL\\fidBellDBC'
+                        home_dir = ''
+                        target_type = 'Database'
+                        vendor = 'MSSQL'
+                        port = list_entry[4]
+                        port = port.strip()
                         target_logger.debug('Adding: %s %s %s %s %s %s ', hostname, instance_name, owner, home_dir, target_type, vendor)
-                        inventory_id = targets.add(hostname, instance_name, 'TBD', '0', owner, home_dir, 'ADD', 0, target_type, target_logger)
+                        inventory_id = targets.add(hostname, instance_name, instance_name, '0', owner, home_dir, 'ADD', port , target_type, target_logger, vendor)
+                                 #def add(host, instance, container, DBID, owner, home_dir, status, port, target_type, target_logger, vendor='ORACLE'):
                     
                         if inventory_id > 0:
                             target_logger.info('Added new:  hostname: %s instance_name: %s inventory_id: %s ',
@@ -100,23 +123,43 @@ def main(argv):
                         else:
                             result = targets.reject(hostname, vendor, instance_name, 'REJECT', owner, home_dir, 'Failed to Add',target_type, target_logger)
                             target_logger.info('Rejecting:  hostname: %s instance_name: %s inventory_id: %s results: %s ', hostname, instance_name, inventory_id, result)
-        except:
-            target_logger.error('discovery.txt file is missing.   Terminating processing.')
+
+
+
+        except BaseException as ex:
+            # Get current system exception
+            ex_type, ex_value, ex_traceback = sys.exc_info()
+        
+            # Extract unformatter stack traces as tuples
+            trace_back = traceback.extract_tb(ex_traceback)
+        
+            # Format stacktrace
+            stack_trace = list()
+        
+            for trace in trace_back:
+                stack_trace.append("File : %s , Line : %d, Func.Name : %s, Message : %s" % (trace[0], trace[1], trace[2], trace[3]))
+        
+            print("Exception type : %s " % ex_type.__name__)
+            print("Exception message : %s" %ex_value)
+            print("Stack trace : %s" %stack_trace)
+
+            return
+        sys.exit()
   
-
-
     # Get newly discovered databases and add them
     elif check_type == 'DISCOVER':
         # Read through the monitoring results for new host and instance combinations
         # Get the delta from what is already known in the inventory
         # DB Record Format: 1) host_instance 2) instance_1 instance_2 ..... instance_n
-        discover_query="""select distinct a.hostname, upper(b.check_result) 
-                          from targets a, check_results b 
-                           where (( check_column = 'pmon') or ( check_column = 'pdbs')) 
-                           and check_date > ( SELECT NOW() - INTERVAL '7 DAYS') 
-                           and check_result not like '%near line 1%' 
-                           and check_result not like '' 
-                  except select hostname, instance_name from targets;  """
+        discover_query=""" select distinct substr(a.hostname,1,50), cast(upper(b.check_result)as varchar2(255))
+from server_team.targets a, server_team.check_results b
+where a.inventory_id = b.inventory_id
+and (( check_column = 'pmon') or ( check_column = 'pdbs'))
+--and to_timestamp(check_date,'YYYY-MM-DD HH24:MI:SS.FF') > ( sysdate -7 )
+-- and check_result not like '%near line 1%'
+and check_result is not null
+minus
+select substr(hostname,1,50), substr(instance_name,1,50) from codify.targets; """
 
         rc, all_targets=inventory.exec_sql(discover_query, 'ALL', target_logger)
 
@@ -139,9 +182,10 @@ def main(argv):
                     target_logger.info('Rejecting:  hostname: %s instance_name: %s inventory_id: %s results: %s ',
                                 hostname, instance_name, inventory_id, result)
 
+
     # Get ALL the active targets from the inventory now that Add and Discover are completed.
     rc, all_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
-    print(all_targets)
+    # print(all_targets)
     # Main Loop of all in-scope Targets - check each one database by database
     for inventory_id, instance_name, owner, home_dir, hostname, TargetType, target_vendor in all_targets:
         target_logger.debug("inventory_id: %s instance: %s owner: %s home_dir: %s hostname: %s TargetType: %s",
@@ -164,9 +208,9 @@ def main(argv):
 
         # Sub Loop to perform all Checks for the Target
         for check, check_type, result_column, handler, check_sub_type, check_vendor in all_checks:
-          if (check_vendor == 'ALL' ) or ( check_vendor == target_vendor ):
+          if (check_vendor.upper() == 'ALL' ) or ( check_vendor.upper() == target_vendor.upper() ):
             result = ''
-            print(check)
+            # print(check)
             if connection[handler_list.index(handler)] != '' :
                 # if check_sub_type == "" or ( check_sub_type == target_sub_type) :
                 if handler == 'OMS':  # Need to do this here because we need hostname and instance_name
@@ -178,7 +222,7 @@ def main(argv):
                 target_logger.debug("Inventory ID: %s Attribute: %s Value: %s RC: %s", inventory_id, result_column,
                                     result, info_rc)
                 if info_rc == 1:
-                    results.add(inventory_id, result, result_column, target_logger)
+                    targets.update_column(inventory_id, result_column, result, target_logger)
 
         for x in range(len(handler_list))  :
             if connection[x] != '' :

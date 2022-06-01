@@ -1,8 +1,10 @@
+#!/home/orac4i/Inventory/bin/python
+
 import os           # Allows us to run os commands from within the script
 import subprocess
 import smtplib      # Allows us to send an email with the status
 import sys, getopt  # Allows us to interact with the o/s
-from time import sleep
+from time import sleep  
 from datetime import datetime
 from datetime import date
 from unittest.mock import patch
@@ -23,9 +25,9 @@ import targets
 # ============================================================================
 LOG_DIR = config('LOG_DIR')
 GLOBAL_LOG_NAME = "DB_Patching"
-GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(date.today()) + ".log"
-GLOBAL_LOG_LEVEL = 'DEBUG'
-GLOBAL_LOG_TO_CONSOLE = 'YES'
+GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(f"{datetime.now():%Y-%m-%d_%H:%M:%S}") + ".log"
+GLOBAL_LOG_LEVEL = 'INFO'
+GLOBAL_LOG_TO_CONSOLE = 'ON'
 
 # ============================================================================
 # ============================================================================
@@ -37,14 +39,14 @@ def main(argv):
     scp_copy = "FALSE"
     conflicts_only = "FALSE"
     handler = "ssh"
-    curr_ver = '12.2.0.1.28'
+    curr_ver = '12.2.0.1.30'
     OPatch_Repo = "/BellDBC/Bell-ora-staging/OPatch/"
-    New_OPatch = "OPatch_12.2.0.1.28_for_DB_21.0.0.0.0.zip"
-    kb_required = 5621087  # Need space for zip and unzipped
+    New_OPatch = "OPatch_12.2.0.1.30_p6880880_122010_Linux-x86-64.zip"
+    kb_required = 5221087  # Need space for zip and unzipped
     hostname = ''
     instance_name = ''
     APPLY = ""
-
+    
 
     # ========================================================================
     # PSU Dictionary / Library
@@ -55,11 +57,11 @@ def main(argv):
     patch_repos[3]= {}
     patch_repos[4]= {}
 
-    # 19C JAN 2022
+    # Updated May 2022
     patch_repos[4] = {
-        "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-19.0.0/RU/",
-        "pf" : "RU_JAN_2022_RDBMS_OJVM_p33567270_190000_Linux-x86-64.zip",
-        "pn" : "33567270" }
+        "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-19.0.0/RU/", 
+        "pf" : "RU_APR_2022_RDBMS_OJVM_p33859194_190000_Linux-x86-64.zip",
+        "pn" : "33859194" }
 
     patch_repos[3] = {
         "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-12201/RU/",
@@ -68,14 +70,13 @@ def main(argv):
 
     patch_repos[2] = {
         "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-12102/PSU/",
-        "pf" : "PSU_JAN_2022_RDBMS_OJVM_p33559997_121020_Linux-x86-64.zip",
-        "pn" : "33559997" }
+        "pf" : "PSU_APR_2022_RDBMS_OJVM_p33859494_121020_Linux-x86-64.zip", 
+        "pn" : "33859494" }
 
     patch_repos[1] = {
         "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-12102/PSU/",
-        "pf" : "PSU_JAN_2022_RDBMS_OJVM_p33559997_121020_Linux-x86-64.zip",
-        "pn" : "33559997" }
-
+        "pf" : "PSU_APR_2022_RDBMS_OJVM_p33859494_121020_Linux-x86-64.zip",
+        "pn" : "33859494" }
 
     # Get the parameters from command line
     try:
@@ -108,17 +109,19 @@ def main(argv):
 
     if ( hostname == '' or instance_name == '' ) :
         target_logger.error('USAGE: python db_patch.py -H Hostname -d Database -c ')
-        return -1
+        #return -1
+        sys.exit(-1)
 
-    target_query = 'select hostname, instance_name, version, os, owner, home_dir from public.target a where a.hostname = \''
-    target_query += hostname + '\' and instance_name = \'' + instance_name + '\';'
+    target_query = 'select hostname, instance_name, version, os, owner, home_dir from targets a where a.hostname = \''
+    target_query += hostname + '\' and instance_name = \'' + instance_name + '\''
 
     # Get ALL the checks to perform on these targets
     RC, patch_target=inventory.exec_sql(target_query, 'ONE', target_logger)
 
     if RC <= 0 :
         target_logger.error("Could not find HOSTNAME=%s with INSTANCE=%s in inventory.", hostname, instance_name)
-        return -1
+        # return -1
+        sys.exit(-1)
 
     else :
         target_logger.info("Found patch target: %s" , patch_target)
@@ -134,7 +137,7 @@ def main(argv):
         if APPLY == 'APPLY' :
             target_logger.error("Unknown version. Update target info and re-run")
             return -1
-        else :
+        else : 
             target_logger.info("Unknown version. doing checks ")
             version = '12.2.0.1.0'
 
@@ -154,7 +157,7 @@ def main(argv):
 
     # ssh to the host to:
     #    1)  confirm access and set timeout to MAX
-    rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 60)
+    rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 60) 
     target_logger.debug( 'Connection RC: %s Home: %s', rc ,  home_dir )
     if rc != 1 :
         target_logger.error("Can not connect to host %s as owner %s", hostname, owner)
@@ -173,7 +176,7 @@ def main(argv):
 
     if str(OPatch_Version) != curr_ver :
         #    2)  Connect confirm OPatch
-        rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 60)
+        rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 60) 
 
         # Check if there is sufficient space in Oracle_Home
         check = 'df -kP ' +  home_dir + ' | awk \'{print $4}\' | tail -n 1 ; exit '
@@ -185,7 +188,7 @@ def main(argv):
             # Move the current OPatch directory
             command = 'mv ' + home_dir + '/OPatch '  + home_dir + '/OPatch.' + OPatch_Version
 
-            rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 60)
+            rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 60) 
 
             rc, output = targets.get_info(command, handler, connection, target_logger, 60)
             target_logger.info('Command: %s RC: %s', command, rc2)
@@ -198,7 +201,7 @@ def main(argv):
             connection.close()
 
             # Now unzip it and overwrite existing files
-            rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 150)
+            rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 150) 
             command = 'cd ' + home_dir + '; unzip -qo ' + New_OPatch
             rc, output = targets.get_info(command, handler, connection, target_logger, 150)
             target_logger.info('Output: %s RC: %s', output, rc2)
@@ -210,11 +213,11 @@ def main(argv):
 
         else:
             target_logger.error('No space for new OPatch.  Please make room and restart.')
-            return -1
+            sys.exit(-1)
     else:
         target_logger.info('Skipping OPatch update.  Already at current version.')
 
-    rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120)
+    rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120) 
 
     # Check space in Oracle_Home
     check = 'df -kP ' +  home_dir + ' | awk \'{print $4}\' | tail -n 1 ; exit '
@@ -223,7 +226,7 @@ def main(argv):
     connection.close()
 
     # What is the current OPatch version now?
-    rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120)
+    rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120) 
     check = home_dir + '/OPatch/opatch version | head -n 1 | awk -F":" \'{print $2}\' '
     rc, OPatch_Version = targets.get_info(check, handler, connection, target_logger)
     sw_dir = '/' + home_dir.split('/')[1] + '/software'
@@ -231,7 +234,7 @@ def main(argv):
 
     if scp_copy == "TRUE" :
         if int(home_free) >  kb_required  :
-            rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120)
+            rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120) 
 
             # Mke sure the /XXX01/software directory exists
             command = 'mkdir -p ' + sw_dir
@@ -240,16 +243,16 @@ def main(argv):
             command = 'scp ' + patch_dir + patch_file + ' ' + owner+'@'+hostname + ':' + sw_dir
             process = subprocess.Popen(command, shell=True, stdout=None)
             rc1 = process.wait()
-            target_logger.info('scp2 result : %s' +  str(rc1))
+            target_logger.info('scp2 result: ' +  str(rc1))
             connection.close()
 
             # unzip the patch and remove the zip file
-            rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120)
-            command = 'cd ' + sw_dir + '; nohup unzip -o ' + patch_file
+            rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120) 
+            command = 'cd ' + sw_dir + '; nohup unzip -o ' + patch_file 
             rc2, output = targets.get_info(command, handler, connection, target_logger, 120)
             if rc2 != 1 :
                     target_logger.error("Failed to unzip patch on %s : %s ", hostname, sw_dir )
-            command = 'cd ' + sw_dir  + ' ; rm -f ' + patch_file
+            command = 'cd ' + sw_dir  + ' ; rm -f ' + patch_file 
             rc3, output = targets.get_info(command, handler, connection, target_logger, 120)
             if rc3 != 1 :
                     target_logger.error("Failed to remove patch zip file on %s : %s ", hostname, sw_dir )
@@ -257,7 +260,7 @@ def main(argv):
 
         else:
             target_logger.error("Only %s kb available. Make room for patches and restart.", home_free)
-            return -1
+            sys.exit(-1)
 
     # Tansfer latest OraDBPatch.ksh to server
     target_logger.info("Transferring OraDBPatch.ksh to: %s ", home_dir + '/../../DBTools' )
@@ -267,13 +270,14 @@ def main(argv):
     target_logger.info("scp OraDBPatch.ksh return code: %s", rc1)
 
     # Tansfer latest OraDBPatch.ksh to server
-    rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 900)
+    rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 1800) 
     check = home_dir + '/../../DBTools/OraDBPatch.ksh ' +instance_name+ ' ' +sw_dir+'/' +patch_num+ ' ' +APPLY
-    rc, patch_apply = targets.get_info(check, handler, connection, target_logger, 900)
+    rc, patch_apply = targets.get_info(check, handler, connection, target_logger, 1800)
     connection.close()
 
     if rc != 1 :
         target_logger.error("OraDBPatch.ksh had errors.  Please investigate on %s", hostname)
+        sys.exit(rc)
     else :
         target_logger.info("OraDBPatch.ksh completed successfully for %s : %s", hostname, instance_name)
 
