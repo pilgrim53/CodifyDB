@@ -15,7 +15,6 @@ CODIFYWEB_DIR = config('CODIFYWEB_DIR')
 sys.path.append(CODIFYWEB_DIR)
 from inv_logging import start_logging
 import inventory
-import targets
 
 # ============================================================================
 
