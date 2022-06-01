@@ -9,7 +9,6 @@ sys.path.append(CODIFYWEB_DIR)
 import inventory
 import targets  # All target functions
 from inv_logging import start_logging  # Allows us to log to a file
-import results
 
 # Set  Environment and Global Variables
 TARGET_FILE = "./discovery.txt"
@@ -203,7 +202,7 @@ select substr(hostname,1,50), substr(instance_name,1,50) from codify.targets; ""
         x = 0
         for handler in handler_list :
             rc, connection[x] = targets.connect(hostname, instance_name, owner, handler, target_logger)
-            results.add(inventory_id, handler + ':' + str(rc), 'access', target_logger)
+            inventory.add_results(inventory_id, handler + ':' + str(rc), 'access', target_logger)
             x += 1
 
         # Sub Loop to perform all Checks for the Target

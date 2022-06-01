@@ -13,6 +13,8 @@ from decouple import config  # Allows us to read .env
 # Set Environment and Global Variables
 OEM_USER = config('OEM_USER')
 OEM_PWD = config('OEM_PWD')
+OMS_USER = config('OMS_USER')
+OMS_DSN = config('OMS_DSN')
 DBC_USER = config('DBC_USER')
 DBC_PWD = config('DBC_PWD')
 SYS_USER = config('SYS_USER')
@@ -78,8 +80,8 @@ def connect(hostname, instance_name, owner, handler, target_logger, call_timeout
         elif handler == 'ASM' :
             conn_mode = cx_Oracle.SYSASM
         elif handler == 'OMS' :
-            user = 'OMS_VIEWER'
-            dsn='DVOMS_CADDLD-593'
+            user = OMS_USER
+            dsn = OMS_DSN
         
         try : 
             curr_connection = cx_Oracle.connect(user, psswd, dsn, mode=conn_mode)
