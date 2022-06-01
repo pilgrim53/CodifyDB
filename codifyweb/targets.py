@@ -504,10 +504,10 @@ def update_column(inventory_id, column_name, value, target_logger):
             target_logger.info('No change in Target Info')
         else:
             if column_name == 'blocksize' or column_name == 'port':
-                insert_stmt = 'update targets set ' + column_name + '=' + str(
+                insert_stmt = 'update target set ' + column_name + '=' + str(
                     value) + ' where inventory_id=' + str(inventory_id)
             else:
-                insert_stmt = 'update targets set ' + column_name + '=\'' + str(
+                insert_stmt = 'update target set ' + column_name + '=\'' + str(
                     value) + '\' where inventory_id=' + str(inventory_id)
 
             result = inventory.exec_sql(insert_stmt, 'EXEC', target_logger)
@@ -542,7 +542,7 @@ def reject(host, vendor, instance, status, owner, home_dir, important_notes, tar
 
     insert_stmt = "{insert_stmt.format(date.today(), host, instance, vendor, status, owner, home_dir, important_notes)}"
 
-    curr_value = inventory.exec_sql(insert_stmt, 'ONE', target_logger)
+    curr_value = inventory.exec_sql(insert_stmt, 'EXEC', target_logger)
 
     target_logger.debug('Target Reject Result: %s', result)
 

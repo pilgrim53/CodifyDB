@@ -79,15 +79,17 @@ python manage.py runserver
 # Add Indices and data
 # ===========================
 cd CodifyWeb 
-docker-compose exec db /bin/sh
-su - postgres
+docker-compose exec db bash
 cd /code/postgresdb
-1_Init_CodifyDB.sh
-exit # postgres user
-exit # root user
+./1_Init_CodifyDB.sh
+exit
 cd ..
 # =============================
 ```	
+
+# Populate some targets
+python scan_targets.py -t Database -a 
+# Alternatively go to http://localhost:8000/   and hit the "Add"  button
 
 ## Install as a Docker Container
 - [ ] install Docker for your monitoring server ex)  https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04 
