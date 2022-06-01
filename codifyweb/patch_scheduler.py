@@ -23,7 +23,7 @@ import inventory
 # ============================================================================
 LOG_DIR = config('LOG_DIR')
 GLOBAL_LOG_NAME = "Patch_Scheduler"
-GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(f"{datetime.now():%Y-%m-%d_%H%M%S}") + ".log"
+GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(f"{datetime.now():%Y-%m-%d_%H%-%M-%S}") + ".log"
 GLOBAL_LOG_LEVEL = 'DEBUG'
 GLOBAL_LOG_TO_CONSOLE = 'ON'
 
@@ -88,20 +88,20 @@ def main(argv):
     # DB_STOPPED, DB_STARTED, CONFLICTS, DB_PATCH_NUMBER, SHARED_HOME 
 
     for inventory_id, hostname, instance_name, check_complete, sched_date_time in patch_targets:
-        target_logger.info("Targets: %s  Scheduled date: %s ", str(inventory_id), str(sched_date_time.strftime("%m/%d/%Y %H:%M:%S")))
+        target_logger.info("Hostname: %s Database: %s Scheduled date: %s ", hostname, instance_name, str(sched_date_time.strftime("%m/%d/%Y %H:%M:%S")))
 
         if sched_date_time == '' :
-            target_logger.error("Unknown Scheduled Date")
+            target_logger.error("Unknown Scheduled Date for Host: %s Database: %s ", hostname, instance_name )
             return -1
 
         if ( check_complete  and check_complete < datetime.now() ) :
-            target_logger.info("Pre-Checks Completed Successfully for %s at %s", \
+            target_logger.info("Pre-Checks Were Completed Successfully for %s at %s", \
                                instance_name, str(check_complete.strftime("%m/%d/%Y %H:%M:%S")))
 
         else: 
-            target_logger.info("Performing Prep on Target : %s ", str(inventory_id))
+            target_logger.info("Performing Prep on Host: %s Database: %s ", hostname, instance_name)
             command = './db_patch.py -H ' + str(hostname) + ' -d ' + str(instance_name) + ' -s' 
-            target_logger.info("Command: %s ", str(command) )
+            target_logger.debug("Command: %s ", str(command) )
             process = subprocess.Popen(command, shell=True, stdout=None)
             waiter = process.wait()
             rc = process.returncode

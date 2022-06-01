@@ -6,8 +6,6 @@ import smtplib      # Allows us to send an email with the status
 import sys, getopt  # Allows us to interact with the o/s
 from time import sleep  
 from datetime import datetime
-from datetime import date
-from unittest.mock import patch
 from decouple import config  # Allows us to read .env
 from threading import TIMEOUT_MAX
 from threading import Timer
@@ -17,7 +15,6 @@ sys.path.append(CODIFYWEB_DIR)
 from inv_logging import start_logging
 import inventory
 import targets
-
 # ============================================================================
 
 # ============================================================================
@@ -25,8 +22,8 @@ import targets
 # ============================================================================
 LOG_DIR = config('LOG_DIR')
 GLOBAL_LOG_NAME = "DB_Patching"
-GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(f"{datetime.now():%Y-%m-%d_%H:%M:%S}") + ".log"
-GLOBAL_LOG_LEVEL = 'INFO'
+GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(f"{datetime.now():%Y-%m-%d_%H-%M-%S}") + ".log"
+GLOBAL_LOG_LEVEL = 'ERROR'
 GLOBAL_LOG_TO_CONSOLE = 'ON'
 
 # ============================================================================
@@ -42,41 +39,15 @@ def main(argv):
     curr_ver = '12.2.0.1.30'
     OPatch_Repo = "/BellDBC/Bell-ora-staging/OPatch/"
     New_OPatch = "OPatch_12.2.0.1.30_p6880880_122010_Linux-x86-64.zip"
-    kb_required = 5221087  # Need space for zip and unzipped
+    kb_required = 5221087  # Need space for zip AND unzipped
     hostname = ''
     instance_name = ''
     APPLY = ""
     
-
     # ========================================================================
     # PSU Dictionary / Library
-    patch_index={'':1, '12.2.0.1.0':3, '12.1.0.2.0':2, '19.0.0.0.0':4}
-    patch_repos = [{}] * 5
-    patch_repos[1]= {}
-    patch_repos[2]= {}
-    patch_repos[3]= {}
-    patch_repos[4]= {}
-
-    # Updated May 2022
-    patch_repos[4] = {
-        "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-19.0.0/RU/", 
-        "pf" : "RU_APR_2022_RDBMS_OJVM_p33859194_190000_Linux-x86-64.zip",
-        "pn" : "33859194" }
-
-    patch_repos[3] = {
-        "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-12201/RU/",
-        "pf" : "RU_JAN_2022_RDBMS_OJVM_p33559893_122010_Linux-x86-64.zip",
-        "pn" : "33559893" }
-
-    patch_repos[2] = {
-        "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-12102/PSU/",
-        "pf" : "PSU_APR_2022_RDBMS_OJVM_p33859494_121020_Linux-x86-64.zip", 
-        "pn" : "33859494" }
-
-    patch_repos[1] = {
-        "pd" : "/BellDBC/Bell-ora-staging/Database/Oracle-DB-12102/PSU/",
-        "pf" : "PSU_APR_2022_RDBMS_OJVM_p33859494_121020_Linux-x86-64.zip",
-        "pn" : "33859494" }
+    patch_query = "select patch_id, patch_version, location, patch_file, patch_num, release_date, is_current, combo, os  \
+                    from dbc_team.patches where current=\"Y\""
 
     # Get the parameters from command line
     try:
@@ -90,8 +61,8 @@ def main(argv):
 
     for opt, arg in opts:
         if opt == '-h':
-            target_logger.info('USAGE: python db_patch.py -H Hostname -d Database -A -s ')
-            sys.exit()
+            target_logger.info('USAGE: python db_patch.py -H Hostname -d Database -A (APPLY) -s (scp the patch)')
+            sys.exit(0)
 
         elif opt == "-A" :
             APPLY = "APPLY"
@@ -108,44 +79,45 @@ def main(argv):
     target_logger.info("Running db_patch.py with HOSTNAME=%s INSTANCE=%s APPLY=%s ", hostname, instance_name, APPLY)
 
     if ( hostname == '' or instance_name == '' ) :
-        target_logger.error('USAGE: python db_patch.py -H Hostname -d Database -c ')
-        #return -1
+        target_logger.error('USAGE: python db_patch.py -H Hostname -d Database -A (APPLY) -s (scp the patch)')
         sys.exit(-1)
 
-    target_query = 'select hostname, instance_name, version, os, owner, home_dir from targets a where a.hostname = \''
+    target_query = 'select inventory_id, hostname, instance_name, version, os, owner, home_dir from targets a where a.hostname = \''
     target_query += hostname + '\' and instance_name = \'' + instance_name + '\''
 
-    # Get ALL the checks to perform on these targets
-    RC, patch_target=inventory.exec_sql(target_query, 'ONE', target_logger)
+    inventory_id = inventory.get_id(hostname, instance_name, target_logger)
 
-    if RC <= 0 :
+    if inventory_id > 0 :
         target_logger.error("Could not find HOSTNAME=%s with INSTANCE=%s in inventory.", hostname, instance_name)
         # return -1
         sys.exit(-1)
 
     else :
-        target_logger.info("Found patch target: %s" , patch_target)
+        target_logger.info("Found patch target ID: %s" , inventory_id)
 
     ################################################
     # * * * *   Main Program of Patching   * * * * #
     ################################################
-
-    hostname, instance_name, version, os, owner, home_dir = [str(value).strip() for value in patch_target]
-    #patch_dir, patch_file, patch_num = {}.fromkeys(['pd', 'pf', 'pn'], patch_repos[patch_index[version]])
+    # Get the details on the patching target
+    version = inventory.get_attribute(inventory_id, '', 'version', target_logger)
+    os = inventory.get_attribute(inventory_id, '', 'os', target_logger)
+    home_dir = inventory.get_attribute(inventory_id, '', 'home_dir', target_logger)
+    owner = inventory.get_attribute(inventory_id, '', 'owner', target_logger)
 
     if version == '' :
         if APPLY == 'APPLY' :
             target_logger.error("Unknown version. Update target info and re-run")
             return -1
         else : 
-            target_logger.info("Unknown version. doing checks ")
+            target_logger.info("Unknown version. doing checks for 12.2.0.1")
             version = '12.2.0.1.0'
 
-    patch_dir = patch_repos[patch_index[version]].get('pd','None')
-    patch_file = patch_repos[patch_index[version]].get('pf','None')
-    patch_num = patch_repos[patch_index[version]].get('pn','None')
+    patch_query += ' and version = ' + version 
+    #  + ' and os = ' + os
 
-    target_logger.debug("Version: %s  Index: %s Number: %s ", str(version), str(patch_index[version]), str(patch_repos[patch_index[version]]))
+    # Get the current patch for the target database
+    RC, patches=inventory.exec_sql(patch_query, 'ONE', target_logger)
+    id, version, patch_dir, patch_file, patch_num, release_date, current, combo = [str(value).strip() for value in patches]
 
     if ( "Linux" not in os ) or ( "x86_64" not in os ) :
         target_logger.error("Current script is for Linux x86_64 patches only.")
@@ -166,22 +138,29 @@ def main(argv):
     # What is the current OPatch version?
     check = home_dir + '/OPatch/opatch version | head -n 1 | awk -F":" \'{print $2}\' '
     rc, OPatch_Version = targets.get_info(check, handler, connection, target_logger, 60)
-    if rc != 1 :
+    if rc == 1:
+        inventory.add_results(inventory_id, OPatch_Version, 'opatch', target_logger)
+    else :
         target_logger.error("Failed to obtain current OPatch version")
         return -1
+        # Let's just exit and fix this issue before proceeding
     connection.close()
 
-    # if the connection is good and it's not the current OPatch then proceed
+    # if the connection is good then see if OPatch needs updating
     target_logger.info("Current OPatch version is: %s" , str(OPatch_Version))
 
     if str(OPatch_Version) != curr_ver :
-        #    2)  Connect confirm OPatch
+        target_logger.info('OPatch is not current.  Updating it first.' )
         rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 60) 
 
         # Check if there is sufficient space in Oracle_Home
         check = 'df -kP ' +  home_dir + ' | awk \'{print $4}\' | tail -n 1 ; exit '
         rc2, home_free = targets.get_info(check, handler, connection, target_logger, 60)
         target_logger.info('Free space in Oracle_Home: %s', home_free )
+
+        if rc2 == 1:
+            inventory.add_results(inventory_id, home_free, 'home_free', target_logger)
+
         connection.close()
 
         if ( rc2 == 1 ) and ( int(home_free) > kb_required ) :
@@ -222,13 +201,20 @@ def main(argv):
     # Check space in Oracle_Home
     check = 'df -kP ' +  home_dir + ' | awk \'{print $4}\' | tail -n 1 ; exit '
     rc2, home_free = targets.get_info(check, handler, connection, target_logger)
-    target_logger.info('Free space in Oracle_Home: %s', home_free )
+    if rc2 == 1:
+        inventory.add_results(inventory_id, home_free, 'home_free', target_logger)
+        target_logger.info('Free space in Oracle_Home: %s', home_free )
+
     connection.close()
 
     # What is the current OPatch version now?
     rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120) 
     check = home_dir + '/OPatch/opatch version | head -n 1 | awk -F":" \'{print $2}\' '
     rc, OPatch_Version = targets.get_info(check, handler, connection, target_logger)
+    if rc == 1:
+        inventory.add_results(inventory_id, OPatch_Version, 'opatch', target_logger)
+
+    # Create /xxx01/software   for uploading patches
     sw_dir = '/' + home_dir.split('/')[1] + '/software'
     connection.close()
 
@@ -236,7 +222,7 @@ def main(argv):
         if int(home_free) >  kb_required  :
             rc, connection = targets.connect(hostname, instance_name, owner, handler, target_logger, 120) 
 
-            # Mke sure the /XXX01/software directory exists
+            # Mke sure the /xxx01/software directory exists
             command = 'mkdir -p ' + sw_dir
             rc, output = targets.get_info(command, handler, connection, target_logger)
             target_logger.info("Transferring patch to: %s", sw_dir)
