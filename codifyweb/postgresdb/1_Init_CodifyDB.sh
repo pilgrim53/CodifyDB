@@ -19,31 +19,38 @@ SET row_security = off;
 SET default_tablespace = '';
 SET default_table_access_method = heap;
 
+CREATE SEQUENCE targets_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER sequence targets_id_seq OWNER TO $APP_DB_USER;
+
+ALTER TABLE targets ALTER COLUMN inventory_id SET DEFAULT nextval('targets_id_seq');
 
 CREATE INDEX "CR_Column"
     ON check_results USING hash
     (check_column COLLATE pg_catalog."default")
     TABLESPACE pg_default;
--- Index: RESULTS
 
--- DROP INDEX "RESULTS";
+-- Index: RESULTS
 
 CREATE INDEX "RESULTS"
     ON check_results USING btree
     (inventory_id ASC NULLS LAST, check_date ASC NULLS LAST, check_column COLLATE pg_catalog."default" ASC NULLS LAST)
     INCLUDE(inventory_id, check_date, check_column)
     TABLESPACE pg_default;
--- Index: check_date
 
--- DROP INDEX check_date;
+-- Index: check_date
 
 CREATE INDEX check_date
     ON check_results USING btree
     (check_date ASC NULLS LAST)
     TABLESPACE pg_default;
--- Index: check_inv
 
--- DROP INDEX check_inv;
+-- Index: check_inv
 
 CREATE INDEX check_inv
     ON check_results USING btree
@@ -118,7 +125,6 @@ CREATE VIEW lastcheck AS
   WHERE ((id.decommissioned IS NULL) AND (id.target_type = 'Database'::text))
   ORDER BY id.inventory_id;
 
-
 ALTER TABLE lastcheck OWNER TO codify;
 
 --
@@ -161,15 +167,6 @@ CREATE INDEX inv_inst
 
 COMMENT ON COLUMN targets.target_type
     IS 'Database,  Server, Other';
-
- CREATE SEQUENCE targets_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER sequence targets_id_seq OWNER TO $APP_DB_USER;
    
 COPY notifications (id, threshold, result_column, frequency) FROM stdin;
 1	< 1000	system_free	HOURLY
