@@ -1,134 +1,116 @@
-import os           # Allows us to run os commands from within the script
-import subprocess
-import smtplib      # Allows us to send an email with the status
-import sys, getopt  # Allows us to interact with the o/s
-from time import sleep  
-from datetime import datetime
-from datetime import date
-from unittest.mock import patch
+"""
+# ============================================================================
+# Name:         patch_scheduler.py
+# Description:  Monitors the PATCHING table and launches db_patch.py
+#               for each entry scheduled in the next 15 days that does
+#               not already have a successfuly pre-requisite check
+#
+# Input Files:  PATCHING Table
+#               PATCHES table
+#               .env
+#
+# Output:       Log files to $LOG_DIR/Patch_Scheduler_$date.log
+#
+# Syntax:       python patch_scheduler.py [-n or --no-pause]
+#
+# Calls:        inventory.connect, inventory.exec_sql, inventory.disconnect
+#
+# Restrictions: Enter the correct python environment prior to running.
+#               ex)  "source ~/<venv>/bin/activate"
+#                           to enter the necessary virtual environment
+# ============================================================================
+#     """
+import argparse          # read parameter input
+import datetime          # date, datetime, timedelta
+import concurrent.futures # allows us to do multiple checks at once
+import time
+from time import sleep
+from tracemalloc import start
 from decouple import config  # Allows us to read .env
 from threading import TIMEOUT_MAX
-from threading import Timer
-# from dataclasses import dataclass   # Allows us to create a data class structure
+from patch import Patch
 # ============================================================================
-CODIFYWEB_DIR = config('CODIFYWEB_DIR')
-sys.path.append(CODIFYWEB_DIR)
+# Now import local modules
+# ============================================================================
 from inv_logging import start_logging
-import inventory
-
+from inventory import Inventory
+from db_patch import patch
 # ============================================================================
-
-# ============================================================================
-# Set  Environment and Global Variables
-# ============================================================================
-LOG_DIR = config('LOG_DIR')
-GLOBAL_LOG_NAME = "Patch_Scheduler"
-GLOBAL_LOG_FILE = LOG_DIR + GLOBAL_LOG_NAME + "_" + str(f"{datetime.now():%Y-%m-%d_%H%M%S}") + ".log"
-GLOBAL_LOG_LEVEL = 'DEBUG'
-GLOBAL_LOG_TO_CONSOLE = 'ON'
-
 
 
 # ============================================================================
-# Set our data model
 # ============================================================================
-# @dataclass
-class PatchTarget:
-    id:                 int = None
-    hostname:           str = None
-    instance_name:      str = None
-    PRE_OPATCH:	        str = None
-    PRE_SW_RELEASE:	str = None
-    PRE_HOME_FREE:	int = None
-    sched_date_time:	date= None
-    POST_OPATCH:	str = None
-    POST_SW_RELEASE:    str = None
-    POST_HOME_FREE:	int = None
-    DB_STOPPED:	        date= None
-    DB_STARTED:	        date= None
-    CONFLICTS:	        str = None
-    DB_PATCH_NUMBER:    str = None
-    SHARED_HOME:	str = None
-
+# -------------------------     MAIN PROGRAM     -----------------------------
 # ============================================================================
-# ============================================================================
-# ---------------------------     MAIN PROGRAM     -------------------------------
-# ============================================================================
-# ============================================================================
-def main(argv):
-    # Set some default values
-    rc = 0
-    target_logger.info("Starting Oracle DB Patch Scheduler")
-
-    target_query = """ select id, hostname, instance_name, check_complete, sched_date_time
-     from dbc_team.patching 
-    where SCHED_DATE_TIME > ( sysdate -1 )
-     -- and SCHED_DATE_TIME < ( sysdate + 1 )
-      and check_complete is null
-      and pre_req_issues is null
-   order by SCHED_DATE_TIME  """
-
-
-    # Get ALL the checks to perform on these targets
-    RC, patch_targets=inventory.exec_sql(target_query, 'ALL', target_logger)
-
-    if RC <= 0 :
-        target_logger.error("Could not get patching schedule")
-        return -1
-
-    else :
-        target_logger.info("Patching Schedule retrieved")
-
-    ################################################
-    # * * * *   Main Program of Patching   * * * * #
-    ################################################
-    # target_logger.info("Number of targets:", str(len(patch_targets[0])))
-
-    # PRE_OPATCH, PRE_SW_RELEASE , PRE_HOME_FREE, SCHED_DATE_TIME, POST_OPATCH, POST_SW_RELEASE, POST_HOME_FREE , 
-    # DB_STOPPED, DB_STARTED, CONFLICTS, DB_PATCH_NUMBER, SHARED_HOME 
-
-    for inventory_id, hostname, instance_name, check_complete, sched_date_time in patch_targets:
-        target_logger.info("Targets: %s  Scheduled date: %s ", str(inventory_id), str(sched_date_time.strftime("%m/%d/%Y %H:%M:%S")))
-
-        if sched_date_time == '' :
-            target_logger.error("Unknown Scheduled Date")
-            return -1
-
-        if ( check_complete  and check_complete < datetime.now() ) :
-            target_logger.info("Pre-Checks Completed Successfully for %s at %s", \
-                               instance_name, str(check_complete.strftime("%m/%d/%Y %H:%M:%S")))
-
-        else: 
-            target_logger.info("Performing Prep on Target : %s ", str(inventory_id))
-            command = './db_patch.py -H ' + str(hostname) + ' -d ' + str(instance_name) + ' -s' 
-            target_logger.info("Command: %s ", str(command) )
-            process = subprocess.Popen(command, shell=True, stdout=None)
-            waiter = process.wait()
-            rc = process.returncode
-            target_logger.info('Patching result: ' +  str(rc))
-
-            if rc != 0 :
-                target_logger.error("Patch Scheduling had errors.  Please investigate on %s", str(hostname))
-                add_check_date = 'update dbc_team.patching set pre_req_issues=\'' + str(rc) + '\', check_complete=sysdate \
-                                     where id = ' + str(inventory_id)
-
-            else :
-                target_logger.info("Patch Scheduling  completed successfully for %s : %s", str(hostname), str(instance_name))
-                add_check_date = 'update dbc_team.patching set pre_req_issues=\'NONE\', check_complete=sysdate \
-                                     where id = ' + str(inventory_id)
-
-            RC, test=inventory.exec_sql(add_check_date, 'EXEC', target_logger)
-
-
-    target_logger.info("Patch Scheduling Completed at %s ", str(datetime.now()))
-    target_logger.info("====================================================================================")
-
-    return rc
-
-# ============================================================================
-# END main program
-# ============================================================================
-
 if __name__ == "__main__":
-    target_logger=start_logging(GLOBAL_LOG_LEVEL, GLOBAL_LOG_FILE, GLOBAL_LOG_NAME, GLOBAL_LOG_TO_CONSOLE)    # Log to File
-    main(sys.argv[1:])
+    # Set some default values
+    log_dir = config('LOG_DIR')
+    log_name = "Patch_Scheduler"
+    log_file = log_dir + log_name + "_" + str(datetime.datetime.now().strftime('%Y-%m-%d')) + ".log"
+    log_level = 'DEBUG'
+    log_to_console = 'ON'
+
+    # Log to File
+    target_logger = start_logging(log_level, log_file, log_name, log_to_console)
+    
+    inventory = Inventory(target_logger)
+    rc = inventory.connect()
+    start = time.time
+    rc = 0
+
+    target_logger.info("Starting Cloud Non Prod Database Patch Scheduler")
+
+    parser = argparse.ArgumentParser(description='Scan Targets.')
+    parser.add_argument('-n', '--no-pause',  action='store_true')
+    args = parser.parse_args()
+
+    patch_list = inventory.get_patches()
+    rc = inventory.disconnect()
+    new_patch_list=[]
+
+    # Give some user feedback and pause here before proceeding
+    print('+=====================================================================================================================+')
+    print('| ACTION     HOSTNAME                        DATABASE       VENDOR SW_RELEASE    APPLY TIME           TICKET          |')
+    print('+=====================================================================================================================+')
+    for p in patch_list:
+        if p.ticket is None:
+            p.ticket = ""
+        if p.apply == 'SKIP':
+            print("| No Action  " + p.host.ljust(32) + p.instance.ljust(15) + p.vendor.ljust(7) + \
+                  str(p.sw_release).ljust(14) + str(p.sched).ljust(21) + p.ticket.ljust(16) + "|")
+        elif p.apply == '':
+            print("| Pre-check  " + p.host.ljust(32) + p.instance.ljust(15) + p.vendor.ljust(7) + \
+                  str(p.sw_release).ljust(14) + str(p.sched).ljust(21) + p.ticket.ljust(16)+ "|")
+            new_patch_list.append(p)
+        elif p.apply == 'APPLY':
+            print("| APPLY! " + p.host.ljust(32) + p.instance.ljust(15) + p.vendor.ljust(7) + \
+                  str(p.sw_release).ljust(14) + str(p.sched).ljust(21) + p.ticket.ljust(16)+ "|")
+            new_patch_list.append(p)
+    print('+=====================================================================================================================+')
+
+    if not args.no_pause:
+        input('Press CTRL-C to abort')
+
+    # Turn the schedule into an actionable list.  ie remove any that are "SKIP"
+    procs = []
+
+    # Take the final list of patches and run them in parallel
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(patch, p.host, p.instance, p.rollbacks,
+                        p.oneoffs, p.apply, p.sw_release, p.scp_copy, 
+                        p.ticket) for p in new_patch_list ]
+
+        # Before leaving see how they did and log the return codes.      
+        for future in concurrent.futures.as_completed(futures):
+            try: 
+                target_logger.info("Completed Patching: %s", future.result())
+            except:
+                target_logger.error("Failed Patching on %s", str(future))
+
+    target_logger.info("Patch Scheduling Completed at %s ", str(datetime.datetime.now()))
+    target_logger.info("====================================================")
+
+    # =======================================================================
+    # END main program
+    # =======================================================================
+
