@@ -25,8 +25,8 @@ TABLE                PATCHES
 # ========================================================================
 """
 import cx_Oracle  # https://oracle.github.io/python-cx_Oracle/
-import psycopg2  # https://pypi.org/project/psycopg2/
-import psycopg2.extras  # This gives access to the psycopg2 error messages
+# import psycopg2  # https://pypi.org/project/psycopg2/
+# import psycopg2.extras  # This gives access to the psycopg2 error messages
 from datetime import date, datetime, timedelta  # not included by default
 from decouple import config  # Allows us to read .env
 from inv_logging import start_logging
@@ -47,6 +47,7 @@ class Inventory:
         self.connection = ''
         self.INV_USER = self.CREDENTIALS.get('INV_USER')
         # self.INV_USER = config('INV_USER')
+        self.TIER = ''
 
     def connect(self):
         """
@@ -54,11 +55,11 @@ class Inventory:
         If database is already connected, do nothing
         :return RC:  1 = Success, 0 = Fail
         """
-
         RC = 1
         INV_PWD = self.CREDENTIALS.get('INV_PWD')
         # INV_PWD = config('INV_PWD')
         DBNAME = config('DBNAME')
+        self.TIER = 'Standard' if DBNAME == 'APEX21' else 'Test'
         INVENTORY_HOST = config('INVENTORY_HOST')
         dsn = ''
 
@@ -76,7 +77,7 @@ class Inventory:
         try:
             if self.connection == '':
                 self.connection = cx_Oracle.connect(
-                    self.INV_USER, INV_PWD, dsn,
+                    user=self.INV_USER, password=INV_PWD, dsn=dsn,
                     mode=cx_Oracle.DEFAULT_AUTH)
                 self.connection.autocommit = True
                 self.connection.callTimeout = 60000
@@ -182,14 +183,7 @@ class Inventory:
 
         check_date = datetime.now()
         data=dict(id=f"{inventory_id}", check_date=f"{str(check_date)}", check_column=f"{column_name}", result=f"{check_result}")
-        if self.INV_USER == "DBC_TEAM":
-            # DBC_Team Schema uses Inventory_id in check_results
-            insert_stmt = """INSERT INTO check_results (inventory_id,check_date,check_result,check_column)
-                VALUES (:id, to_timestamp(:check_date,'YYYY-MM-DD HH24:MI:SS.FF'), :result, :check_column)"""
-
-        else:
-            # Server_Team Schema uses hostname in check_results
-            insert_stmt = """INSERT INTO check_results (hostname,check_date,check_result,check_column)
+        insert_stmt = """INSERT INTO check_results (inventory_id,check_date,check_result,check_column)
                 VALUES (:id, to_timestamp(:check_date,'YYYY-MM-DD HH24:MI:SS.FF'), :result, :check_column)"""
 
         self.logger.debug("Insert Statement: %s %s", insert_stmt, data)
@@ -217,7 +211,7 @@ class Inventory:
 
     def get_result(self, inventory_id, column):
         """
-        Returns the most recent value of an target's attribute
+        Returns the most recent value of a target's attribute
         :param inventory_id:  The Inventory_ID of the object
         :param column:   The column or "attribute" you want to retrieve
         :return: value: the current value (most recent) of the attribute
@@ -420,6 +414,9 @@ class Inventory:
         :return: rc: Return code that indicates whether connection was
             successful (1 = Success, 0 = Fail, -1 = Could not connect)
         """
+
+        update_value = update_value.strip()
+        
         self.logger.debug(f"Set attribute for InventoryID: {inventory_id} "
                           f"Attribute: {update_column} "
                           f"New Value: {update_value} ")
@@ -537,15 +534,73 @@ class Inventory:
 
         return checks_list
 
+    def get_target(self, target_type, id):
+        # User
+        if target_type != "Database":
+            target_query = ("select inventory_id, instance_name, owner, home_dir, "
+                        "upper(hostname), target_type, vendor, sub_type, version, support_tier\n"
+                        f"from server_team.targets where inventory_id = {str(id)} ")
+        else:
+            target_query = ("select inventory_id, instance_name, owner, home_dir, "
+                        " upper(hostname), target_type, vendor, sub_type, version, support_tier\n"
+                        f" from dbc_team.targets where inventory_id = {str(id)}  " )
+
+        self.logger.info("Target Query: %s", target_query)
+
+        rc, targets = self.exec_sql(target_query, 'ONE')
+        self.logger.debug("# of Attributes: %s", len(targets))
+
+        for attribute in targets:
+            self.logger.debug("Attributes: %s", attribute)
+        
+        try:
+            for inventory_id, instance_name, owner, home_dir,\
+                    hostname, target_type, vendor, sub_type, version, support_tier in targets:
+                
+                if owner is None or owner == '':
+                    owner = 'oracle'
+                if target_type == 'Server' and instance_name is not None:
+                    if hostname.upper() in instance_name.upper() :
+                        hostname = instance_name
+
+                target = Target(inventory_id=inventory_id,
+                                hostname=hostname,
+                                instance_name=instance_name,
+                                owner=owner,
+                                home_dir=home_dir,
+                                target_type=target_type,
+                                vendor=vendor,
+                                sub_type=sub_type,
+                                version=version,
+                                support_tier=support_tier,
+                                logger=self.logger)
+                self.logger.debug(f"Adding Target: {target}")
+
+        except AttributeError as Exc:
+            self.logger.debug(f"AttributeError: {Exc}")
+            value=''
+            
+        except TypeError as Exc:
+            self.logger.debug(f"TypeError: {Exc}")
+            value=''
+
+        except Exception as Exc: 
+            self.logger.debug(f"Unknown Error getting target: {Exc}")
+
+        return target
+
     def get_targets(self, target_type, vendor, low_id, high_id):
 
-        target_query = ("select inventory_id, instance_name, owner, home_dir, "
-                        "upper(hostname), target_type, vendor, sub_type, version\n"
-                        "from targets where support_tier = 'Test' "
-                        "and decommissioned is null ")
-
         if target_type != "Database":
-            target_query += f" and upper(target_type)='{target_type.upper()}'"
+            target_query = ("select inventory_id, instance_name, owner, home_dir, "
+                        "upper(hostname), target_type, vendor, sub_type, version, support_tier\n"
+                        f"from server_team.targets where support_tier = \'{self.TIER}\' "
+                        "and decommissioned is null ")
+        else:
+            target_query = ("select inventory_id, instance_name, owner, home_dir, "
+                        "upper(hostname), target_type, vendor, sub_type, version, support_tier\n"
+                        f"from dbc_team.targets where support_tier = \'{self.TIER}\' "
+                        "and decommissioned is null ")
 
         if vendor != "ALL":
             target_query += f" and upper(vendor) = '{vendor.upper()}'"
@@ -568,7 +623,7 @@ class Inventory:
 
         try:
             for inventory_id, instance_name, owner, home_dir,\
-                    hostname, target_type, vendor, sub_type, version in all_targets:
+                    hostname, target_type, vendor, sub_type, version, support_tier in all_targets:
                 
                 if owner is None or owner == '':
                     owner = 'oracle'
@@ -585,6 +640,7 @@ class Inventory:
                                 vendor=vendor,
                                 sub_type=sub_type,
                                 version=version,
+                                support_tier=support_tier,
                                 logger=self.logger)
                 self.logger.debug(f"Adding Target: {target}")
                 target_list.append(target)
