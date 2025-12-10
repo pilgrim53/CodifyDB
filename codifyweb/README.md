@@ -1,98 +1,54 @@
-# CodifyDB
+# Step 1) Setting up the Python Environment
 
-This repository contains scripts that are used to inventory and monitor IT resources such as servers and databases. Additional information and support can be found at https://pankratzmanagement.com
+In order for some of the python modules to work. The NonProdInventory code must be run on Python 3.10 or higher. 
+To create a virtual python 3.11 environment on caddld-590 follow these steps.
 
-## Overview
+0. Log in fresh.  Do not try to do these steps from an existing log in.
+1. cd [DEVEL_BASE]   (ex  /app/automation for caddla-978   or  ~/gitlab for personal )
+2. (s)cp -r caddld-590:/BellDBC/Bell-ora-staging/python/modules/Python-3.11-Environment/* .
+4. cd Python-3.11.4
+5. ./configure --with-openssl=/usr/include/openssl   
+6. make
+7. vi Makefile  \# Change prefix from /opt/local to  !pwd !!!!
+8. make install;  cd .. 
+9. Create virtual environment:
+    * Using vscode
+        * Setup using vscode: https://code.visualstudio.com/docs/python/environments#
+    * or use venv
+        * Python-3.11.4/python -m venv [virtual_env]
+10.  . [virtual_env]/bin/activate
+11. \# mkdir [DEVEL_BASE]/modules; cd [DEVEL_BASE]/modules
+13. \# (s)cp caddld-590:/BellDBC/Bell-ora-staging/python/modules/Python-3.11-Environment/* . 
+14. pip install -r requirements.txt -f ./ --no-index
 
-This application has 3 operation modes:
+# Step 2) Set up your development git repository
+1) Create your personal ssh key and upload it to your gitlab profile
+   https://docs.gitlab.com/ee/user/ssh.html
 
-1. ADD resources called "Targets". These are things you want to inventory and monitor such as servers and databases.
-2. UPDATE targets.  Over time targets come and go, get upgraded, moved, etc..   Update will scan the targets for any changes in status.   
-3. CHECK targets.   Perform various health and status checks on the targets in your inventory.   There are 3 custom filter options you can apply on any give "Check".   
-  - TYPE:   	ie   OS, DB, Other
-  - FREQUENCY:  ie  MONTHLY, DAILY, HOURLY, ADHOC, etc...
-  - VENDOR:   	ie  Oracle, AIX, Solaris, DB2, SQL, Postgres, etc...
+2) cd to [DEVEL_BASE]   (ex /app/automation or  ~/gitlab )
 
-All information including the monitored targets and monitoring results are stored in a Postgres database.   The TARGETS table contains the relatively static information about the targets such as Name, Version, IP Address, Vendor, CreateDate, etc...
-The checks you want to perform on the Targets are stored in the "CHECKLIST" table.
-Finally, results of all the "Check" runs are stored in the CHECK_RESULTS table.
-
-Grafana is recommended to be used for creating the dashboards and user interfaces for your monitoring results.  However, you can use the Postgres database directly with your own queries and reports.
-
-### Application Dependencies
-- Python 3 https://www.python.org/download/releases/3.0/
-- psycopg2 https://www.psycopg.org/
-- paramiko for OS monitoring http://www.paramiko.org/
-- cx_Oracle for Oracle DB monitoring https://oracle.github.io/python-cx_Oracle/
-- You will need either a common account and password or passwordless (ssh key) access to linux / un*x servers
-- You will need a common account and password for each database vendor group.
-
-
-### Description of files
---------------------
-
-Non-Python files:
-
-filename                  |  description
---------------------------|------------------------------------------------------------------------------------
-README.md                 |  Text file (markdown format) description of the project.
-dockerfile                |  Rapid deployment via Docker container
+3) git clone git@gitlab.bell.corp.bce.ca:it-infrastructure/ainonprodsupport/NonProdInventory.git
 
 
-Python scripts files:
 
-filename                  |  description
---------------------------|------------------------------------------------------------------------------------
-scan_targets.py           |  This is the program for building, adding, updating targets in your Inventory
-check_targets.py          |  This is the program used to perform monitoring checks on your Inventory
+# Step 3) Perform UAT of your development work
+1) Merge your developemnt branch into UAT 
 
+2) ssh orac4i@caddld-590
 
-Python modules:
+3) cd automation/NonProdInventory
 
-filename                  |  description
---------------------------|------------------------------------------------------------------------------------
-Inv_Logging.py            |  Handle all the application logging output to files.
-Targets.py                |  Module containing all Target methods (add, update, get, etc...)
+4) git checkout origin/UAT
 
-### Database Schema
-------------------------
+5) git pull origin/UAT
 
-<img alt="Pretty Picture goes here" src="tbdg" width="75%">
+6) vi .env    \#   Verify correct DB,  log directory, etc...
 
-# Installation
+7)  \# gpg --gen-key   \# NOTE:  you can not do this from su and only do this ONCE! 
 
-## Installing from Github
-- [ ] install pre-requisite python modules listed above
-- [ ] download this repository and unzip **OR** clone directly from github
+8)  vi uat_info   \# Add the passphrase you used to generate the key and update as necessary
 
-```
-cd <your application directory>
-git clone https://github.com/pilgrim53/CodifyDB.git  
-```	
-
-## Install as a Docker Container
-- [ ] install Docker for your monitoring server ex)  https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04 
-- [ ] complete all post install steps  ex)    https://docs.docker.com/engine/install/linux-postinstall/
-- [ ] install from GitHub (above) 
-
-```
-docker-compose up -d --build
-```
-
-## Configure your instance
- - set postgres password
- - update .env
- - etc...
- 
- # Using the Inventory Application
- 
- ## Add Targets
-  - do these things
-  
- ## Update Targets
-  - do these other things
- 
- ## Check Targets
-  - do still more things
-
- # Getting additional help or support
+9) gpg --output uat_info.inf --encrypt --recipient orac4i@caddld-590.belldev.dev.bce.ca uat_info
+    NOTE:   To view the file after encrypting:  "gpg --decrypt uat_info.inf"
+    
+10)  . /home/orac4i/automation/Python-3.11-Environment/UAT_Env/bin/activate

@@ -102,7 +102,7 @@ def main(argv):
                             list_entry[1].strip(),
                             list_entry[2].strip(),
                             list_entry[3].strip(),
-                            'Database', 'ORACLE','STANDALONE',
+                            'Database', 'ORACLE','STANDALONE','Discovered',
                             target_logger,
                             port=0
                         )
@@ -191,19 +191,18 @@ def main(argv):
         # Get the delta from what is already known in the inventory
         # DB Record Format: 1) host_instance
         # 2) instance_1 instance_2 ..... instance_n
-        discover_query = """ select distinct lower(a.hostname), b.check_result
-                              from server_team.targets a,
-                              server_team.check_results b
-                              where a.hostname = b.hostname
-                               and check_column in ( 'pmon', 'pdbs')
-                               and check_date > ( sysdate - 30 )
+        discover_query = """ select distinct lower(b.hostname), b.check_result
+                              from server_team.targets a, server_team.check_results b
+                             where lower(a.instance_name) = lower(b.hostname)
+                               and check_column in ( 'pmon', 'pdbs' )
+                               and check_date > ( sysdate - 7 )
                                and check_result is not null
                                and upper(check_result) != 'NONE'
                              union
                             select distinct lower(a.hostname), b.check_result
                               from dbc_team.targets a, dbc_team.check_results b
                              where a.inventory_id = b.inventory_id
-                               and check_column in ( 'pmon', 'pdbs')
+                               and check_column in ( 'pmon', 'pdbs' )
                                and check_date > ( sysdate - 7 )
                                and check_result is not null
                                and upper(check_result) != 'NONE'
@@ -213,6 +212,7 @@ def main(argv):
                            """
 
         rc, all_targets = inventory.exec_sql(discover_query, 'ALL')
+        
 
         for hostname, instance_list in all_targets:
             if ',' in instance_list:
@@ -220,9 +220,11 @@ def main(argv):
             else:
                 instance_list = instance_list.split()
             for instance_name in instance_list:
+                owner, instance_name = instance_name.split(":")
                 target_logger.info(f'Checking target '
                                    f'Hostname: {str(hostname)} '
-                                   f'Instance_name: {str(instance_name)}')
+                                   f'Instance_name: {str(instance_name)} '
+                                   f'Owner: {str(owner)} ')
                 # Try connecting to the database and get info if possible
                 # exists=targets.CreateDBC(target, owner, target_logger)
                 # if exists >= 0 :  # -1 does not exist 0=host exists,
@@ -237,11 +239,13 @@ def main(argv):
                         inventory_id=0,
                         hostname=hostname,
                         instance_name=instance_name,
-                        owner='TBD',
+                        owner=owner,
                         home_dir='',
-                        vendor='',
-                        sub_type='',
-                        target_type='',
+                        vendor='ORACLE',
+                        sub_type='STANDALONE',
+                        target_type='Database',
+                        version='',
+                        support_tier='Discovered',
                         logger=target_logger
                     )
                     inventory.add(new_target)  # Rejects target if not added
@@ -256,6 +260,26 @@ def main(argv):
                     target_logger.debug(f'Already in Inventory '
                                         f'Hostname: {str(hostname)} '
                                         f'Instance_name: {str(instance_name)}')
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     rc = inventory.disconnect()
     target_logger.info("Completed running scan_target.py "

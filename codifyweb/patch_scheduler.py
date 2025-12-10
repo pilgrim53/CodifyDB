@@ -83,7 +83,7 @@ if __name__ == "__main__":
                   str(p.sw_release).ljust(14) + str(p.sched).ljust(21) + p.ticket.ljust(16)+ "|")
             new_patch_list.append(p)
         elif p.apply == 'APPLY':
-            print("| APPLY! " + p.host.ljust(32) + p.instance.ljust(15) + p.vendor.ljust(7) + \
+            print("| APPLY!     " + p.host.ljust(32) + p.instance.ljust(15) + p.vendor.ljust(7) + \
                   str(p.sw_release).ljust(14) + str(p.sched).ljust(21) + p.ticket.ljust(16)+ "|")
             new_patch_list.append(p)
     print('+=====================================================================================================================+')

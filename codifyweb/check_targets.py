@@ -90,7 +90,7 @@ def main():
 
         # Before leaving see how they did and log the return codes.
         for future in concurrent.futures.as_completed(futures):
-                try:
+                try: 
                     target_logger.info("Completed Checks: %s", future.result())
                 except:
                     target_logger.error("Failed on %s", str(future))

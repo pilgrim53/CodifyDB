@@ -11,15 +11,16 @@ import paramiko  # Allows us to ssh to the target hosts
 # logging.basicConfig()
 # logging.getLogger("paramiko").setLevel(logging.DEBUG) # for example
 
-import psycopg2  # https://pypi.org/project/psycopg2/
-import psycopg2.extras  # This gives access to the psycopg2 error messages
-import pyodbc  # Allows us to connect to MS SQL Server
+# import psycopg2  # https://pypi.org/project/psycopg2/
+# import psycopg2.extras  # This gives access to the psycopg2 error messages
+# import pyodbc  # Allows us to connect to MS SQL Server
 from decouple import config
 
 from password_manager import PasswordManager
 
 import sys
 import os
+import ssl
 
 class Target:
     CREDENTIALS = PasswordManager()
@@ -63,8 +64,11 @@ class Target:
 
     SQL_DRIVER_NAME = 'FreeTDS'
 
+    # CIPHERS = 'ECDHE-ECDSA-AES256-SHA:AES128-SHA256:AES256-SHA:AES256-SHA256'
+    CIPHERS = 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:AES256-SHA256:AES128-SHA256:AES128-GCM-SHA256:ECDHE-RCA-AES128-GCM-SHA256:ECDHE-RCA-AES256-GCM-SHA384'
+    
     def __init__(self, inventory_id, hostname, instance_name, owner,
-                 home_dir, target_type, vendor, sub_type, version, logger, container='',
+                 home_dir, target_type, vendor, sub_type, version, support_tier, logger, container='',
                  serial_number='', status='', port=0, notes=''):
         self.inventory_id = inventory_id
         self.hostname = hostname
@@ -82,11 +86,50 @@ class Target:
         self.logger = logger
         self.connection = ''
         self.version = version
+        self.support_tier = support_tier
         from inventory import Inventory
         self.inventory = Inventory(self.logger)
         self.timer = None
 
     def __str__(self):
+        target_dict = {
+            'inventory_id': self.inventory_id,
+            'hostname': self.hostname,
+            'instance_name': self.instance_name,
+            'vendor': self.vendor,
+            'version': self.version,
+            'support_tier': self.support_tier,
+            'sub_type':self.sub_type,
+            'owner': self.owner,
+            'home_dir': self.home_dir,
+            'target_type': self.target_type,
+            'container': self.container,
+            'serial_number': self.serial_number,
+            'status': self.status,
+            'port': self.port
+        }
+        return str(target_dict)
+    
+    def as_dict(self):
+        target_dict = {
+            'inventory_id': self.inventory_id,
+            'hostname': self.hostname,
+            'instance_name': self.instance_name,
+            'vendor': self.vendor,
+            'version': self.version,
+            'support_tier': self.support_tier,
+            'sub_type': self.sub_type,
+            'owner': self.owner,
+            'home_dir': self.home_dir,
+            'target_type': self.target_type,
+            'container': self.container,
+            'serial_number': self.serial_number,
+            'status': self.status,
+            'port': self.port
+        }
+        return target_dict
+
+    def as_dict(self):
         target_dict = {
             'inventory_id': self.inventory_id,
             'hostname': self.hostname,
@@ -102,7 +145,7 @@ class Target:
             'status': self.status,
             'port': self.port
         }
-        return str(target_dict)
+        return target_dict
 
     def connect(self, handler, inventory, call_timeout=240):
         """
@@ -131,7 +174,7 @@ class Target:
             rc = self.create_oracle_connection(handler,call_timeout,inventory)
             self.hostname = fqdn
 
-        elif handler in ['ssh', 'oem_ssh', 'win_ssh', 'os_proc', 'oraoemag','rsh_978']:
+        elif handler in ['ssh', 'oem_ssh', 'win_ssh', 'os_proc', 'oraoemag','rsh_978', 'win_ssh_key']:
             rc = self.create_ssh_connection(handler, call_timeout)
 
         elif handler == 'Postgres':
@@ -156,6 +199,9 @@ class Target:
         psswd = self.DBC_PWD
         conn_mode = cx_Oracle.DEFAULT_AUTH
 
+        # ctx = ssl.create_default_context()
+        # ctx.set_ciphers(self.CIPHERS)
+        
         if handler == 'SYSDBA':
             conn_mode = cx_Oracle.SYSDBA
             user = self.SYS_USER
@@ -169,7 +215,7 @@ class Target:
         rc = 1
 
         try:
-            self.connection = cx_Oracle.connect(user, psswd, dsn, mode=conn_mode)
+            self.connection = cx_Oracle.connect(user=user, password=psswd, dsn=dsn, mode=conn_mode)
             # Connection timeout is milliseconds
             self.connection.callTimeout = call_timeout*1000
 
@@ -212,12 +258,12 @@ class Target:
         for port in ['1521', '2349', '2350']:
             new_dsn = f"//{self.hostname}:{port}/{self.instance_name}"
             try:
-                self.connection = cx_Oracle.connect(self.DBC_USER, self.DBC_PWD, new_dsn)
+                self.connection = cx_Oracle.connect(user=self.DBC_USER, password=self.DBC_PWD, dsn=new_dsn)
                 self.connection.callTimeout = call_timeout*1000
                 self.logger.info("Found working EZ Connect: %s ", dsn + '=' + new_dsn)
                 rc = 1
                 self.logger.info(f"Pre-pending new tns entry to tnsnames.ora for {dsn}")
-                new_line = (f'# AUTOMATION {dsn}=(DESCRIPTION=(ADDRESS='
+                new_line = (f'{dsn}=(DESCRIPTION=(ADDRESS='
                             f'(PROTOCOL=TCP)(HOST={self.hostname})(PORT={port}'
                             f'))(CONNECT_DATA=(SERVICE_NAME='
                             f'{self.instance_name}))) \n')
@@ -228,7 +274,7 @@ class Target:
                 if error.code in self.DBC_NO_ACCESS or error.code in self.TNS_OTHER:
                     rc = 1
                     self.logger.info(f"Appending new tns entry to tnsnames.ora for {dsn}")
-                    new_line = (f'# AUTOMATION {dsn}=(DESCRIPTION=(ADDRESS='
+                    new_line = (f'{dsn}=(DESCRIPTION=(ADDRESS='
                                 f'(PROTOCOL=TCP)(HOST={self.hostname})'
                                 f'(PORT={port}))(CONNECT_DATA='
                                 f'(SERVICE_NAME={self.instance_name}))) \n')
@@ -243,11 +289,11 @@ class Target:
                 self.logger.info(f"No other TNS Entry available yet for this instance: {self.instance_name}")
             else:
                 try:
-                    self.connection = cx_Oracle.connect(self.DBC_USER, self.DBC_PWD, tns_entry)
+                    self.connection = cx_Oracle.connect(tns_entry, user=self.DBC_USER, password=self.DBC_PWD)
                     self.connection.callTimeout = call_timeout*1000
                     self.logger.info("Discovered TNS: %s IS WORKING for %s", tns_entry, dsn)
                     self.logger.info(f"Pre-pending new tns entry to tnsnames.ora for {dsn}")
-                    new_line = '# AUTOMATION ' + tns_entry + '\n'
+                    new_line = tns_entry + '\n'
                     self.append_tns_entry(dsn, new_line)
 
 
@@ -259,7 +305,7 @@ class Target:
                                         tns_entry, dsn)
                         self.logger.info("Pre-pending new tns entry to "
                                         "tnsnames.ora for %s", dsn)
-                        new_line = '# AUTOMATION ' + tns_entry + '\n'
+                        new_line = tns_entry + '\n'
                         rc = error.code
                         with open(self.TNS_ADMIN + '/tnsnames.ora', 'r+') \
                                 as file:
@@ -278,10 +324,119 @@ class Target:
         self.logger.info(f"Exiting create_TNS_entry with RC: {rc} ")
         return rc
 
+    def restore_access_to_target_DSN(self, dsn, handler, call_timeout):
+        rc = 0
+        try:
+            self.logger.info(f"check if Database has initial "
+                             f"password: {dsn + '=' + dsn} ")
+            self.connection = cx_Oracle.connect(user=self.DBC_USER,
+                                                password=self.TMP_PWD, dsn=dsn)
+            # Connection timeout is milliseconds
+            self.connection.callTimeout = call_timeout*1000
+            self.logger.info(f"Database has initial password. "
+                             f"Resetting on: {dsn + '=' + dsn}")
+            
+            fix_query = (f'alter user {self.DBC_USER} identified '
+                         f'by "{self.DBC_PWD}" account unlock')
+            rc = self.exec_sql(fix_query)
+
+            fix_query = (f'alter user DBSNMP identified by '
+                         f'"{self.DBSNMP_PWD}" account unlock')
+            rc = self.exec_sql(fix_query)
+
+        except cx_Oracle.Error as exc:
+            error, = exc.args
+            self.logger.error(f"Temp Password Check Failed: {dsn} "
+                              f"Code: {error.code} MSG: {error.message}")
+            self.logger.info("check if SYS works: %s ", dsn + '=' + dsn)
+
+            try:
+                self.connection = cx_Oracle.connect(user=self.SYS_USER,
+                                                    password=self.SYS_PWD,
+                                                    dsn=dsn, mode=cx_Oracle.SYSDBA)
+                # Connection timeout is milliseconds
+                self.connection.callTimeout = call_timeout*1000
+                self.logger.info(f"Logged in with SYS. Resetting BELLDBC "
+                                 f"on: {dsn + '=' + dsn} ")
+                fix_query = (f'alter user {self.DBC_USER} identified by '
+                             f'"{self.DBC_PWD}" account unlock')
+                rc = self.exec_sql(fix_query)
+
+                fix_query = (f'alter user DBSNMP identified by '
+                             f'"{self.DBSNMP_PWD}" account unlock')
+                rc = self.exec_sql(fix_query)
+                self.disconnect()
+
+            except cx_Oracle.Error as exc:
+                error, = exc.args
+                self.logger.error(f"SYS Password Check Failed: {dsn} "
+                                  f"Code: {error.code} MSG: {error.message}")
+
+                try:
+                    self.logger.info(f"Try / as sysdba with Owner: {self.owner} on: {self.instance_name}")
+                    
+                    true_connection = self.connection  # save for later
+                    true_handler = handler  # save for later
+
+                    handler = 'ssh'
+                    self.connection = paramiko.SSHClient()
+                    self.connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                    private_key = paramiko.RSAKey.from_private_key_file(self.PKEY)
+                    self.connection.connect(hostname=self.hostname, port=22,
+                                           username=self.owner,
+                                           timeout=call_timeout,
+                                           banner_timeout=10, auth_timeout=10,
+                                           pkey=private_key)
+
+                    fix_command = ". ./.bash_profile >/dev/null 2>&1;" 
+                    fix_command += "OUTPUT=`" + self.home_dir + "/bin/sqlplus -s <<sqlOUT"
+                    fix_command += """connect / as sysdba
+set trim on trims on heading off
+set lines 200
+alter user SYS identified by \"""" + self.SYS_PWD + """\" profile C##NOEXPIRE_PWD account unlock;   
+create user C##BELLDBC identified by \"""" + self.DBC_PWD + """\";
+alter user C##BELLDBC identified by \"""" + self.DBC_PWD + """\" profile C##NOEXPIRE_PWD account unlock;
+grant dba to C##BELLDBC container=all;
+ALTER USER C##BELLDBC SET CONTAINER_DATA=ALL CONTAINER=CURRENT;
+create profile C##NOEXPIRE_PWD limit PASSWORD_LIFE_TIME UNLIMITED;
+alter user dbsnmp profile C##NOEXPIRE_PWD identified by \"""" + self.DBSNMP_PWD + """\" account unlock;
+exit; 
+sqlOUT`
+"""
+
+                    rc, result = self.get_info(fix_command, 'ssh')
+                    self.logger.info("SYSDBA Fix returned: %s rc: %s ", result, rc)
+                    self.connection.close()
+                    self.connection = true_connection
+                    handler = true_handler
+
+                except BaseException:
+                    self.logger.error(f"SYSDBA Fix failed, "
+                                      f"Host: {self.hostname} "
+                                      f"Owner: {self.owner} "
+                                      f"Handler: {handler}")
+                    result = 'SYSDBA Fix Failed'
+
+        if rc == 1:
+            try:
+                self.connection = cx_Oracle.connect(user=self.DBC_USER, password=self.DBC_PWD, dsn=dsn)
+                # Connection timeout is milliseconds
+                self.connection.callTimeout = call_timeout*1000
+                self.logger.info("Post DBC Fix Verification Succeeded!!!")
+
+            except cx_Oracle.Error as exc:
+                error, = exc.args
+                self.logger.error(f"Post DBC Fix Verification Check: {dsn} "
+                                  f"Code: {error.code} MSG: {error.message}")
+                rc = error.code
+
+        return rc
 
     def create_ssh_connection(self, handler, call_timeout):
         
         rc = 0
+        if self.target_type == 'Server':
+            self.PKEY = '/home/BELLDEV.DEV.BCE.CA/automation/.ssh/fidBIN_dev'
         if handler == 'ssh':
             PWD = self.DBC_PWD
             user = self.owner
@@ -290,23 +445,27 @@ class Target:
             user = self.OEM_USER
         elif handler == 'win_ssh':
             PWD = self.WIN_PWD
-            user = self.WIN_USER
+            user = self.owner
         elif handler == 'oraoemag':
             PWD = 'self.oms_pwd'
             user = 'oraoemag'
         elif handler == 'os_proc':
             if self.inventory.INV_USER == 'DBC_TEAM':
-                localhost = DBC_SERVER
+                localhost = 'caddld-590.belldev.dev.bce.ca'
                 user = 'orac4i'
             else: 
-                localhost = OS_SERVER
+                localhost = 'caddla-978.belldev.dev.bce.ca'
                 user = 'fidBIN'
         elif handler == 'rsh_978' :
-                self.PKEY = os_key
-                localhost = OS_SERVER
+                self.PKEY = '/home/inventory/.ssh/id_fidBIN_rsa'
+                localhost = 'caddla-978.belldev.dev.bce.ca'
                 user = 'fidBIN'
+        elif handler == 'win_ssh_key':
+            self.PKEY = '/home/BELLDEV.DEV.BCE.CA/fidbellitnonprod/.ssh/id_rsa'
+            user = 'fidbellitnonprod'
+            localhost = 'caddla-978.belldev.dev.bce.ca'
 
-        self.logger.debug(f"Arrived at create_ssh_connection Host: {self.hostname} User: {user} ")
+        self.logger.debug(f"Arrived at create_ssh_connection Host: {self.hostname} User: {user} Handler: {handler}")
 
         self.connection = paramiko.SSHClient()
         self.connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -403,19 +562,22 @@ class Target:
         return rc
 
     def disconnect(self):
-        # if connection exists, close it and set connection to ''
-
+       # if connection exists, close it and set connection to ''
         try:
-            if self.connection != '':
-                # self.logger.debug("Disconnecting from :  %s ", str(self.connection))
+            if (
+                (isinstance(self.connection, paramiko.client.SSHClient) and self.connection.get_transport().is_active()) or
+                (isinstance(self.connection, cx_Oracle.Connection) and self.connection.ping() is None) or
+                (isinstance(self.connection, pyodbc.Connection))
+            ):
                 self.connection.close()
-                # self.logger.debug("Disconnected from :  %s ", str(self.connection))
                 self.connection = ''
                 if self.timer:
                     self.timer.cancel()
                     self.timer = None
-        except Exception:
+            
+        except Exception as e:
             self.logger.error(f'Error when disconnecting from target: {self.hostname}')
+            self.logger.info(f"Error details: {e}")
             self.connection = ''
 
     def exec_sql(self, inventory_query):
@@ -470,10 +632,10 @@ class Target:
         result = ''
 
         if self.connection != '':
-            if handler in ['ssh', 'oem_ssh', 'win_ssh', 'os_proc', 'oraoemag','rsh_978']:
+            if handler in ['ssh', 'oem_ssh', 'win_ssh', 'os_proc', 'oraoemag','rsh_978', 'win_ssh_key']:
                 rc, result = self.get_OS_info(check,call_timeout)
-                if handler == 'win_ssh' and 'only' in result:
-                    rc = 2
+                # if handler == 'win_ssh' and 'only' in result:
+                #     rc = 2
 
             elif handler in [ 'PLSQL', 'SYSDBA' ] :
                 rc, result = self.get_PLSQL_info(check)
@@ -606,6 +768,10 @@ class Target:
 
         try:
             stdin, stdout, stderr = self.connection.exec_command(check, timeout=call_timeout, get_pty=False)
+            
+            #Note:  pty is required for "sudo" commands on many servers.  Maybe a future "handler"
+            # stdin, stdout, stderr = self.connection.exec_command(check, timeout=call_timeout, get_pty=True)
+
             time.sleep(1)
 
             # get the shared channel for stdout/stderr/stdin
@@ -619,16 +785,13 @@ class Target:
 
             # read stdout/stderr in order to prevent read block hangs
             stdout_chunks = []
-            stdout_chunks.append(stdout.channel.recv(
-                len(stdout.channel.in_buffer)))
+            stdout_chunks.append(stdout.channel.recv(len(stdout.channel.in_buffer)))
             # chunked read to prevent stalls
 
-            while not channel.closed or channel.recv_ready() \
-                    or channel.recv_stderr_ready():
+            while not channel.closed or channel.recv_ready() or channel.recv_stderr_ready():
                 # stop if channel was closed prematurely, and there is no data
                 # in the buffers.
-                self.logger.debug('Reading stdout at: %s',
-                                  str(datetime.now()))
+                self.logger.debug('Reading stdout at: %s', str(datetime.now()))
                 timeout = call_timeout / 10
                 got_chunk = False
                 read_q, _, _ = select.select([stdout.channel], [], [], timeout)
@@ -674,8 +837,7 @@ class Target:
             if rc == 0:
                 rc = 1
 
-            self.logger.debug("OS result length : %s ",
-                              str(len(stdout_chunks)))
+            self.logger.debug("OS result length : %s ",str(len(stdout_chunks)))
             result = ''.join(str(stdout_chunks[len(stdout_chunks) - 1].decode(
                 "utf-8")).strip().replace('logout', ''))
 
@@ -725,13 +887,7 @@ class Target:
         if rc == 1 and checks_by_handler:
             for check_handler in checks_by_handler:
                 rc = self.connect(check_handler, self.inventory)
-                
-                # Database_Team Schema
-                if self.inventory.INV_USER == 'DBC_TEAM':
-                    self.inventory.add_result(self.inventory_id,f'{check_handler}:{rc}','access')
-                # Server_Team Schema
-                else:
-                    self.inventory.add_result(self.hostname,f'{check_handler}:{rc}','access')
+                self.inventory.add_result(self.inventory_id,f'{check_handler}:{rc}','access')
                 
                 if rc != 1:
                     self.disconnect()
@@ -757,17 +913,17 @@ class Target:
 
                             if '$ORACLE_HOME' in target_check.check:
                                 self.logger.debug(f"Found \"$ORACLE_HOME\" - Changing: {str(target_check.check)} to {str(target_check.check.replace('$ORACLE_HOME', self.home_dir ))}")
-                                temp_check = target_check.check.replace('$ORACLE_HOME', self.home_dir)
+                                temp_check = temp_check.replace('$ORACLE_HOME', self.home_dir)
                             if '${ORACLE_HOME}' in target_check.check:
-                                temp_check = target_check.check.replace('${ORACLE_HOME}', str(self.home_dir))
+                                temp_check = temp_check.replace('${ORACLE_HOME}', str(self.home_dir))
                             if '$ORACLE_SID' in target_check.check:
-                                temp_check = target_check.check.replace('$ORACLE_SID', self.instance_name)
+                                temp_check = temp_check.replace('$ORACLE_SID', self.instance_name)
                             if '${ORACLE_SID}' in target_check.check:
-                                temp_check = target_check.check.replace('${ORACLE_SID}', self.instance_name)
+                                temp_check = temp_check.replace('${ORACLE_SID}', self.instance_name)
                             if '$HOSTNAME' in target_check.check:
-                                temp_check = target_check.check.replace('$HOSTNAME', self.hostname)
+                                temp_check = temp_check.replace('$HOSTNAME', self.hostname)
                             if '${HOSTNAME}' in target_check.check:
-                                temp_check = target_check.check.replace('${HOSTNAME}', self.hostname)
+                                temp_check = temp_check.replace('${HOSTNAME}', self.hostname)
                         except: 
                             self.logger.debug("Unable to substitute: %s", str(target_check.check) )
 
@@ -785,17 +941,12 @@ class Target:
                                     target_check.result_column,
                                     result)
 
-                            # Standard Schema
-                            if self.inventory.INV_USER == 'DBC_TEAM':
+                            # Now add all check results to CHECK_RESULTS table
+                            if result == '' or result is None :
+                                self.logger.debug("No result value to save. Skipping the insert." )
+                            else :
                                 rc = self.inventory.add_result(
                                     self.inventory_id,
-                                    result,
-                                    target_check.result_column)
-
-                            # Server_Team Schema
-                            else:
-                                rc = self.inventory.add_result(
-                                    self.hostname,
                                     result,
                                     target_check.result_column)
                 self.disconnect()
